@@ -63,3 +63,39 @@ All changes to the `main` branch must go through a pull request. To push your ch
 3. Open a pull request on GitHub. The GitHub Actions workflow will automatically check the code for linting errors before the merge.
 
 ---
+
+## React Native/Expo Setup
+1. Install Expo Go
+   ```bash
+   npm install -g expo-cli
+   ```
+
+2. Install tunnels
+   ```bash
+   npm install --global @expo/ngrok@^4.1.0
+   ```
+
+3. Install Expo
+   ```bash
+   create-expo-app@3.0.0
+   ```
+
+4. Install Expo Go on iOS or Android device
+   Android: https://play.google.com/store/apps/details?id=host.exp.exponent&hl=en_US
+   iOS: https://apps.apple.com/us/app/expo-go/id982107779
+
+5. Run
+   ```bash
+   npx expo start
+   ```
+   *If your device is having network issues, try adding the --tunnel flag
+
+6. Scan QR code with iOS or Android device
+   The app should be visible on your phone!
+
+
+## Notes/References
+- Sample code is located in the **app-example** directory
+- To learn more about developing your project with Expo, look at the following resources:
+- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
+- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
