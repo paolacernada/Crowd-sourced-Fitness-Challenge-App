@@ -99,3 +99,34 @@ All changes to the `main` branch must go through a pull request. To push your ch
 - To learn more about developing your project with Expo, look at the following resources:
 - [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
 - [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+
+---
+
+# Test Backend Server
+
+This TypeScript node.js backend server enables users to make backend function calls locally while developing instead of through Google Cloud Functions, avoiding unecessary usage fees.
+
+### Steps to Set Up Locally:
+1. Navigate to the /test_backend folder
+
+2. Initialize the backend with a (separate) package.json
+    ```bash
+    npm init -y
+    ```bash
+
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+4. If there isn't a tsconfig.json file, run:
+    ```bash
+    npx tsc --init
+    ```
+5. Add script
+   "start": "nodemon ts-node src/server.ts",
+
+6. Run
+      ```bash
+      npm start
+      ```
