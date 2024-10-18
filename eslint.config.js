@@ -1,8 +1,8 @@
-import prettier from "eslint-plugin-prettier"
-import react from "eslint-plugin-react"
-import jsxA11y from "eslint-plugin-jsx-a11y"
-import typescript from "@typescript-eslint/eslint-plugin"
-import parser from "@typescript-eslint/parser"
+import prettier from "eslint-plugin-prettier";
+import react from "eslint-plugin-react";
+import jsxA11y from "eslint-plugin-jsx-a11y";
+import typescript from "@typescript-eslint/eslint-plugin";
+import parser from "@typescript-eslint/parser";
 
 export default [
   {
@@ -38,4 +38,4 @@ export default [
       },
     },
   },
-]
+];
