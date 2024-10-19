@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-dotenv.config({ path: ".env.backend" });
+dotenv.config({ path: ".env.server" });
 
 import { createClient } from "@supabase/supabase-js";
 if (!process.env.SUPABASE_URL) {
