@@ -8,6 +8,11 @@ VALUES
 -- Insert starter badges data
 
 -- Insert difficulty data. This table is not modifiable.
+INSERT INTO difficulty (name)
+VALUES
+('Easy'),
+('Medium'),
+('Hard');
 
 -- Insert starter challenges data
 
