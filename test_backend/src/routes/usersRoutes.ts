@@ -50,10 +50,60 @@ router.get("/:id", async (req: any, res: any) => {
   }
 });
 
-// Add new user
-// router.post('/users', (req, res) => {
-//   // Create a user
-// });
+// Create new user
+router.post("/", async (req: any, res: any) => {
+  const { name } = req.body;
+
+  if (!name) {
+    return res.status(400).json({ error: "You must enter a username" });
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from("users") //
+      .insert({
+        name: name, // registration_date is automatically handled by PostgreSQL table (via DEFAULT)
+      })
+      .select();
+
+    if (error) {
+      throw error;
+    }
+
+    // Respond with newly-created user data
+    res.status(201).json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error-- Unable to create user." });
+  }
+});
+
+// router.post('/', async (req: any, res: any) => {
+//     const { name } = req.body;
+
+//     if (!name) {
+//         return res.status(404).json({ error: "You must enter a username" });
+//       }
+
+//     try {
+//         const { data, error } = await supabase
+//           .from("users") // Replace with your table name
+//           .insert({
+//             name: name,
+//             // registration_date: "NOW()"
+//         })
+//           .select();
+
+//         if (error) {
+//           throw error;
+//         }
+
+//         res.status(200).json(data);
+//       } catch (err) {
+//         console.error(err);
+//         res.status(500).json({ error: "Error-- Unable to fetch user data." });
+//       }
+//     });
 
 // Update user
 

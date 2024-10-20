@@ -26,7 +26,8 @@ CREATE TABLE goals (
 CREATE TABLE users (
   id bigint primary key generated always as identity,
   name VARCHAR(50) UNIQUE NOT NULL,
-  registration_date TIMESTAMP
+  -- registration_date TIMESTAMP
+  registration_date TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE tags (

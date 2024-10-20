@@ -1,9 +1,9 @@
 -- Insert starter user data
-INSERT INTO users (name, registration_date)
+INSERT INTO users (name)
 VALUES
-('Sam', NOW()),
-('Paola', NOW()),
-('Liz', NOW());
+('Sam'),
+('Paola'),
+('Liz');
 
 -- Insert starter badges data
 
