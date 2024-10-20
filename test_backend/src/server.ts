@@ -5,7 +5,7 @@ import combinedRoutes from "./routes/index";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json()); // Todo: I might not need this
+app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("The backend server is running!");
