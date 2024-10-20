@@ -78,67 +78,65 @@ router.post("/", async (req: any, res: any) => {
   }
 });
 
-
 // Update user
-router.patch('/:id', async (req: any, res: any) => {
-    const { id } = req.params;  // Get the user ID from the URL
-    const { name } = req.body;  // Get the new name from the request body
+router.patch("/:id", async (req: any, res: any) => {
+  const { id } = req.params; // Get the user ID from the URL
+  const { name } = req.body; // Get the new name from the request body
 
-    // Will do || checks when handling more than one field (like with Challenges)
-    if (!name) {
-        return res.status(400).json({ error: "You must provide a name to update" });
+  // Will do || checks when handling more than one field (like with Challenges)
+  if (!name) {
+    return res.status(400).json({ error: "You must provide a name to update" });
+  }
+
+  try {
+    // Update user in Supabase database
+    const { data, error } = await supabase
+      .from("users")
+      .update({ name })
+      .eq("id", id)
+      .select(); // Returns updated row
+
+    if (error) {
+      throw error;
     }
 
-    try {
-        // Update user in Supabase database
-        const { data, error } = await supabase
-            .from("users")
-            .update({ name })
-            .eq('id', id)
-            .select();  // Returns updated row
-
-        if (error) {
-            throw error;
-        }
-
-        if (data.length === 0) {
-            return res.status(404).json({ error: "User not found" });
-        }
-
-        // Responds with updated user data
-        res.status(200).json(data);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Unable to update user (error)." });
+    if (data.length === 0) {
+      return res.status(404).json({ error: "User not found" });
     }
+
+    // Responds with updated user data
+    res.status(200).json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Unable to update user (error)." });
+  }
 });
 
-  
 // Delete user
-router.delete('/:id', async (req: any, res: any) => {
-    const { id } = req.params;
+router.delete("/:id", async (req: any, res: any) => {
+  const { id } = req.params;
 
-    try {
-        const { data, error } = await supabase
-            .from("users")
-            .delete()
-            .eq('id', id)
-            .select();  // Returns deleted row
+  try {
+    const { data, error } = await supabase
+      .from("users")
+      .delete()
+      .eq("id", id)
+      .select(); // Returns deleted row
 
-        // Supabase error handler
-        if (error) {
-            throw error;
-        }
-
-        if (data.length === 0) {
-            return res.status(404).json({ error: "User not found" });
-        }
-
-        res.status(204).send();
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Unable to delete user (error)." });
+    // Supabase error handler
+    if (error) {
+      throw error;
     }
+
+    if (data.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(204).send();
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Unable to delete user (error)." });
+  }
 });
 
 export default router;
