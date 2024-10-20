@@ -6,9 +6,7 @@ const router = Router();
 // Returns all users
 router.get("/", async (req, res) => {
   try {
-    const { data, error } = await supabase
-      .from("users")
-      .select("*");
+    const { data, error } = await supabase.from("users").select("*");
 
     if (error) {
       throw error;
