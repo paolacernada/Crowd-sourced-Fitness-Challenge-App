@@ -1,6 +1,6 @@
 import express from "express";
 // import supabase from "./config/supabaseClient";
-import combinedRoutes from './routes/index'
+import combinedRoutes from "./routes/index";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,8 +12,7 @@ app.get("/", (req, res) => {
 });
 
 // Returns all users
-app.use('/api', combinedRoutes); // Prefixes all routes in importer router with "api"
-
+app.use("/api", combinedRoutes); // Prefixes all routes in importer router with "api"
 
 // // Returns all users
 // app.get("/api/users", async (req, res) => {
@@ -32,8 +31,6 @@ app.use('/api', combinedRoutes); // Prefixes all routes in importer router with 
 //     res.status(500).json({ error: 'Error-- Unable to fetch "users" data.' });
 //   }
 // });
-
-
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
