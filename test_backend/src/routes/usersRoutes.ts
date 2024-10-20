@@ -1,5 +1,4 @@
 import { Router } from "express";
-// import { Router } from 'express';
 import supabase from "../config/supabaseClient";
 
 const router = Router();
@@ -8,7 +7,7 @@ const router = Router();
 router.get("/", async (req, res) => {
   try {
     const { data, error } = await supabase
-      .from("users") // Replace with your table name
+      .from("users")
       .select("*");
 
     if (error) {
