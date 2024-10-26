@@ -78,7 +78,7 @@ router.post("/", async (req: any, res: any) => {
   }
 });
 
-// Update user
+// Update challenge
 router.patch("/:id", async (req: any, res: any) => {
   const { id } = req.params;
   const { name, description, difficulty } = req.body;
@@ -124,5 +124,30 @@ router.patch("/:id", async (req: any, res: any) => {
 });
 
 // Todo: Delete challenge
+router.delete("/:id", async (req: any, res: any) => {
+  const { id } = req.params;
+
+  try {
+    const { data, error } = await supabase
+      .from("challenges")
+      .delete()
+      .eq("id", id)
+      .select(); // Returns deleted row
+
+    // Supabase error handler
+    if (error) {
+      throw error;
+    }
+
+    if (data.length === 0) {
+      return res.status(404).json({ error: "Challenge not found" });
+    }
+
+    res.status(204).send();
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Unable to delete challenge (error)." });
+  }
+});
 
 export default router;
