@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Text, View, ActivityIndicator } from "react-native";
 import { supabase } from "../src/config/supabaseClient";
+import { useNavigation } from "expo-router";
 
 export default function Index() {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const navigation = useNavigation();
+
   useEffect(() => {
-    // Fetch users from Supabase
+    navigation.setOptions({ title: "FitTogether Challenge" });
+  }, [navigation]);
+
+  useEffect(() => {
     const fetchUsers = async () => {
       const { data, error } = await supabase.from("users").select("*");
       if (error) {

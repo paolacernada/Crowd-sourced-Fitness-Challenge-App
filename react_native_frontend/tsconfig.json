@@ -1,5 +1,4 @@
 {
-  "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
     "paths": {
@@ -29,8 +28,6 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "expo-env.d.ts",
-    ".expo/types/**/*.ts",
     "src/**/*",
     "App.tsx"
   ],
@@ -39,5 +36,6 @@
     "babel.config.js",
     "metro.config.js",
     "jest.config.js"
-  ]
+  ],
+  "extends": "expo/tsconfig.base"
 }

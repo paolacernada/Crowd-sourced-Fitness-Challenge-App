@@ -30,7 +30,7 @@ const SupabaseTest = () => {
 
   return (
     <View>
-      <Text>Supabase Users:</Text>
+      <Text>FitTogether Users:</Text>
       {users.map((user, index) => (
         <Text key={index}>{user.name}</Text>
       ))}
