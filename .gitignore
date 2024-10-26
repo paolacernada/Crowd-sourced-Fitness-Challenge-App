@@ -6,3 +6,4 @@ dist/
 .eslintcache
 .vscode/
 .expo
+.expo/settings.json

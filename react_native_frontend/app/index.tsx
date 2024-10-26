@@ -9,7 +9,7 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <Text>I was finally able to get this working.</Text>
+      <Text>Currently in progress.</Text>
     </View>
   );
 }
