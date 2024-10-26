@@ -64,6 +64,7 @@ router.post("/", async (req: any, res: any) => {
       .select();
 
     if (error) {
+      console.error("Supabase Error:", error);
       throw error;
     }
 
