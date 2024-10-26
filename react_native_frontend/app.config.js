@@ -2,8 +2,8 @@ import "dotenv/config";
 
 export default () => ({
   expo: {
-    name: "fitness_challenge",
-    slug: "fitness_challenge",
+    name: "react_native_frontend",
+    slug: "react_native_frontend",
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
