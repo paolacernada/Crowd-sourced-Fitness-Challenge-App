@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "lint": "eslint .",
-    "lint:fix": "eslint frontend/ backend/ --fix"
+    "lint:fix": "eslint fitness_challenge/ test_backend/ --fix"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.9.0",
