@@ -4,3 +4,6 @@ dist/
 .env.server
 .env.frontend
 .eslintcache
+.vscode/
+.expo
+.expo/settings.json
