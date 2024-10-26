@@ -5,3 +5,4 @@ dist/
 .env.frontend
 .eslintcache
 .vscode/
+*.env.*
