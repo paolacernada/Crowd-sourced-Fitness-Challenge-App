@@ -123,7 +123,7 @@ router.patch("/:id", async (req: any, res: any) => {
   }
 });
 
-// Todo: Delete challenge
+// Delete challenge
 router.delete("/:id", async (req: any, res: any) => {
   const { id } = req.params;
 
