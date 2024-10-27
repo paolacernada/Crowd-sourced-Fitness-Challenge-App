@@ -1,46 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { Text, View, ActivityIndicator } from "react-native";
-import { supabase } from "../src/config/supabaseClient";
-import { useNavigation } from "expo-router";
+import { Text, View } from "react-native";
 
 export default function Index() {
-  const [users, setUsers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const navigation = useNavigation();
-
-  useEffect(() => {
-    navigation.setOptions({ title: "FitTogether Challenge" });
-  }, [navigation]);
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const { data, error } = await supabase.from("users").select("*");
-      if (error) {
-        console.error("Error fetching users:", error);
-      } else {
-        setUsers(data);
-      }
-      setLoading(false);
-    };
-
-    fetchUsers();
-  }, []);
-
-  if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
-  }
-
   return (
     <View
       style={{
@@ -49,14 +9,7 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <Text style={{ fontSize: 24, fontWeight: "bold" }}>
-        FitTogether Users:
-      </Text>
-      {users.map((user, index) => (
-        <Text key={index} style={{ fontSize: 18 }}>
-          {user.name}
-        </Text>
-      ))}
+      <Text>Currently in progress.</Text>
     </View>
   );
 }

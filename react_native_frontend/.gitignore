@@ -1,5 +1,4 @@
 node_modules/
-.env.frontend
 .expo/
 dist/
 npm-debug.*
@@ -10,7 +9,7 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
-_layout copy.tsx
+
 # macOS
 .DS_Store
 
