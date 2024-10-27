@@ -30,8 +30,19 @@ VALUES
     ('15 times', 'Participate 15 times')
 
 -- Insert starter tags data
+INSERT INTO tags (name)
+VALUES
+('superstar'),
+('dedication'),
+('fitness');
 
 -- Insert starter challenge_goals data
+INSERT INTO challenge_goals (challenge_id, goal_id) 
+VALUES
+(1, 3),
+(2, 1),
+(3, 2)
+;
 
 -- Insert starter challenge_tags data
 

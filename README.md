@@ -102,7 +102,7 @@ All changes to the `main` branch must go through a pull request. To push your ch
 
 ---
 
-# Test Backend Server
+# Local Backend Server
 
 This TypeScript node.js backend server enables users to make backend function calls locally while developing instead of through Google Cloud Functions, avoiding unecessary usage fees.
 
@@ -130,3 +130,44 @@ This TypeScript node.js backend server enables users to make backend function ca
       ```bash
       npm start
       ```
+
+# Supabase Edge Functions
+### Installation
+1. Install supabase CLI, following instructions to add to PATH, etc.
+      ```bash
+      brew install supabase/tap/supabase
+      ```
+
+2. Upgrade supabase CLI
+      ```bash
+      brew upgrade supabase
+      ```
+
+3. Log into Supabase. If you see an error (WSL may cause one) try adding the --no-browser flag
+      ```bash
+      supabase login
+      ```
+
+4. Init supabase project. In the project root folder:
+      ```bash
+      supabase init
+      ```
+
+5. Run
+      ```bash
+      supabase start
+      ```
+
+# Testing
+1. Run exampleFunction locally for testing
+      ```bash
+      supabase functions serve exampleFunction
+      ```
+
+2. Deploy exampleFunction (to Supabase)
+      ```bash
+      supabase functions deploy functionName
+      ```
+   - Deployment URL can be found in terminal output after deployment
+
+3. Update frontend to use deployed Edge Function URL instead of local routes.

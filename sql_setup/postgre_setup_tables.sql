@@ -36,11 +36,11 @@ CREATE TABLE tags (
 );
 
 CREATE TABLE challenge_goals (
-  challenge_id bigint,
-  FOREIGN KEY (challenge_id) references challenges(id) on delete cascade,
-  goal_id INT ,
-  FOREIGN KEY (goal_id) REFERENCES goals(id) ON DELETE CASCADE,
-  PRIMARY KEY (challenge_id, goal_id)
+  id bigint primary key generated always as identity,
+  challenge_id bigint NOT NULL,
+  FOREIGN KEY (challenge_id) REFERENCES challenges(id) ON DELETE CASCADE,
+  goal_id bigint NOT NULL,
+  FOREIGN KEY (goal_id) REFERENCES goals(id) ON DELETE CASCADE
 );
 
 CREATE TABLE challenge_tags (
