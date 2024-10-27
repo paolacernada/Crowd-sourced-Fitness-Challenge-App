@@ -7,7 +7,7 @@ import tagRoutes from "./tagsRoutes";
 import challengeGoalRoutes from "./challengesGoalsRoutes";
 import challengeTagRoutes from "./challengesTagsRoutes";
 import badgeRoutes from "./badgesRoutes";
-// import userBadgeRoutes from "./usersBadgesRoutes";
+import userBadgeRoutes from "./usersBadgesRoutes";
 
 const router = Router();
 
@@ -19,7 +19,6 @@ router.use("/tags", tagRoutes); // Prefixes all routes in tagRoutes.ts with 'tag
 router.use("/challengeGoals", challengeGoalRoutes); // Prefixes all routes in challengeGoalRoutes.ts with 'challenge_goals'
 router.use("/challengeTags", challengeTagRoutes); // Prefixes all routes in challengeTagRoutes.ts with 'challenge_goals'
 router.use("/badges", badgeRoutes); // Prefixes all routes in badgeRoutes.ts with 'badges'
-
-// router.use("/userBadges", userBadgeRoutes); // Prefixes all routes in userBadgeRoutes.ts with 'userBadges'
+router.use("/userBadges", userBadgeRoutes); // Prefixes all routes in userBadgeRoutes.ts with 'userBadges'
 
 export default router;

@@ -64,3 +64,8 @@ VALUES
 ;
 
 -- Insert starter users_badges data
+INSERT INTO users_badges (user_id, badge_id)
+VALUES
+(1, 3),
+(2, 2),
+(3, 1)
