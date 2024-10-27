@@ -44,17 +44,17 @@ CREATE TABLE challenge_goals (
 );
 
 CREATE TABLE challenge_tags (
+  id bigint primary key generated always as identity,
   challenge_id INT,
   FOREIGN KEY (challenge_id) REFERENCES challenges(id) ON DELETE CASCADE,
   tag_id INT,
-  FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE,
-  PRIMARY KEY (challenge_id, tag_id)
+  FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
 );
 
 CREATE TABLE users_badges (
+    id bigint primary key generated always as identity,
     user_id INT,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     badge_id INT,
-    FOREIGN KEY (badge_id) REFERENCES badges(id) ON DELETE CASCADE,
-    PRIMARY KEY (user_id, badge_id)
+    FOREIGN KEY (badge_id) REFERENCES badges(id) ON DELETE CASCADE
 );

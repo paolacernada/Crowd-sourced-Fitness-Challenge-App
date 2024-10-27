@@ -6,6 +6,17 @@ VALUES
 ('Liz');
 
 -- Insert starter badges data
+INSERT INTO badges (name, description)
+VALUES
+('Dedication', 'Exercised 3 times this week'),
+('Superstar', 'Exercised 5 times this week'),
+('Strong Start', 'Completed first goal')
+
+CREATE TABLE badges (
+  id bigint primary key generated always as identity,
+  name VARCHAR(100) UNIQUE NOT NULL,
+  description VARCHAR(500) NOT NULL
+);
 
 -- Insert difficulty data. This table is not modifiable.
 INSERT INTO difficulty (name)
@@ -45,5 +56,11 @@ VALUES
 ;
 
 -- Insert starter challenge_tags data
+INSERT INTO challenge_tags (challenge_id, tag_id) 
+VALUES
+(1, 2),
+(2, 3),
+(3, 1)
+;
 
 -- Insert starter users_badges data
