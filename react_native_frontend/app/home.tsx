@@ -1,0 +1,82 @@
+import React, { useState } from "react";
+import { View, Text, StyleSheet, Button, TextInput, Alert } from "react-native";
+import { supabase } from "../src/config/supabaseClient";
+import { useRouter } from "expo-router";
+
+export default function HomeScreen() {
+  const [challengeName, setChallengeName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleCreateChallenge = async () => {
+    if (!challengeName) {
+      Alert.alert("Error", "Challenge name cannot be empty.");
+      return;
+    }
+
+    setLoading(true);
+
+    const { error } = await supabase
+      .from("challenges")
+      .insert([{ name: challengeName, created_at: new Date() }]);
+
+    if (error) {
+      Alert.alert("Error creating challenge", error.message);
+      setLoading(false);
+    } else {
+      Alert.alert("Success", "Challenge created successfully!");
+      setChallengeName(""); // Reset input
+      setLoading(false);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Welcome to FitTogether Challenges!</Text>
+      <Text style={styles.subtitle}>
+        Track your progress, join challenges, and more.
+      </Text>
+
+      <TextInput
+        placeholder="Enter a new challenge name"
+        value={challengeName}
+        onChangeText={setChallengeName}
+        style={{
+          borderWidth: 1,
+          marginBottom: 20,
+          padding: 8,
+          borderRadius: 5,
+          width: "80%",
+        }}
+      />
+
+      <Button
+        title={loading ? "Creating Challenge..." : "Start a New Challenge"}
+        onPress={handleCreateChallenge}
+        disabled={loading}
+      />
+
+      <Button title="Log out" onPress={() => router.replace("/login")} />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  subtitle: {
+    fontSize: 18,
+    color: "#666",
+    marginBottom: 40,
+    textAlign: "center",
+  },
+});
