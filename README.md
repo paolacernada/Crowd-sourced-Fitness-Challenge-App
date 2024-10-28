@@ -96,28 +96,117 @@ This app enables users to create and participate in community-driven fitness cha
 
 3. Open a pull request on GitHub. The GitHub Actions workflow will automatically check the code for linting errors before the merge.
 
-4. Upon review, the pull request will be approved and merged to the `main` branch, or revisions will be requested.
+---
+
+## Local Backend Server
+
+This TypeScript node.js backend server enables users to make backend function calls locally while developing instead of through Google Cloud Functions, avoiding unecessary usage fees.
+
+### Steps to Set Up Locally:
+1. Navigate to the /test_backend folder
+
+2. Initialize the backend with a (separate) package.json
+   ```bash
+   npm init -y
+   ```
+
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+4. If there isn't a tsconfig.json file, run:
+    ```bash
+    npx tsc --init
+    ```
+5. Add script
+   "start": "nodemon ts-node src/server.ts",
+
+6. Add .env.server file 
+   ```bash
+   touch .env.server
+   ```
+   - Add the following to .env.server:
+      SUPABASE_URL = (your SUPABASE_URL here)
+      SUPABASE_ANON_KEY = (your SUPABASE_ANON_KEY here)
+
+7. Run
+      ```bash
+      npm start
+      ```
+
+## React Native/Expo Setup
+1. Install Expo Go CLI
+   ```bash
+   npm install -g expo-cli
+   ```
+
+2. Install ngrok (For tunneling with Expo)
+   ```bash
+   npm install --global @expo/ngrok@^4.1.0
+   ```
+
+3. Install project dependencies
+   ```bash
+   npm install
+   ```
+
+4. Install react-native-dotenv
+   ```bash
+   npm install react-native-dotenv --save
+   ```
+
+5. Add .env.frontend file 
+   ```bash
+   touch .env.frontend
+   ```
+   - Add the following to .env.server:
+      SUPABASE_URL = (your SUPABASE_URL here)
+      SUPABASE_ANON_KEY = (your SUPABASE_ANON_KEY here)
+
+6. Create an Expo app (if you haven't already)
+   ```bash
+   create-expo-app@3.0.0
+   ```
+
+7. Install Expo Go on your iOS or Android device
+   Android: https://play.google.com/store/apps/details?id=host.exp.exponent&hl=en_US
+   iOS: https://apps.apple.com/us/app/expo-go/id982107779
+
+8. Start your development server
+   ```bash
+   npx expo start
+   ```
+   *If your device is having network issues, try adding the --tunnel flag
+
+9. Scan QR code with iOS or Android device
+   The app should be visible on your phone!
+
+
+## Notes/References
+- Sample code is located in the **app-example** directory
+- To learn more about developing your project with Expo, look at the following resources:
+- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
+- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
 
 ---
 
-# ⚡ Supabase Edge Functions
-
+# Supabase Edge Functions
 ### Installation
+1. Install supabase CLI, following instructions to add to PATH, etc.
+      ```bash
+      brew install supabase/tap/supabase
+      ```
 
-1. Install Supabase CLI, following instructions to add it to your PATH:
-   ```bash
-   brew install supabase/tap/supabase
-   ```
+2. Upgrade supabase CLI
+      ```bash
+      brew upgrade supabase
+      ```
 
-2. Upgrade Supabase CLI (if needed):
-   ```bash
-   brew upgrade supabase
-   ```
-
-3. Log into Supabase. If you see an error (WSL may cause one), try adding the `--no-browser` flag:
-   ```bash
-   supabase login
-   ```
+3. Log into Supabase. If you see an error (WSL may cause one) try adding the --no-browser flag
+      ```bash
+      supabase login
+      ```
 
 4. Initialize the Supabase project in the root folder:
    ```bash
@@ -129,21 +218,19 @@ This app enables users to create and participate in community-driven fitness cha
    supabase start
    ```
 
-# 🧪 Testing
+# Testing
+1. Run exampleFunction locally for testing
+      ```bash
+      supabase functions serve exampleFunction
+      ```
 
-1. Run the function locally for testing:
-   ```bash
-   supabase functions serve exampleFunction
-   ```
+2. Deploy exampleFunction (to Supabase)
+      ```bash
+      supabase functions deploy functionName
+      ```
+   - Deployment URL can be found in terminal output after deployment
 
-2. Deploy the function to Supabase:
-   ```bash
-   supabase functions deploy functionName
-   ```
-
-   - Deployment URL can be found in the terminal output after deployment.
-
-3. Update the frontend to use the deployed Edge Function URL instead of local routes.
+3. Update frontend to use deployed Edge Function URL instead of local routes.
 
 # 📚 Explore the Docs
 
