@@ -64,45 +64,7 @@ All changes to the `main` branch must go through a pull request. To push your ch
 
 ---
 
-## React Native/Expo Setup
-1. Install Expo Go
-   ```bash
-   npm install -g expo-cli
-   ```
-
-2. Install tunnels
-   ```bash
-   npm install --global @expo/ngrok@^4.1.0
-   ```
-
-3. Install Expo
-   ```bash
-   create-expo-app@3.0.0
-   ```
-
-4. Install Expo Go on iOS or Android device
-   Android: https://play.google.com/store/apps/details?id=host.exp.exponent&hl=en_US
-   iOS: https://apps.apple.com/us/app/expo-go/id982107779
-
-5. Run
-   ```bash
-   npx expo start
-   ```
-   *If your device is having network issues, try adding the --tunnel flag
-
-6. Scan QR code with iOS or Android device
-   The app should be visible on your phone!
-
-
-## Notes/References
-- Sample code is located in the **app-example** directory
-- To learn more about developing your project with Expo, look at the following resources:
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
----
-
-# Local Backend Server
+## Local Backend Server
 
 This TypeScript node.js backend server enables users to make backend function calls locally while developing instead of through Google Cloud Functions, avoiding unecessary usage fees.
 
@@ -110,9 +72,9 @@ This TypeScript node.js backend server enables users to make backend function ca
 1. Navigate to the /test_backend folder
 
 2. Initialize the backend with a (separate) package.json
-    ```bash
-    npm init -y
-    ```bash
+   ```bash
+   npm init -y
+   ```
 
 3. Install dependencies:
    ```bash
@@ -126,10 +88,74 @@ This TypeScript node.js backend server enables users to make backend function ca
 5. Add script
    "start": "nodemon ts-node src/server.ts",
 
-6. Run
+6. Add .env.server file 
+   ```bash
+   touch .env.server
+   ```
+   - Add the following to .env.server:
+      SUPABASE_URL = (your SUPABASE_URL here)
+      SUPABASE_ANON_KEY = (your SUPABASE_ANON_KEY here)
+
+7. Run
       ```bash
       npm start
       ```
+
+## React Native/Expo Setup
+1. Install Expo Go CLI
+   ```bash
+   npm install -g expo-cli
+   ```
+
+2. Install ngrok (For tunneling with Expo)
+   ```bash
+   npm install --global @expo/ngrok@^4.1.0
+   ```
+
+3. Install project dependencies
+   ```bash
+   npm install
+   ```
+
+4. Install react-native-dotenv
+   ```bash
+   npm install react-native-dotenv --save
+   ```
+
+5. Add .env.frontend file 
+   ```bash
+   touch .env.frontend
+   ```
+   - Add the following to .env.server:
+      SUPABASE_URL = (your SUPABASE_URL here)
+      SUPABASE_ANON_KEY = (your SUPABASE_ANON_KEY here)
+
+6. Create an Expo app (if you haven't already)
+   ```bash
+   create-expo-app@3.0.0
+   ```
+
+7. Install Expo Go on your iOS or Android device
+   Android: https://play.google.com/store/apps/details?id=host.exp.exponent&hl=en_US
+   iOS: https://apps.apple.com/us/app/expo-go/id982107779
+
+8. Start your development server
+   ```bash
+   npx expo start
+   ```
+   *If your device is having network issues, try adding the --tunnel flag
+
+9. Scan QR code with iOS or Android device
+   The app should be visible on your phone!
+
+
+## Notes/References
+- Sample code is located in the **app-example** directory
+- To learn more about developing your project with Expo, look at the following resources:
+- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
+- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+
+---
 
 # Supabase Edge Functions
 ### Installation
