@@ -2,7 +2,7 @@ import "dotenv/config";
 
 export default {
   expo: {
-    name: "FitTogether Challenge",
+    name: "FitTogether Challenges",
     slug: "fitness_challenge",
     version: "1.0.0",
     orientation: "portrait",
