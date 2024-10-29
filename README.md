@@ -159,7 +159,7 @@ This TypeScript node.js backend server enables users to make backend function ca
 
 # Supabase Edge Functions
 ### Installation
-1. Install supabase CLI, following instructions to add to PATH, etc.
+1. Install the supabase CLI (follow the instructions to add to PATH, etc.)
       ```bash
       brew install supabase/tap/supabase
       ```
@@ -183,8 +183,40 @@ This TypeScript node.js backend server enables users to make backend function ca
       ```bash
       supabase start
       ```
+### Deno installation
+5. Install deno
+      ```bash
+      brew install deno
+      ```
 
-# Testing
+
+
+- Install Deno extension
+- create deno.json file in /supabase directory and add:
+      {
+  "compilerOptions": {
+    "lib": ["deno.ns", "deno.unstable"]
+  }
+}
+
+
+         Use Deno Only in the Supabase Directory
+         Focus on the Supabase Directory: Write all your Deno code (Edge Functions) in the supabase/functions directory and ensure that your Node.js backend and React Native frontend remain unaffected by Deno.
+
+         Run Deno Commands: When you need to run or test your Deno functions, navigate to the supabase/functions directory and use Deno commands as needed.
+
+                  4. Keep Node.js for Other Parts of the Project
+                  Continue Using Node.js: For your test_backend and react_native_frontend, continue using Node.js as you normally would. Ensure you don't mix Deno code in those directories.
+
+
+
+To run (and test) a file locally in Deno:
+deno run --allow-net --allow-read functions/users/index.ts
+
+
+
+
+### Testing
 1. Run exampleFunction locally for testing
       ```bash
       supabase functions serve exampleFunction
