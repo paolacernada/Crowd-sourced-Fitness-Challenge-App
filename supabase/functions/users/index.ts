@@ -4,8 +4,16 @@ import { config } from "https://deno.land/x/dotenv/mod.ts";
 const env = config({ path: "../../.env.supabase" });
 console.log("Loaded environment variables:", env); // Check what's loaded
 
-const supabaseUrl = env.SUPABASE_URL;
-const supabaseAnonKey = env.SUPABASE_ANON_KEY;
+//
+
+// For local serving:
+// const supabaseUrl = env.SUPABASE_URL;
+// const supabaseAnonKey = env.SUPABASE_ANON_KEY;
+// For deployment
+const supabaseUrl = Deno.env.get("SUPABASE_URL");
+const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+
+//
 
 console.log("Supabase URL:", supabaseUrl);
 console.log("Supabase Anon Key:", supabaseAnonKey);
