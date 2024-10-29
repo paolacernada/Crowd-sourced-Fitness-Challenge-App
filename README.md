@@ -254,14 +254,18 @@ in the supabase/ directory, run: ```supabase functions build```
 then ```supabase functions deploy functionName```
 
 
+- Run locally: This command allows the function to access environment variables and watches for file changes.
+   deno run --allow-env --watch auth.ts
 
 
-To run (and test) a file locally in Deno:
-deno run --allow-net --allow-read functions/users/index.ts (or whatever your function name is)
+- To run (and test) a file locally in Deno (you need to be in the supabase/functions/YourFunction folder):
+   deno run --allow-net --allow-read functions/users/index.ts (or whatever your function name is)
 
-To deploy the function run:
-supabase functions deploy functionName
+- To deploy the function run:
+   supabase functions deploy functionName
 
+- To deploy without needing JWT:
+   supabase functions deploy functionName --no-verify-jwt
 
 
 ### Testing
