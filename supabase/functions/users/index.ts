@@ -4,8 +4,6 @@ import { config } from "https://deno.land/x/dotenv/mod.ts";
 const env = config({ path: "../../.env.supabase" });
 console.log("Loaded environment variables:", env); // Check what's loaded
 
-//
-
 // For local serving:
 // const supabaseUrl = env.SUPABASE_URL;
 // const supabaseAnonKey = env.SUPABASE_ANON_KEY;
@@ -13,10 +11,9 @@ console.log("Loaded environment variables:", env); // Check what's loaded
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
 
-//
-
-console.log("Supabase URL:", supabaseUrl);
-console.log("Supabase Anon Key:", supabaseAnonKey);
+// Testing use
+// console.log("Supabase URL:", supabaseUrl);
+// console.log("Supabase Anon Key:", supabaseAnonKey);
 
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error("Environment variables are not set correctly.");
@@ -97,121 +94,14 @@ Deno.serve(async (req) => {
   }
 
   // Handle other HTTP methods (POST, PATCH, DELETE) similarly...
+
+
+
   
   // Handle unsupported methods
   return new Response("Method Not Allowed", { status: 405 });
 });
 
-//
-
-//
-
-//
-
-//
-
-//
-
-//
-
-// functions/users/index.ts
-// import { config } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
-
-// // Load environment variables from .env.supabase file: for local testing
-// // const env = config({ path: ".env.supabase" });
-// // const supabaseUrl = env.SUPABASE_URL!;
-// // const supabaseAnonKey = env.SUPABASE_ANON_KEY!;
-
-// // Use environment variables on Supabase
-// const supabaseUrl = Deno.env.get("SUPABASE_URL");
-// const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
-
-// // For testing use
-// console.log("Supabase URL:", supabaseUrl);
-// console.log("Supabase Anon Key:", supabaseAnonKey);
-// // console.log("Loaded environment variables:", env);
-
-// const supabaseFetch = async (url: string, options: RequestInit) => {
-//   const response = await fetch(url, {
-//     ...options,
-//     headers: {
-//       ...options.headers,
-//       "apikey": supabaseAnonKey,
-//       "Authorization": `Bearer ${supabaseAnonKey}`,
-//       "Content-Type": "application/json",
-//     },
-//   });
-//   return response;
-// };
-
-// const handler = async (req: Request): Promise<Response> => {
-//   const url = new URL(req.url);
-//   const path = url.pathname;
-
-//   // Handle different HTTP methods
-//   if (req.method === "GET") {
-//     const id = path.split("/").pop();
-//     if (id && !isNaN(Number(id))) {
-//       // Fetch a single user by ID
-//       try {
-//         const response = await supabaseFetch(
-//           `${supabaseUrl}/rest/v1/users?id=eq.${id}`,
-//           {
-//             method: "GET",
-//           }
-//         );
-
-//         if (!response.ok) {
-//           const errorData = await response.json();
-//           return new Response(JSON.stringify({ error: errorData.message }), {
-//             status: response.status,
-//           });
-//         }
-
-//         const data = await response.json();
-//         return new Response(JSON.stringify(data), {
-//           headers: { "Content-Type": "application/json" },
-//         });
-//       } catch (err) {
-//         console.error(err);
-//         return new Response(
-//           JSON.stringify({ error: "Error-- Unable to fetch user data." }),
-//           {
-//             status: 500,
-//             headers: { "Content-Type": "application/json" },
-//           }
-//         );
-//       }
-//     } else {
-//       // Fetch all users
-//       try {
-//         const response = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
-//           method: "GET",
-//         });
-
-//         if (!response.ok) {
-//           const errorData = await response.json();
-//           return new Response(JSON.stringify({ error: errorData.message }), {
-//             status: response.status,
-//           });
-//         }
-
-//         const data = await response.json();
-//         return new Response(JSON.stringify(data), {
-//           headers: { "Content-Type": "application/json" },
-//         });
-//       } catch (err) {
-//         console.error(err);
-//         return new Response(
-//           JSON.stringify({ error: "Error-- Unable to fetch users data." }),
-//           {
-//             status: 500,
-//             headers: { "Content-Type": "application/json" },
-//           }
-//         );
-//       }
-//     }
-//   }
 
 //   if (req.method === "POST") {
 //     const body = await req.json();
