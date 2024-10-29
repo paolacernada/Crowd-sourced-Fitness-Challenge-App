@@ -25,7 +25,7 @@ export default function HomeScreen() {
       setLoading(false);
     } else {
       Alert.alert("Success", "Challenge created successfully!");
-      setChallengeName(""); // Reset input
+      setChallengeName("");
       setLoading(false);
     }
   };
