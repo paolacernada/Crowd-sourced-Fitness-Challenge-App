@@ -1,15 +1,19 @@
 // functions/users/index.ts
 import { config } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
 
-// Load environment variables from .env.supabase file
-const env = config({ path: ".env.supabase" });
-const supabaseUrl = env.SUPABASE_URL!;
-const supabaseAnonKey = env.SUPABASE_ANON_KEY!;
+// Load environment variables from .env.supabase file: for local testing
+// const env = config({ path: ".env.supabase" });
+// const supabaseUrl = env.SUPABASE_URL!;
+// const supabaseAnonKey = env.SUPABASE_ANON_KEY!;
 
+// Use environment variables on Supabase
+const supabaseUrl = Deno.env.get("SUPABASE_URL");
+const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+
+// For testing use
 console.log("Supabase URL:", supabaseUrl);
-console.log("Supabase Key:", supabaseAnonKey);
-
-console.log("Loaded environment variables:", env);
+console.log("Supabase Anon Key:", supabaseAnonKey);
+// console.log("Loaded environment variables:", env);
 
 const supabaseFetch = async (url: string, options: RequestInit) => {
   const response = await fetch(url, {
@@ -129,7 +133,10 @@ const handler = async (req: Request): Promise<Response> => {
     } catch (err) {
       console.error("Internal Error:", err);
       return new Response(
-        JSON.stringify({ error: "Error-- Unable to create user." }),
+        JSON.stringify({
+          error: "Error-- Unable to create user.",
+          details: err.message,
+        }),
         { status: 500 }
       );
     }
@@ -213,7 +220,8 @@ const handler = async (req: Request): Promise<Response> => {
   return new Response("Method Not Allowed", { status: 405 });
 };
 
-// Start the server
-const port = 8000; // or any port of your choice
-Deno.serve({ port }, handler);
-console.log(`Server running on http://localhost:${port}`);
+// Remove this block when deploying
+// // Start the server
+// const port = 8000; // or any port of your choice
+// Deno.serve({ port }, handler);
+// console.log(`Server running on http://localhost:${port}`);

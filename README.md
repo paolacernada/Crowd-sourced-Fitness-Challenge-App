@@ -250,10 +250,17 @@ This TypeScript node.js backend server enables users to make backend function ca
                   Continue Using Node.js: For your test_backend and react_native_frontend, continue using Node.js as you normally would. Ensure you don't mix Deno code in those directories.
 
 
+in the supabase/ directory, run: ```supabase functions build```
+then ```supabase functions deploy functionName```
+
+
+
 
 To run (and test) a file locally in Deno:
-deno run --allow-net --allow-read functions/users/index.ts
+deno run --allow-net --allow-read functions/users/index.ts (or whatever your function name is)
 
+To deploy the function run:
+supabase functions deploy functionName
 
 
 
