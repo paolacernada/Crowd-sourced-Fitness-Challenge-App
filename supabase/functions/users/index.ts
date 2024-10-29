@@ -110,20 +110,24 @@ const handler = async (req: Request): Promise<Response> => {
         body: JSON.stringify({ name }),
       });
 
+      // Check if the response is ok
       if (!response.ok) {
-        const errorData = await response.json();
-        return new Response(JSON.stringify({ error: errorData.message }), {
+        const errorData = await response.text(); // Get response as text
+        console.error("Supabase Error:", errorData);
+        return new Response(JSON.stringify({ error: errorData }), {
           status: response.status,
         });
       }
 
-      const data = await response.json();
-      return new Response(JSON.stringify(data), {
+      // Handle response data
+      const data = await response.text();
+      const jsonData = data ? JSON.parse(data) : {}; // Parse or set to empty object
+      return new Response(JSON.stringify(jsonData), {
         status: 201,
         headers: { "Content-Type": "application/json" },
       });
     } catch (err) {
-      console.error(err);
+      console.error("Internal Error:", err);
       return new Response(
         JSON.stringify({ error: "Error-- Unable to create user." }),
         { status: 500 }
@@ -152,19 +156,26 @@ const handler = async (req: Request): Promise<Response> => {
         }
       );
 
+      // Check if the response is ok
       if (!response.ok) {
-        const errorData = await response.json();
-        return new Response(JSON.stringify({ error: errorData.message }), {
+        const errorData = await response.text(); // Get response as text
+        console.error("Supabase Error:", errorData);
+        return new Response(JSON.stringify({ error: errorData }), {
           status: response.status,
         });
       }
 
-      const data = await response.json();
-      return new Response(JSON.stringify(data), {
+      // Handle the response
+      const data = await response.text();
+      const jsonData = data ? JSON.parse(data) : {}; // Parse or set to empty object
+
+      // Return the updated user data or a success message
+      return new Response(JSON.stringify(jsonData), {
+        status: 200, // Use 200 for successful updates
         headers: { "Content-Type": "application/json" },
       });
     } catch (err) {
-      console.error(err);
+      console.error("Internal Error:", err);
       return new Response(JSON.stringify({ error: "Unable to update user." }), {
         status: 500,
       });
