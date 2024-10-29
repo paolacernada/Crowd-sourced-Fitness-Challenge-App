@@ -1,20 +1,38 @@
-export default async function handler(req, res) {
-  const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+import { config } from "https://deno.land/x/dotenv/mod.ts";
 
-  console.log("Supabase URL:", supabaseUrl);
-  console.log("Supabase Anon Key:", supabaseAnonKey);
+// Load the custom .env file with the correct relative path
+const env = config({ path: "../../.env.supabase" });
+console.log("Loaded environment variables:", env); // Check what's loaded
+
+Deno.serve(async (req) => {
+  const supabaseUrl = env.SUPABASE_URL;
+  const supabaseAnonKey = env.SUPABASE_ANON_KEY;
+
+  console.log("Supabase URL:", supabaseUrl); // Log the URL
+  console.log("Supabase Anon Key:", supabaseAnonKey); // Log the Key
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    return res.status(500).json({
-      message: "Environment variables are not set correctly.",
-      supabaseUrl: !!supabaseUrl,
-      supabaseAnonKey: !!supabaseAnonKey,
-    });
+    return new Response(
+      JSON.stringify({
+        message: "Environment variables are not set correctly.",
+        supabaseUrl: !!supabaseUrl,
+        supabaseAnonKey: !!supabaseAnonKey,
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
 
-  return res.status(200).json({
-    message: "Environment variables are set correctly!",
-    supabaseUrl,
-  });
-}
+  return new Response(
+    JSON.stringify({
+      message: "Environment variables are set correctly!",
+      supabaseUrl,
+    }),
+    {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    }
+  );
+});
