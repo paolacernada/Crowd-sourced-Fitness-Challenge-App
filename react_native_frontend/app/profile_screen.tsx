@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Button, StyleSheet, ActivityIndicator, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from "react-native";
 import { supabase } from "../src/config/supabaseClient";
 import { useLocalSearchParams } from "expo-router";
 import { useTheme } from "../src/context/ThemeContext";
@@ -40,11 +40,21 @@ export default function ProfileScreen() {
   }, [userId]);
 
   if (loading) {
-    return <ActivityIndicator size="large" color={theme === "dark" ? "#fff" : "#000"} />;
+    return (
+      <ActivityIndicator
+      size="large"
+      color={theme === "dark" ? "#fff" : "#000"}
+      />
+    );
   }
 
   if (!userProfile) {
-    return <Text style={{ color: theme === "dark" ? "#fff" : "#000" }}>No user profile found.</Text>;
+    return (
+      <Text style={{ color: theme === "dark" ? "#fff" : "#000" }}>
+        No user profile found.
+      </Text>
+    );
+
   }
 
   return (
@@ -91,7 +101,9 @@ export default function ProfileScreen() {
             styles.button,
             theme === "dark" ? styles.darkButton : styles.lightButton,
           ]}
-          onPress={() => {/* Handle edit profile */}}
+          onPress={() => {
+            /* Handle edit profile */
+          }}
         >
           <Text style={styles.buttonText}>Edit Profile</Text>
         </TouchableOpacity>
