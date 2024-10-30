@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from "react-native";
+import { 
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  TouchableOpacity
+ } from "react-native";
 import { supabase } from "../src/config/supabaseClient";
 import { useLocalSearchParams } from "expo-router";
 import { useTheme } from "../src/context/ThemeContext";
@@ -42,8 +48,8 @@ export default function ProfileScreen() {
   if (loading) {
     return (
       <ActivityIndicator
-      size="large"
-      color={theme === "dark" ? "#fff" : "#000"}
+        size="large"
+        color={theme === "dark" ? "#fff" : "#000"}
       />
     );
   }
@@ -54,7 +60,6 @@ export default function ProfileScreen() {
         No user profile found.
       </Text>
     );
-
   }
 
   return (
