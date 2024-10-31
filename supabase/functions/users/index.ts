@@ -2,7 +2,7 @@ import { config } from "https://deno.land/x/dotenv/mod.ts";
 
 // Load the custom .env file with the correct relative path
 const env = config({ path: "../../.env.supabase" });
-console.log("Loaded environment variables:", env); // Check what's loaded
+// console.log("Loaded environment variables:", env); // Check what's loaded
 
 // For local serving:
 // const supabaseUrl = env.SUPABASE_URL;
