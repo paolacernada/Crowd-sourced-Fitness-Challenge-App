@@ -123,14 +123,25 @@ Deno.serve(async (req) => {
         });
       }
 
-      // const dataText = await response.text(); // Use .text() to handle any type of response
-      // console.log("Supabase Response:", dataText); // Log the raw response
+      const dataText = await response.text(); // Use .text() to handle any type of response
+      console.log("Supabase Response:", dataText); // Log the raw response
 
-      const data = await response.json(); // Use .json() to parse directly
-      return new Response(JSON.stringify(data), {
-        status: 201,
-        headers: { "Content-Type": "application/json" },
-      });
+      if (dataText) {
+        const data = JSON.parse(dataText); // Only parse if there's content
+        return new Response(JSON.stringify(data), {
+          status: 201,
+          headers: { "Content-Type": "application/json" },
+        });
+      } else {
+        // If there's no response body, you can still return a success message
+        return new Response(
+          JSON.stringify({ message: "User created successfully." }),
+          {
+            status: 201,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+      }
     } catch (err) {
       console.error("Internal Error:", err);
       return new Response(
