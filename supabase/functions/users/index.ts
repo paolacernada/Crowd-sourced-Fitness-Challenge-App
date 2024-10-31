@@ -35,7 +35,7 @@ Deno.serve(async (req) => {
   const url = new URL(req.url);
   const path = url.pathname;
 
-  // Handle different HTTP methods
+  // GET method
   if (req.method === "GET") {
     const id = path.split("/").pop();
     if (id && !isNaN(Number(id))) {
@@ -93,8 +93,6 @@ Deno.serve(async (req) => {
     }
   }
 
-  // Handle other HTTP methods (POST, PATCH, DELETE) similarly...
-
   // POST method
   if (req.method == "POST") {
     const body = await req.json();
@@ -123,17 +121,19 @@ Deno.serve(async (req) => {
         });
       }
 
-      const dataText = await response.text(); // Use .text() to handle any type of response
-      console.log("Supabase Response:", dataText); // Log the raw response
+      const dataText = await response.text(); // Todo: Is using .text() (to handle all types of responses) strictly needed?
+      console.log("Supabase Response:", dataText);
 
+      // This is to prevent an error message caused by Supabase returning
+      // an empty response even if POST is successful
       if (dataText) {
-        const data = JSON.parse(dataText); // Only parse if there's content
+        const data = JSON.parse(dataText);
         return new Response(JSON.stringify(data), {
           status: 201,
           headers: { "Content-Type": "application/json" },
         });
       } else {
-        // If there's no response body, you can still return a success message
+        // The empty response is specifically handled here
         return new Response(
           JSON.stringify({ message: "User created successfully." }),
           {
@@ -155,6 +155,66 @@ Deno.serve(async (req) => {
   }
 
   // PATCH method
+  if (req.method === "PATCH") {
+    const id = path.split("/").pop();
+    const body = await req.json();
+    const { name } = body;
+
+    if (!name) {
+      return new Response(
+        JSON.stringify({ error: "You must provide a name to update" }),
+        { status: 400 }
+      );
+    }
+
+    try {
+      const response = await supabaseFetch(
+        `${supabaseUrl}/rest/v1/users?id=eq.${id}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({ name }),
+          headers: { "Content-Type": "application/json" }, // Ensure Content-Type is set
+        }
+      );
+
+      // Check if the response is ok
+      if (!response.ok) {
+        const errorData = await response.text(); // Get response as text
+        console.error("Supabase Error:", errorData);
+        return new Response(JSON.stringify({ error: errorData }), {
+          status: response.status,
+          headers: { "Content-Type": "application/json" }, // Include Content-Type for errors too
+        });
+      }
+
+      // Handle the response
+      const dataText = await response.text();
+      console.log("Supabase Response:", dataText); // Log the raw response
+
+      if (dataText) {
+        const jsonData = JSON.parse(dataText); // Parse if there's content
+        return new Response(JSON.stringify(jsonData), {
+          status: 200, // Use 200 for successful updates
+          headers: { "Content-Type": "application/json" },
+        });
+      } else {
+        // Return a success message if no response body is received
+        return new Response(
+          JSON.stringify({ message: "User updated successfully." }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+      }
+    } catch (err) {
+      console.error("Internal Error:", err);
+      return new Response(JSON.stringify({ error: "Unable to update user." }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+  }
 
   // DELETE method
 
@@ -170,22 +230,26 @@ Deno.serve(async (req) => {
 
 //
 
-// if (req.method === "POST") {
+// if (req.method === "PATCH") {
+//   const id = path.split("/").pop();
 //   const body = await req.json();
 //   const { name } = body;
 
 //   if (!name) {
 //     return new Response(
-//       JSON.stringify({ error: "You must enter a username" }),
+//       JSON.stringify({ error: "You must provide a name to update" }),
 //       { status: 400 }
 //     );
 //   }
 
 //   try {
-//     const response = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
-//       method: "POST",
-//       body: JSON.stringify({ name }),
-//     });
+//     const response = await supabaseFetch(
+//       `${supabaseUrl}/rest/v1/users?id=eq.${id}`,
+//       {
+//         method: "PATCH",
+//         body: JSON.stringify({ name }),
+//       }
+//     );
 
 //     // Check if the response is ok
 //     if (!response.ok) {
@@ -196,71 +260,22 @@ Deno.serve(async (req) => {
 //       });
 //     }
 
-//     // Handle response data
+//     // Handle the response
 //     const data = await response.text();
 //     const jsonData = data ? JSON.parse(data) : {}; // Parse or set to empty object
+
+//     // Return the updated user data or a success message
 //     return new Response(JSON.stringify(jsonData), {
-//       status: 201,
+//       status: 200, // Use 200 for successful updates
 //       headers: { "Content-Type": "application/json" },
 //     });
 //   } catch (err) {
 //     console.error("Internal Error:", err);
-//     return new Response(
-//       JSON.stringify({
-//         error: "Error-- Unable to create user.",
-//         details: err.message,
-//       }),
-//       { status: 500 }
-//     );
+//     return new Response(JSON.stringify({ error: "Unable to update user." }), {
+//       status: 500,
+//     });
 //   }
 // }
-
-//   if (req.method === "PATCH") {
-//     const id = path.split("/").pop();
-//     const body = await req.json();
-//     const { name } = body;
-
-//     if (!name) {
-//       return new Response(
-//         JSON.stringify({ error: "You must provide a name to update" }),
-//         { status: 400 }
-//       );
-//     }
-
-//     try {
-//       const response = await supabaseFetch(
-//         `${supabaseUrl}/rest/v1/users?id=eq.${id}`,
-//         {
-//           method: "PATCH",
-//           body: JSON.stringify({ name }),
-//         }
-//       );
-
-//       // Check if the response is ok
-//       if (!response.ok) {
-//         const errorData = await response.text(); // Get response as text
-//         console.error("Supabase Error:", errorData);
-//         return new Response(JSON.stringify({ error: errorData }), {
-//           status: response.status,
-//         });
-//       }
-
-//       // Handle the response
-//       const data = await response.text();
-//       const jsonData = data ? JSON.parse(data) : {}; // Parse or set to empty object
-
-//       // Return the updated user data or a success message
-//       return new Response(JSON.stringify(jsonData), {
-//         status: 200, // Use 200 for successful updates
-//         headers: { "Content-Type": "application/json" },
-//       });
-//     } catch (err) {
-//       console.error("Internal Error:", err);
-//       return new Response(JSON.stringify({ error: "Unable to update user." }), {
-//         status: 500,
-//       });
-//     }
-//   }
 
 //   if (req.method === "DELETE") {
 //     const id = path.split("/").pop();
