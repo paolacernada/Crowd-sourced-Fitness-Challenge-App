@@ -1,17 +1,18 @@
 import { config } from "https://deno.land/x/dotenv/mod.ts";
 
-// Load env variables
+// Load environment variables
 const env = config({ path: "../../.env.supabase" });
 
+// Use environment variables for deployment
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
 
-// Validate env variables
+// Validate environment variables
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error("Environment variables are not set correctly.");
 }
 
-// Fetches data
+// Helper function for fetching data
 const supabaseFetch = async (url: string, options: RequestInit) => {
   const response = await fetch(url, {
     ...options,
@@ -25,7 +26,7 @@ const supabaseFetch = async (url: string, options: RequestInit) => {
   return response;
 };
 
-// Utility function -> Handles responses
+// Utility function to handle responses
 const handleResponse = async (response: Response) => {
   if (!response.ok) {
     const errorData = await response.json();
@@ -34,7 +35,7 @@ const handleResponse = async (response: Response) => {
   return await response.json();
 };
 
-// Handles requests
+// Function to handle requests
 const handleRequest = async (req: Request) => {
   const url = new URL(req.url);
   const path = url.pathname.split("/");
@@ -43,16 +44,18 @@ const handleRequest = async (req: Request) => {
   try {
     switch (req.method) {
       case "GET":
-        return id && !isNaN(Number(id)) ? await getUser(id) : await getUsers();
+        return id && !isNaN(Number(id))
+          ? await getChallenge(id)
+          : await getChallenges();
 
       case "POST":
-        return await createUser(await req.json());
+        return await createChallenge(await req.json());
 
       case "PATCH":
-        return await updateUser(id, await req.json());
+        return await updateChallenge(id, await req.json());
 
       case "DELETE":
-        return await deleteUser(id); // todo: the code works, but this probably still needs to be fixed
+        return await deleteChallenge(id); // todo: the code works, but this probably still needs to be fixed
 
       default:
         return new Response("Method Not Allowed", { status: 405 });
@@ -68,8 +71,8 @@ const handleRequest = async (req: Request) => {
 
 // Handlers for different HTTP methods
 // GET
-const getUsers = async () => {
-  const response = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
+const getChallenges = async () => {
+  const response = await supabaseFetch(`${supabaseUrl}/rest/v1/challenges`, {
     method: "GET",
   });
   const data = await handleResponse(response);
@@ -79,9 +82,9 @@ const getUsers = async () => {
 };
 
 // GET by id
-const getUser = async (id: string) => {
+const getChallenge = async (id: string) => {
   const response = await supabaseFetch(
-    `${supabaseUrl}/rest/v1/users?id=eq.${id}`,
+    `${supabaseUrl}/rest/v1/challenges?id=eq.${id}`,
     { method: "GET" }
   );
   const data = await handleResponse(response);
@@ -91,15 +94,15 @@ const getUser = async (id: string) => {
 };
 
 // POST
-const createUser = async (body: { name: string }) => {
+const createChallenge = async (body: { name: string }) => {
   if (!body.name) {
     return new Response(
-      JSON.stringify({ error: "You must enter a username" }),
+      JSON.stringify({ error: "You must enter a challenge" }),
       { status: 400 }
     );
   }
 
-  const response = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
+  const response = await supabaseFetch(`${supabaseUrl}/rest/v1/challenges`, {
     method: "POST",
     body: JSON.stringify({ name: body.name }),
   });
@@ -112,7 +115,10 @@ const createUser = async (body: { name: string }) => {
 };
 
 // PATCH
-const updateUser = async (id: string | undefined, body: { name: string }) => {
+const updateChallenge = async (
+  id: string | undefined,
+  body: { name: string }
+) => {
   if (!body.name) {
     return new Response(
       JSON.stringify({ error: "You must provide a name to update" }),
@@ -121,7 +127,7 @@ const updateUser = async (id: string | undefined, body: { name: string }) => {
   }
 
   const response = await supabaseFetch(
-    `${supabaseUrl}/rest/v1/users?id=eq.${id}`,
+    `${supabaseUrl}/rest/v1/challenge?id=eq.${id}`,
     {
       method: "PATCH",
       body: JSON.stringify({ name: body.name }),
@@ -143,16 +149,16 @@ const updateUser = async (id: string | undefined, body: { name: string }) => {
   } else {
     // Case: response is empty
     return new Response(
-      JSON.stringify({ message: "User updated successfully." }),
+      JSON.stringify({ message: "Challenge updated successfully." }),
       { status: 200 }
     );
   }
 };
 
 // DELETE
-const deleteUser = async (id: string) => {
+const deleteChallenge = async (id: string) => {
   const response = await supabaseFetch(
-    `${supabaseUrl}/rest/v1/users?id=eq.${id}`,
+    `${supabaseUrl}/rest/v1/challenges?id=eq.${id}`,
     { method: "DELETE" }
   );
 
