@@ -1,8 +1,7 @@
 import { config } from "https://deno.land/x/dotenv/mod.ts";
 
-// Load the custom .env file with the correct relative path
 const env = config({ path: "../../.env.supabase" });
-// console.log("Loaded environment variables:", env); // Check what's loaded
+// console.log("Loaded environment variables:", env); // Testing use, to check what's loaded
 
 // For local serving:
 // const supabaseUrl = env.SUPABASE_URL;
@@ -81,10 +80,11 @@ Deno.serve(async (req) => {
 
         const data = await response.json();
         return new Response(JSON.stringify(data), {
+          status: 201,
           headers: { "Content-Type": "application/json" },
         });
       } catch (err) {
-        console.error(err);
+        console.error("Internal Error:", err);
         return new Response(
           JSON.stringify({ error: "Error-- Unable to fetch users data." }),
           { status: 500, headers: { "Content-Type": "application/json" } }
@@ -95,58 +95,114 @@ Deno.serve(async (req) => {
 
   // Handle other HTTP methods (POST, PATCH, DELETE) similarly...
 
+  // POST method
+  if (req.method == "POST") {
+    const body = await req.json();
+    const { name } = body;
 
+    if (!name) {
+      return new Response(
+        JSON.stringify({ error: "You must enter a username" }),
+        { status: 400 }
+      );
+    }
 
-  
+    try {
+      const response = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
+        method: "POST",
+        body: JSON.stringify({ name }),
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error("Supabase Error:", errorData);
+        return new Response(JSON.stringify({ error: errorData }), {
+          status: response.status,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+
+      // const dataText = await response.text(); // Use .text() to handle any type of response
+      // console.log("Supabase Response:", dataText); // Log the raw response
+
+      const data = await response.json(); // Use .json() to parse directly
+      return new Response(JSON.stringify(data), {
+        status: 201,
+        headers: { "Content-Type": "application/json" },
+      });
+    } catch (err) {
+      console.error("Internal Error:", err);
+      return new Response(
+        JSON.stringify({
+          error: "Error-- Unable to create user.",
+          details: err.message,
+        }),
+        { status: 500 }
+      );
+    }
+  }
+
+  // PATCH method
+
+  // DELETE method
+
   // Handle unsupported methods
   return new Response("Method Not Allowed", { status: 405 });
 });
 
+//
 
-//   if (req.method === "POST") {
-//     const body = await req.json();
-//     const { name } = body;
+//
 
-//     if (!name) {
-//       return new Response(
-//         JSON.stringify({ error: "You must enter a username" }),
-//         { status: 400 }
-//       );
-//     }
+//
 
-//     try {
-//       const response = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
-//         method: "POST",
-//         body: JSON.stringify({ name }),
-//       });
+//
 
-//       // Check if the response is ok
-//       if (!response.ok) {
-//         const errorData = await response.text(); // Get response as text
-//         console.error("Supabase Error:", errorData);
-//         return new Response(JSON.stringify({ error: errorData }), {
-//           status: response.status,
-//         });
-//       }
+// if (req.method === "POST") {
+//   const body = await req.json();
+//   const { name } = body;
 
-//       // Handle response data
-//       const data = await response.text();
-//       const jsonData = data ? JSON.parse(data) : {}; // Parse or set to empty object
-//       return new Response(JSON.stringify(jsonData), {
-//         status: 201,
-//         headers: { "Content-Type": "application/json" },
-//       });
-//     } catch (err) {
-//       console.error("Internal Error:", err);
-//       return new Response(
-//         JSON.stringify({
-//           error: "Error-- Unable to create user.",
-//           details: err.message,
-//         }),
-//         { status: 500 }
-//       );
-//     }
+//   if (!name) {
+//     return new Response(
+//       JSON.stringify({ error: "You must enter a username" }),
+//       { status: 400 }
+//     );
 //   }
+
+//   try {
+//     const response = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
+//       method: "POST",
+//       body: JSON.stringify({ name }),
+//     });
+
+//     // Check if the response is ok
+//     if (!response.ok) {
+//       const errorData = await response.text(); // Get response as text
+//       console.error("Supabase Error:", errorData);
+//       return new Response(JSON.stringify({ error: errorData }), {
+//         status: response.status,
+//       });
+//     }
+
+//     // Handle response data
+//     const data = await response.text();
+//     const jsonData = data ? JSON.parse(data) : {}; // Parse or set to empty object
+//     return new Response(JSON.stringify(jsonData), {
+//       status: 201,
+//       headers: { "Content-Type": "application/json" },
+//     });
+//   } catch (err) {
+//     console.error("Internal Error:", err);
+//     return new Response(
+//       JSON.stringify({
+//         error: "Error-- Unable to create user.",
+//         details: err.message,
+//       }),
+//       { status: 500 }
+//     );
+//   }
+// }
 
 //   if (req.method === "PATCH") {
 //     const id = path.split("/").pop();
