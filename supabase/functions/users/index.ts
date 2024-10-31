@@ -173,32 +173,30 @@ Deno.serve(async (req) => {
         {
           method: "PATCH",
           body: JSON.stringify({ name }),
-          headers: { "Content-Type": "application/json" }, // Ensure Content-Type is set
+          headers: { "Content-Type": "application/json" },
         }
       );
 
-      // Check if the response is ok
       if (!response.ok) {
-        const errorData = await response.text(); // Get response as text
+        const errorData = await response.text();
         console.error("Supabase Error:", errorData);
         return new Response(JSON.stringify({ error: errorData }), {
           status: response.status,
-          headers: { "Content-Type": "application/json" }, // Include Content-Type for errors too
+          headers: { "Content-Type": "application/json" },
         });
       }
 
-      // Handle the response
       const dataText = await response.text();
-      console.log("Supabase Response:", dataText); // Log the raw response
+      console.log("Supabase Response:", dataText);
 
       if (dataText) {
-        const jsonData = JSON.parse(dataText); // Parse if there's content
+        const jsonData = JSON.parse(dataText);
         return new Response(JSON.stringify(jsonData), {
-          status: 200, // Use 200 for successful updates
+          status: 200,
           headers: { "Content-Type": "application/json" },
         });
       } else {
-        // Return a success message if no response body is received
+        // Same as above, this handles a successful operation where no response was returned by Supabase
         return new Response(
           JSON.stringify({ message: "User updated successfully." }),
           {
@@ -217,99 +215,44 @@ Deno.serve(async (req) => {
   }
 
   // DELETE method
+  if (req.method === "DELETE") {
+    const id = path.split("/").pop();
+
+    try {
+      const response = await supabaseFetch(
+        `${supabaseUrl}/rest/v1/users?id=eq.${id}`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error("Supabase Error:", errorData);
+        return new Response(JSON.stringify({ error: errorData }), {
+          status: response.status,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+
+      // Case: Succesful deletion
+      return new Response(null, { status: 204 });
+    } catch (err) {
+      console.error("Internal Error:", err);
+      return new Response(JSON.stringify({ error: "Unable to delete user." }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+  }
 
   // Handle unsupported methods
   return new Response("Method Not Allowed", { status: 405 });
 });
 
-//
-
-//
-
-//
-
-//
-
-// if (req.method === "PATCH") {
-//   const id = path.split("/").pop();
-//   const body = await req.json();
-//   const { name } = body;
-
-//   if (!name) {
-//     return new Response(
-//       JSON.stringify({ error: "You must provide a name to update" }),
-//       { status: 400 }
-//     );
-//   }
-
-//   try {
-//     const response = await supabaseFetch(
-//       `${supabaseUrl}/rest/v1/users?id=eq.${id}`,
-//       {
-//         method: "PATCH",
-//         body: JSON.stringify({ name }),
-//       }
-//     );
-
-//     // Check if the response is ok
-//     if (!response.ok) {
-//       const errorData = await response.text(); // Get response as text
-//       console.error("Supabase Error:", errorData);
-//       return new Response(JSON.stringify({ error: errorData }), {
-//         status: response.status,
-//       });
-//     }
-
-//     // Handle the response
-//     const data = await response.text();
-//     const jsonData = data ? JSON.parse(data) : {}; // Parse or set to empty object
-
-//     // Return the updated user data or a success message
-//     return new Response(JSON.stringify(jsonData), {
-//       status: 200, // Use 200 for successful updates
-//       headers: { "Content-Type": "application/json" },
-//     });
-//   } catch (err) {
-//     console.error("Internal Error:", err);
-//     return new Response(JSON.stringify({ error: "Unable to update user." }), {
-//       status: 500,
-//     });
-//   }
-// }
-
-//   if (req.method === "DELETE") {
-//     const id = path.split("/").pop();
-
-//     try {
-//       const response = await supabaseFetch(
-//         `${supabaseUrl}/rest/v1/users?id=eq.${id}`,
-//         {
-//           method: "DELETE",
-//         }
-//       );
-
-//       if (!response.ok) {
-//         const errorData = await response.json();
-//         return new Response(JSON.stringify({ error: errorData.message }), {
-//           status: response.status,
-//         });
-//       }
-
-//       return new Response(null, { status: 204 });
-//     } catch (err) {
-//       console.error(err);
-//       return new Response(JSON.stringify({ error: "Unable to delete user." }), {
-//         status: 500,
-//       });
-//     }
-//   }
-
-//   // Handle unsupported methods
-//   return new Response("Method Not Allowed", { status: 405 });
-// };
-
-// // Remove this block when deploying
-// // // Start the server
-// // const port = 8000; // or any port of your choice
-// // Deno.serve({ port }, handler);
-// // console.log(`Server running on http://localhost:${port}`);
+// REMOVE THIS BLOCK WHEN DEPLOYING
+// // Start the server
+// const port = 8000; // or any port of your choice
+// Deno.serve({ port }, handler);
+// console.log(`Server running on http://localhost:${port}`);
