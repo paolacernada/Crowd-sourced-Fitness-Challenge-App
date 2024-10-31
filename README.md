@@ -227,6 +227,27 @@ then ```supabase functions deploy functionName```
    supabase functions deploy functionName --no-verify-jwt
 
 
+
+
+# Enable Deno:
+   Look for the setting named Deno: Enable or deno.enable.
+   Make sure the checkbox is checked.
+   Open Settings JSON (Optional):
+
+   If you prefer editing the settings JSON directly, you can click on the {} icon in the top right corner to open the settings.json file.
+   Add or update the following line in the JSON file:
+   json
+   Copy code
+   {
+   "deno.enable": true
+   }
+
+
+
+
+
+
+
 ### Testing
 1. Run exampleFunction locally for testing
       ```bash
