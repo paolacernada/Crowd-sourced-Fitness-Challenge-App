@@ -70,4 +70,8 @@ Deno.serve(handleRequest);
 // REMOVE THIS BLOCK WHEN DEPLOYING
 // const port = 8000; // or any port of your choice
 // Deno.serve({ port }, handler);
+<<<<<<< HEAD
 // console.log(`Server running on http://localhost:${port}`);
+=======
+// console.log(`Server running on http://localhost:${port}`);
+>>>>>>> c363b0e780bb9344f738f756f0b59f5ab300f17e
