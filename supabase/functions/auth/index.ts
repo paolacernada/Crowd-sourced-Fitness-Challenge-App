@@ -1,16 +1,13 @@
 import { config } from "https://deno.land/x/dotenv/mod.ts";
 
-// Load the custom .env file with the correct relative path
+// Load custom .env file with the correct relative path -- The path was tricky
 const env = config({ path: "../../.env.supabase" });
 console.log("Loaded environment variables:", env); // Check what's loaded
 
+// eslint-disable-next-line no-unused-vars
 Deno.serve(async (req) => {
   //
-<<<<<<< HEAD
 
-=======
-  
->>>>>>> c363b0e780bb9344f738f756f0b59f5ab300f17e
   // For local serving:
   // const supabaseUrl = env.SUPABASE_URL;
   // const supabaseAnonKey = env.SUPABASE_ANON_KEY;

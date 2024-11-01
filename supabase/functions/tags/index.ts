@@ -1,5 +1,6 @@
 import { config } from "https://deno.land/x/dotenv/mod.ts";
 
+// eslint-disable-next-line no-unused-vars
 const env = config({ path: "../../.env.supabase" });
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -110,10 +111,6 @@ const createTag = async (body: { name: string }) => {
     body: JSON.stringify({ name: body.name }),
   });
 
-<<<<<<< HEAD
-=======
-
->>>>>>> c363b0e780bb9344f738f756f0b59f5ab300f17e
   if (!response.ok) {
     const errorData = await response.text();
     throw new Error(errorData);
@@ -195,8 +192,4 @@ Deno.serve(handleRequest);
 // // Start the server
 // const port = 8000; // or any port of your choice
 // Deno.serve({ port }, handler);
-<<<<<<< HEAD
 // console.log(`Server running on http://localhost:${port}`);
-=======
-// console.log(`Server running on http://localhost:${port}`);
->>>>>>> c363b0e780bb9344f738f756f0b59f5ab300f17e
