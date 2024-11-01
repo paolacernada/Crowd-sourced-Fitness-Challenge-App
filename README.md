@@ -194,21 +194,25 @@ This TypeScript node.js backend server enables users to make backend function ca
 # Supabase Edge Functions
 ### Installation
 1. Install the supabase CLI (follow the instructions to add to PATH, etc.)
-      ```bash
-      brew install supabase/tap/supabase
-      ```
+   ```bash
+   brew install supabase/tap/supabase
+   ```
 
 2. Upgrade supabase CLI
-      ```bash
-      brew upgrade supabase
-      ```
+   ```bash
+   brew upgrade supabase
+   ```
 
 3. Log into Supabase. If you see an error (WSL may cause one) try adding the --no-browser flag
-      ```bash
-      supabase login
-      ```
+   ```bash
+   supabase login
+   ```
 
+<<<<<<< HEAD
 4. Initialize the Supabase project in the root folder:
+=======
+4. Init supabase project. In the project root folder:
+>>>>>>> c363b0e (Update Readme with draft Supabase instructions)
    ```bash
    supabase init
    ```
@@ -220,52 +224,57 @@ This TypeScript node.js backend server enables users to make backend function ca
    ```
 =======
 5. Run
-      ```bash
-      supabase start
-      ```
+   ```bash
+   supabase start
+   ```
+
 ### Deno installation
+<<<<<<< HEAD
 5. Install deno
       ```bash
       brew install deno
       ```
 >>>>>>> aa19c3e (supabase/users CRUD options work when tested locally (although it gives inaccurate error messages))
+=======
+1. Install deno
+   ```bash
+   brew install deno
+   ```
+>>>>>>> c363b0e (Update Readme with draft Supabase instructions)
 
+2. If using Visual Sudio Code: Install Deno extension 
 
+3. In /supabase/ directory 
+   ```bash
+   touch deno.json
+   ```
+   - Add:
+      { "compilerOptions": { "lib": ["deno.ns", "deno.unstable"] } }
 
-- Install Deno extension
-- create deno.json file in /supabase directory and add:
-      {
-  "compilerOptions": {
-    "lib": ["deno.ns", "deno.unstable"]
-  }
-}
+4. NOTE: Use Deno only in the Supabase directory, to ensure that the Node backend and React Native frontend are unaffected by Deno settings.
 
+5. In /supabase/ directory, run:
+   ```bash
+   supabase functions build
+   ```
 
-         Use Deno Only in the Supabase Directory
-         Focus on the Supabase Directory: Write all your Deno code (Edge Functions) in the supabase/functions directory and ensure that your Node.js backend and React Native frontend remain unaffected by Deno.
+6. To deply an edge function myFunction, run:
+   ```bash
+   supabase functions deploy myFunction
+   ```
+   - Deployment URL can be found in terminal output after deployment
+   - To deploy without JWT, use the  --no-verify-jwt flag
 
-         Run Deno Commands: When you need to run or test your Deno functions, navigate to the supabase/functions directory and use Deno commands as needed.
-
-                  4. Keep Node.js for Other Parts of the Project
-                  Continue Using Node.js: For your test_backend and react_native_frontend, continue using Node.js as you normally would. Ensure you don't mix Deno code in those directories.
-
-
-in the supabase/ directory, run: ```supabase functions build```
-then ```supabase functions deploy functionName```
-
-
-- Run locally: This command allows the function to access environment variables and watches for file changes.
+7. To run locally, in the function's directory run:    
+   ```bash
+   deno run --allow-net --allow-read pathToFunction/index.ts
+   OR, while in the folder: 
    deno run --allow-env --watch auth.ts
-
-
-- To run (and test) a file locally in Deno (you need to be in the supabase/functions/YourFunction folder):
-   deno run --allow-net --allow-read functions/users/index.ts (or whatever your function name is)
-
-- To deploy the function run:
-   supabase functions deploy functionName
+   ```
 
 - To deploy without needing JWT:
    supabase functions deploy functionName --no-verify-jwt
+<<<<<<< HEAD
 
 
 
@@ -310,3 +319,5 @@ then ```supabase functions deploy functionName```
 - [Supabase documentation](https://supabase.com/docs): Tutorials, APIs, and platform resources.
 
 ---
+=======
+>>>>>>> c363b0e (Update Readme with draft Supabase instructions)
