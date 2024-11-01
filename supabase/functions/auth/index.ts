@@ -6,7 +6,7 @@ console.log("Loaded environment variables:", env); // Check what's loaded
 
 Deno.serve(async (req) => {
   //
-  
+
   // For local serving:
   // const supabaseUrl = env.SUPABASE_URL;
   // const supabaseAnonKey = env.SUPABASE_ANON_KEY;
