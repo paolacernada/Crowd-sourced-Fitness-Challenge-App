@@ -110,7 +110,6 @@ const createTag = async (body: { name: string }) => {
     body: JSON.stringify({ name: body.name }),
   });
 
-
   if (!response.ok) {
     const errorData = await response.text();
     throw new Error(errorData);
