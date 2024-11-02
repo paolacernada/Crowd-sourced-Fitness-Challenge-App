@@ -89,14 +89,18 @@ This app enables users to create and participate in community-driven fitness cha
    git checkout -b <branch-name>
    ```
 
-2. Push the branch:
+2. Auto-fix any linting issues:
+   ```bash
+   npm run lint:fix
+
+3. Push the branch:
    ```bash
    git push origin <branch-name>
    ```
 
-3. Open a pull request on GitHub. The GitHub Actions workflow will automatically check the code for linting errors before the merge.
+4. Open a pull request on GitHub. The GitHub Actions workflow will automatically check the code for linting errors before the merge.
 
-4. Upon review, the pull request will be approved and merged to the `main` branch, or revisions will be requested.
+5. Upon review, the pull request will be approved and merged to the `main` branch, or revisions will be requested.
 
 ---
 
