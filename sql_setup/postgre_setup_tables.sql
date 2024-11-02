@@ -23,6 +23,14 @@ CREATE TABLE goals (
   description VARCHAR(300) NOT NULL
 );
 
+-- The following adds the Supabase UUID
+-- CREATE TABLE users (
+--   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+--   name VARCHAR(50) UNIQUE NOT NULL,
+--   registration_date TIMESTAMP DEFAULT NOW(),
+--   user_id UUID UNIQUE
+-- );
+
 CREATE TABLE users (
   id bigint primary key generated always as identity,
   name VARCHAR(50) UNIQUE NOT NULL,
