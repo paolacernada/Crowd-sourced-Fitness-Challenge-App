@@ -19,6 +19,7 @@ interface Profile {
 export default function ProfileScreen() {
   const [userProfile, setUserProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const { userId } = useLocalSearchParams();
   const { theme } = useTheme();
 
@@ -30,11 +31,13 @@ export default function ProfileScreen() {
         const userIdNumber = parseInt(userId as string, 10);
         const profile = await fetchUserProfile(userIdNumber);
         setUserProfile(profile);
-      } catch (error) {
+      } catch {
+        setError("Failed to load user profile.");
       } finally {
         setLoading(false);
       }
     };
+
     loadUserProfile();
   }, [userId]);
 
@@ -46,12 +49,16 @@ export default function ProfileScreen() {
       />
     );
   }
+  if (error) {
+    return <Text style={styles.errorText}>{error}</Text>;
+  }
 
   if (!userProfile) {
-    return;
-    <Text style={{ color: theme === "dark" ? "#fff" : "#000" }}>
-      No user profile found.
-    </Text>;
+    return (
+      <Text style={{ color: theme === "dark" ? "#fff" : "#000" }}>
+        No user profile found.
+      </Text>
+    );
   }
 
   return (
@@ -134,6 +141,12 @@ const styles = StyleSheet.create({
   },
   lightText: {
     color: "#000",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 16,
+    textAlign: "center",
+    margin: 20,
   },
   formContainer: {
     width: "90%",
