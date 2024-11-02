@@ -44,16 +44,16 @@ const handleRequest = async (req: Request) => {
   try {
     switch (req.method) {
       case "GET":
-        return id && !isNaN(Number(id)) ? await getUser(id) : await getUsers();
+        return id && !isNaN(Number(id)) ? await getGoal(id) : await getGoals();
 
       case "POST":
-        return await createUser(await req.json());
+        return await createGoal(await req.json());
 
       case "PATCH":
-        return await updateUser(id, await req.json());
+        return await updateGoal(id, await req.json());
 
       case "DELETE":
-        return await deleteUser(id); // todo: the code works, but this probably still needs to be fixed
+        return await deleteGoal(id);
 
       default:
         return new Response("Method Not Allowed", { status: 405 });
@@ -69,8 +69,8 @@ const handleRequest = async (req: Request) => {
 
 // Handlers for different HTTP methods
 // GET
-const getUsers = async () => {
-  const response = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
+const getGoals = async () => {
+  const response = await supabaseFetch(`${supabaseUrl}/rest/v1/goals`, {
     method: "GET",
   });
   const data = await handleResponse(response);
@@ -80,9 +80,9 @@ const getUsers = async () => {
 };
 
 // GET by id
-const getUser = async (id: string) => {
+const getGoal = async (id: string) => {
   const response = await supabaseFetch(
-    `${supabaseUrl}/rest/v1/users?id=eq.${id}`,
+    `${supabaseUrl}/rest/v1/goals?id=eq.${id}`,
     { method: "GET" }
   );
   const data = await handleResponse(response);
@@ -92,45 +92,63 @@ const getUser = async (id: string) => {
 };
 
 // POST
-const createUser = async (body: { name: string }) => {
-  if (!body.name) {
+const createGoal = async (body: { name: string; description: string }) => {
+  if (!body.name || !body.description) {
     return new Response(
-      JSON.stringify({ error: "You must enter a username" }),
+      JSON.stringify({ error: "You must enter a goal name and description" }),
       { status: 400 }
     );
   }
 
-  const response = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
+  const response = await supabaseFetch(`${supabaseUrl}/rest/v1/goals`, {
     method: "POST",
-    body: JSON.stringify({ name: body.name }),
+    body: JSON.stringify({ name: body.name, description: body.description }),
   });
 
-  const data = await handleResponse(response);
-  return new Response(JSON.stringify(data), {
-    status: 201,
-    headers: { "Content-Type": "application/json" },
-  });
+  if (!response.ok) {
+    const errorData = await response.text();
+    throw new Error(errorData);
+  }
+
+  const dataText = await response.text();
+  if (dataText) {
+    const jsonData = JSON.parse(dataText);
+    return new Response(JSON.stringify(jsonData), {
+      status: 201,
+      headers: { "Content-Type": "application/json" },
+    });
+  } else {
+    return new Response(
+      JSON.stringify({ message: "Goal created successfully." }),
+      { status: 201, headers: { "Content-Type": "application/json" } }
+    );
+  }
 };
 
 // PATCH
-const updateUser = async (id: string | undefined, body: { name: string }) => {
-  if (!body.name) {
+const updateGoal = async (
+  id: string | undefined,
+  body: { name?: string; description?: string }
+) => {
+  if (!body.name && !body.description) {
     return new Response(
-      JSON.stringify({ error: "You must provide a name to update" }),
+      JSON.stringify({
+        error: "You must provide at least a name or description to update",
+      }),
       { status: 400 }
     );
   }
 
   const response = await supabaseFetch(
-    `${supabaseUrl}/rest/v1/users?id=eq.${id}`,
+    `${supabaseUrl}/rest/v1/goals?id=eq.${id}`,
     {
       method: "PATCH",
-      body: JSON.stringify({ name: body.name }),
+      body: JSON.stringify({ name: body.name, description: body.description }),
     }
   );
 
   if (!response.ok) {
-    const errorData = await response.text(); // .text() used to handle potential empty response -- Supabase returns an empty response even after some successful operations
+    const errorData = await response.text();
     throw new Error(errorData);
   }
 
@@ -142,18 +160,17 @@ const updateUser = async (id: string | undefined, body: { name: string }) => {
       headers: { "Content-Type": "application/json" },
     });
   } else {
-    // Case: response is empty
     return new Response(
-      JSON.stringify({ message: "User updated successfully." }),
+      JSON.stringify({ message: "Goal updated successfully." }),
       { status: 200 }
     );
   }
 };
 
 // DELETE
-const deleteUser = async (id: string) => {
+const deleteGoal = async (id: string) => {
   const response = await supabaseFetch(
-    `${supabaseUrl}/rest/v1/users?id=eq.${id}`,
+    `${supabaseUrl}/rest/v1/goals?id=eq.${id}`,
     { method: "DELETE" }
   );
 
@@ -169,7 +186,6 @@ const deleteUser = async (id: string) => {
 Deno.serve(handleRequest);
 
 // REMOVE THIS BLOCK WHEN DEPLOYING
-// // Start the server
 // const port = 8000; // or any port of your choice
 // Deno.serve({ port }, handler);
 // console.log(`Server running on http://localhost:${port}`);

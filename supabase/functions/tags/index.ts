@@ -1,36 +1,38 @@
 import { config } from "https://deno.land/x/dotenv/mod.ts";
 
-// Load env variables
 // eslint-disable-next-line no-unused-vars
 const env = config({ path: "../../.env.supabase" });
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
 
-// Validate env variables
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error("Environment variables are not set correctly.");
 }
 
-// Fetches data
 const supabaseFetch = async (url: string, options: RequestInit) => {
+  const headers = {
+    ...options.headers,
+    "apikey": supabaseAnonKey,
+    "Authorization": `Bearer ${supabaseAnonKey}`,
+    "Content-Type": "application/json",
+  };
+
+  // console.log("Request Headers:", headers); // Debug use for any header errors
+
   const response = await fetch(url, {
     ...options,
-    headers: {
-      ...options.headers,
-      "apikey": supabaseAnonKey,
-      "Authorization": `Bearer ${supabaseAnonKey}`,
-      "Content-Type": "application/json",
-    },
+    headers,
   });
   return response;
 };
 
-// Utility function -> Handles responses
+// Utility function handling responses
 const handleResponse = async (response: Response) => {
   if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message);
+    const errorData = await response.text();
+    console.error("Error response:", errorData);
+    throw new Error(errorData);
   }
   return await response.json();
 };
@@ -44,16 +46,18 @@ const handleRequest = async (req: Request) => {
   try {
     switch (req.method) {
       case "GET":
-        return id && !isNaN(Number(id)) ? await getUser(id) : await getUsers();
+        return id && !isNaN(Number(id)) ? await getTag(id) : await getTags();
 
       case "POST":
-        return await createUser(await req.json());
+        const body = await req.json();
+        return await createTag(body);
 
       case "PATCH":
-        return await updateUser(id, await req.json());
+        const patchBody = await req.json();
+        return await updateTag(id, patchBody);
 
       case "DELETE":
-        return await deleteUser(id); // todo: the code works, but this probably still needs to be fixed
+        return await deleteTag(id);
 
       default:
         return new Response("Method Not Allowed", { status: 405 });
@@ -69,8 +73,8 @@ const handleRequest = async (req: Request) => {
 
 // Handlers for different HTTP methods
 // GET
-const getUsers = async () => {
-  const response = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
+const getTags = async () => {
+  const response = await supabaseFetch(`${supabaseUrl}/rest/v1/tags`, {
     method: "GET",
   });
   const data = await handleResponse(response);
@@ -80,9 +84,9 @@ const getUsers = async () => {
 };
 
 // GET by id
-const getUser = async (id: string) => {
+const getTag = async (id: string) => {
   const response = await supabaseFetch(
-    `${supabaseUrl}/rest/v1/users?id=eq.${id}`,
+    `${supabaseUrl}/rest/v1/tags?id=eq.${id}`,
     { method: "GET" }
   );
   const data = await handleResponse(response);
@@ -92,28 +96,44 @@ const getUser = async (id: string) => {
 };
 
 // POST
-const createUser = async (body: { name: string }) => {
+const createTag = async (body: { name: string }) => {
   if (!body.name) {
     return new Response(
-      JSON.stringify({ error: "You must enter a username" }),
+      JSON.stringify({ error: "You must enter a tag name" }),
       { status: 400 }
     );
   }
 
-  const response = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
+  console.log("Request Body:", JSON.stringify(body));
+
+  const response = await supabaseFetch(`${supabaseUrl}/rest/v1/tags`, {
     method: "POST",
     body: JSON.stringify({ name: body.name }),
   });
 
-  const data = await handleResponse(response);
-  return new Response(JSON.stringify(data), {
-    status: 201,
-    headers: { "Content-Type": "application/json" },
-  });
+  if (!response.ok) {
+    const errorData = await response.text();
+    throw new Error(errorData);
+  }
+
+  const dataText = await response.text();
+  if (dataText) {
+    const jsonData = JSON.parse(dataText);
+    return new Response(JSON.stringify(jsonData), {
+      status: 201,
+      headers: { "Content-Type": "application/json" },
+    });
+  } else {
+    // Returns successful method if the response is empty
+    return new Response(
+      JSON.stringify({ message: "Tag created successfully." }),
+      { status: 201, headers: { "Content-Type": "application/json" } }
+    );
+  }
 };
 
 // PATCH
-const updateUser = async (id: string | undefined, body: { name: string }) => {
+const updateTag = async (id: string | undefined, body: { name: string }) => {
   if (!body.name) {
     return new Response(
       JSON.stringify({ error: "You must provide a name to update" }),
@@ -122,7 +142,7 @@ const updateUser = async (id: string | undefined, body: { name: string }) => {
   }
 
   const response = await supabaseFetch(
-    `${supabaseUrl}/rest/v1/users?id=eq.${id}`,
+    `${supabaseUrl}/rest/v1/tags?id=eq.${id}`,
     {
       method: "PATCH",
       body: JSON.stringify({ name: body.name }),
@@ -130,7 +150,7 @@ const updateUser = async (id: string | undefined, body: { name: string }) => {
   );
 
   if (!response.ok) {
-    const errorData = await response.text(); // .text() used to handle potential empty response -- Supabase returns an empty response even after some successful operations
+    const errorData = await response.text();
     throw new Error(errorData);
   }
 
@@ -144,16 +164,16 @@ const updateUser = async (id: string | undefined, body: { name: string }) => {
   } else {
     // Case: response is empty
     return new Response(
-      JSON.stringify({ message: "User updated successfully." }),
+      JSON.stringify({ message: "Tag updated successfully." }),
       { status: 200 }
     );
   }
 };
 
 // DELETE
-const deleteUser = async (id: string) => {
+const deleteTag = async (id: string) => {
   const response = await supabaseFetch(
-    `${supabaseUrl}/rest/v1/users?id=eq.${id}`,
+    `${supabaseUrl}/rest/v1/tags?id=eq.${id}`,
     { method: "DELETE" }
   );
 

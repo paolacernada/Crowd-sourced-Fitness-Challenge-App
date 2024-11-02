@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "lib": ["ESNext", "DOM"],
+    "strict": true,
+    // "types": ["deno.ns"]  // Include Deno-specific types
+    "types": ["deno.ns", "deno.unstable"]
+    // "esModuleInterop": true    
+  },
+  "include": [
+    "functions/**/*.ts" // Adjust this path based on where your functions are located
+  ]
+}
+
