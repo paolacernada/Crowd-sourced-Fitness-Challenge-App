@@ -6,110 +6,69 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from "react-native";
-import { supabase } from "../src/config/supabaseClient";
 import { useLocalSearchParams } from "expo-router";
 import { useTheme } from "../src/context/ThemeContext";
+import { fetchUserProfile } from "../src/services/userService";
 
 interface Profile {
-  id: bigint;
-  email: string;
-  username: string;
-  created_at: string;
+  id: number;
+  name: string;
+  registration_date: string;
+  email: string | null;  
 }
 
 export default function ProfileScreen() {
   const [userProfile, setUserProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const { userId } = useLocalSearchParams();
+  const { userId = "2"} = useLocalSearchParams();
   const { theme } = useTheme();
 
+
   useEffect(() => {
-    const fetchUserProfile = async () => {
-      if (!userId) return; // Ensure userId is defined before making the call
-      const userIdBigInt = BigInt(userId as string); // Convert to bigint if necessary
-
-      const { data, error } = await supabase
-        .from("users")
-        .select("*")
-        .eq("id", userIdBigInt)
-        .single();
-
-      if (error) {
-        console.error("Error fetching user profile:", error);
-      } else {
-        setUserProfile(data);
+    const loadUserProfile = async () => {
+      if (!userId) return;
+  
+      try {
+        const userIdNumber = parseInt(userId as string, 10);
+        const profile = await fetchUserProfile(userIdNumber);
+        setUserProfile(profile);
+      } catch (error) {
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
-
-    fetchUserProfile();
+    loadUserProfile();
   }, [userId]);
 
   if (loading) {
     return (
-      <ActivityIndicator
-        size="large"
-        color={theme === "dark" ? "#fff" : "#000"}
-      />
+      <ActivityIndicator size="large" color={theme === "dark" ? "#fff" : "#000"} />
     );
   }
 
   if (!userProfile) {
-    return (
-      <Text style={{ color: theme === "dark" ? "#fff" : "#000" }}>
-        No user profile found.
-      </Text>
-    );
+    return <Text style={{ color: theme === "dark" ? "#fff" : "#000" }}>No user profile found.</Text>;
   }
 
   return (
-    <View
-      style={[
-        styles.container,
-        theme === "dark" ? styles.darkContainer : styles.lightContainer,
-      ]}
-    >
-      <Text
-        style={[
-          styles.appName,
-          theme === "dark" ? styles.darkAppName : styles.lightAppName,
-        ]}
-      >
+    <View style={[styles.container, theme === "dark" ? styles.darkContainer : styles.lightContainer]}>
+      <Text style={[styles.appName, theme === "dark" ? styles.darkAppName : styles.lightAppName]}>
         FitTogether Challenges
       </Text>
-
-      <View
-        style={[
-          styles.formContainer,
-          theme === "dark" ? styles.darkForm : styles.lightForm,
-        ]}
-      >
-        <Text
-          style={[
-            styles.title,
-            theme === "dark" ? styles.darkText : styles.lightText,
-          ]}
-        >
+      <View style={[styles.formContainer, theme === "dark" ? styles.darkForm : styles.lightForm]}>
+        <Text style={[styles.title, theme === "dark" ? styles.darkText : styles.lightText]}>
           User Profile
         </Text>
         <Text style={theme === "dark" ? styles.darkText : styles.lightText}>
-          Email: {userProfile.email}
+          ID: {userProfile.id}
         </Text>
         <Text style={theme === "dark" ? styles.darkText : styles.lightText}>
-          Username: {userProfile.username}
+          Username: {userProfile.name}
         </Text>
         <Text style={theme === "dark" ? styles.darkText : styles.lightText}>
-          Created At: {new Date(userProfile.created_at).toLocaleDateString()}
+          Created At: {userProfile.registration_date}
         </Text>
-        <TouchableOpacity
-          style={[
-            styles.button,
-            theme === "dark" ? styles.darkButton : styles.lightButton,
-          ]}
-          onPress={() => {
-            /* Handle edit profile */
-          }}
-        >
+        <TouchableOpacity style={[styles.button, theme === "dark" ? styles.darkButton : styles.lightButton]}>
           <Text style={styles.buttonText}>Edit Profile</Text>
         </TouchableOpacity>
       </View>
