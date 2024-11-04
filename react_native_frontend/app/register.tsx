@@ -17,6 +17,7 @@ export default function RegisterScreen() {
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState(""); // New username state
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -24,19 +25,46 @@ export default function RegisterScreen() {
 
   const handleRegister = async () => {
     setLoading(true);
+
+    // Validate password
     if (password !== confirmPassword) {
       Alert.alert("Error", "Passwords do not match!");
       setLoading(false);
       return;
     }
 
-    const { error } = await supabase.auth.signUp({
+    // Attempt to sign up the user
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
 
+    const user = data?.user; // Accessing user from the data object
+
+    // Debugging output
+    console.log("Sign-up response:", { user, error });
+    // // Note: delete this after figuring out whiy the uuid isn't being inserted in the users entry
+    // console.log("User object:", user, error);
+
     if (error) {
+      console.error("Sign-up error:", error);
       Alert.alert("Registration Error", error.message);
+      setLoading(false);
+      return; // todo: doublecheck if returning here is the best approach
+    }
+
+    // Insert new user data (with uuid) into PostgreSQL database
+    // todo: update local and deployed Supabase Edge Functions and use those instead of Supabase code
+    const { error: dbError } = await supabase.from("users").insert([
+      {
+        name: `${firstName} ${lastName}`,
+        username, // Include username
+        uuid: user?.id, // Using the Supabase Auth UUID
+      },
+    ]);
+
+    if (dbError) {
+      Alert.alert("Database Error", dbError.message);
       setLoading(false);
     } else {
       Alert.alert("Success", "Account created! Please log in.");
@@ -90,6 +118,16 @@ export default function RegisterScreen() {
           placeholderTextColor={theme === "dark" ? "#999" : "#999"}
           value={lastName}
           onChangeText={setLastName}
+          style={[
+            styles.input,
+            theme === "dark" ? styles.darkInput : styles.lightInput,
+          ]}
+        />
+        <TextInput
+          placeholder="Username"
+          placeholderTextColor={theme === "dark" ? "#999" : "#999"}
+          value={username} // New username input
+          onChangeText={setUsername}
           style={[
             styles.input,
             theme === "dark" ? styles.darkInput : styles.lightInput,
