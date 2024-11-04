@@ -6,9 +6,11 @@ const env = config({ path: "../../.env.supabase" });
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+// Todo: add supabaseServiceKey equivalent to localbackend users route(s) too
+const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_KEY"); // Service key for authenticated requests
 
 // Validate env variables
-if (!supabaseUrl || !supabaseAnonKey) {
+if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
   throw new Error("Environment variables are not set correctly.");
 }
 
@@ -19,7 +21,7 @@ const supabaseFetch = async (url: string, options: RequestInit) => {
     headers: {
       ...options.headers,
       "apikey": supabaseAnonKey,
-      "Authorization": `Bearer ${supabaseAnonKey}`,
+      "Authorization": `Bearer ${supabaseServiceKey}`, // Use service key for server-side actions
       "Content-Type": "application/json",
     },
   });
@@ -35,13 +37,35 @@ const handleResponse = async (response: Response) => {
   return await response.json();
 };
 
+// Validate JWT
+const validateJWT = async (token: string) => {
+  const response = await supabaseFetch(`${supabaseUrl}/auth/v1/user`, {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Invalid JWT");
+  }
+
+  return await response.json();
+};
+
 // Handles requests
 const handleRequest = async (req: Request) => {
   const url = new URL(req.url);
   const path = url.pathname.split("/");
   const id = path.pop();
+  const token = req.headers.get("Authorization")?.split("Bearer ")[1];
 
   try {
+    // Validate JWT if provided
+    if (token) {
+      await validateJWT(token);
+    }
+
     switch (req.method) {
       case "GET":
         return id && !isNaN(Number(id)) ? await getUser(id) : await getUsers();
@@ -92,17 +116,17 @@ const getUser = async (id: string) => {
 };
 
 // POST
-const createUser = async (body: { name: string }) => {
-  if (!body.name) {
+const createUser = async (body: { name: string; username: string }) => {
+  if (!body.name || !body.username) {
     return new Response(
-      JSON.stringify({ error: "You must enter a username" }),
+      JSON.stringify({ error: "You must enter a name and username" }),
       { status: 400 }
     );
   }
 
   const response = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
     method: "POST",
-    body: JSON.stringify({ name: body.name }),
+    body: JSON.stringify({ name: body.name, username: body.username }),
   });
 
   const data = await handleResponse(response);
