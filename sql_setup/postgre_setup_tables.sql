@@ -23,20 +23,23 @@ CREATE TABLE goals (
   description VARCHAR(300) NOT NULL
 );
 
--- The following adds the Supabase UUID
--- CREATE TABLE users (
---   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
---   name VARCHAR(50) UNIQUE NOT NULL,
---   registration_date TIMESTAMP DEFAULT NOW(),
---   user_id UUID UNIQUE
--- );
-
+-- The following adds the Supabase UUID and username
+-- But I had to keep the username nullable for now, until I either insert values to all the users or completely reenter all data for all tables.
 CREATE TABLE users (
-  id bigint primary key generated always as identity,
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   name VARCHAR(50) UNIQUE NOT NULL,
-  -- registration_date TIMESTAMP
-  registration_date TIMESTAMP DEFAULT NOW()
+  registration_date TIMESTAMP DEFAULT NOW(),
+  uuid uuid,  -- Supabase Auth UUID, nullable.  Todo: add UNIQUE
+  username VARCHAR(50) UNIQUE NOT NULL,  -- New username field   NOTE: I 
 );
+
+-- Previous table
+-- CREATE TABLE users (
+--   id bigint primary key generated always as identity,
+--   name VARCHAR(50) UNIQUE NOT NULL,
+--   -- registration_date TIMESTAMP
+--   registration_date TIMESTAMP DEFAULT NOW()
+-- );
 
 CREATE TABLE tags (
   id bigint primary key generated always as identity,
