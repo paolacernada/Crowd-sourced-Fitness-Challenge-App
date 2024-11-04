@@ -6,11 +6,9 @@ const env = config({ path: "../../.env.supabase" });
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
-// Todo: add supabaseServiceKey equivalent to localbackend users route(s) too
-const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_KEY"); // Service key for authenticated requests
 
 // Validate env variables
-if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
+if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error("Environment variables are not set correctly.");
 }
 
@@ -21,6 +19,7 @@ const supabaseFetch = async (url: string, options: RequestInit) => {
     headers: {
       ...options.headers,
       "apikey": supabaseAnonKey,
+      "Authorization": `Bearer ${supabaseAnonKey}`,
       "Content-Type": "application/json",
     },
   });
@@ -36,35 +35,13 @@ const handleResponse = async (response: Response) => {
   return await response.json();
 };
 
-// Validate JWT
-const validateJWT = async (token: string) => {
-  const response = await supabaseFetch(`${supabaseUrl}/auth/v1/user`, {
-    method: "GET",
-    headers: {
-      "Authorization": `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("Invalid JWT");
-  }
-
-  return await response.json();
-};
-
 // Handles requests
 const handleRequest = async (req: Request) => {
   const url = new URL(req.url);
   const path = url.pathname.split("/");
   const id = path.pop();
-  const token = req.headers.get("Authorization")?.split("Bearer ")[1];
 
   try {
-    // Validate JWT if provided
-    if (token) {
-      await validateJWT(token);
-    }
-
     switch (req.method) {
       case "GET":
         return id && !isNaN(Number(id)) ? await getUser(id) : await getUsers();
@@ -115,78 +92,25 @@ const getUser = async (id: string) => {
 };
 
 // POST
-const createUser = async (body: {
-  name: string;
-  username: string;
-  email: string;
-  password: string;
-}) => {
-  if (!body.name || !body.username || !body.email || !body.password) {
+const createUser = async (body: { name: string }) => {
+  if (!body.name) {
     return new Response(
-      JSON.stringify({
-        error: "You must enter a name, username, email, and password",
-      }),
+      JSON.stringify({ error: "You must enter a username" }),
       { status: 400 }
     );
   }
 
-  // First, sign up the user with Supabase Auth by calling the API
-  const response = await supabaseFetch(`${supabaseUrl}/auth/v1/signup`, {
+  const response = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
     method: "POST",
-    body: JSON.stringify({
-      email: body.email,
-      password: body.password,
-    }),
+    body: JSON.stringify({ name: body.name }),
   });
 
-  const authData = await handleResponse(response); // Handle the response from the signup
-
-  if (!response.ok) {
-    return new Response(
-      JSON.stringify({ error: authData.error || "Failed to sign up" }),
-      { status: 400 }
-    );
-  }
-
-  // After successful signup, insert user details into the database
-  const { user } = authData; // Get the user object from the response
-  const dbResponse = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${authData.access_token}`, // Use the access token
-    },
-    body: JSON.stringify({
-      name: body.name,
-      username: body.username,
-      uuid: user.id, // Use the UUID provided by Supabase Auth
-    }),
-  });
-
-  const data = await handleResponse(dbResponse);
+  const data = await handleResponse(response);
   return new Response(JSON.stringify(data), {
     status: 201,
     headers: { "Content-Type": "application/json" },
   });
 };
-
-//   const response = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
-//     method: "POST",
-//     body: JSON.stringify({
-//       name: body.name,
-//       username: body.username,
-//       uuid: user.id,
-//     }),
-//   });
-
-//   const { user } = authData; // Get the user object from the response
-
-//   const data = await handleResponse(response);
-//   return new Response(JSON.stringify(data), {
-//     status: 201,
-//     headers: { "Content-Type": "application/json" },
-//   });
-// };
 
 // PATCH
 const updateUser = async (id: string | undefined, body: { name: string }) => {
