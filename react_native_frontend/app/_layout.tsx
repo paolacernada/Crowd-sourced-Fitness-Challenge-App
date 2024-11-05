@@ -43,6 +43,12 @@ export default function RootLayout() {
             headerShown: false,
           }}
         />
+        <Stack.Screen
+          name="profile_screen"
+          options={{
+            headerShown: false,
+          }}
+        />
         <Stack.Screen name="home" options={{ title: "Home" }} />
       </Stack>
     </ThemeProvider>

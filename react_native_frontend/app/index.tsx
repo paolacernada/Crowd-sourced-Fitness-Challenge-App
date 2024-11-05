@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Text, View, ActivityIndicator } from "react-native";
 import { supabase } from "../src/config/supabaseClient";
+import styles from "../components/ScreenStyles";
 
 export default function Index() {
   const [users, setUsers] = useState<any[]>([]);

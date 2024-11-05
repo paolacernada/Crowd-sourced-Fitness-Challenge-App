@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, Button, TextInput, Alert } from "react-native";
 import { supabase } from "../src/config/supabaseClient";
 import { useRouter } from "expo-router";
+import styles from "../components/ScreenStyles";
 
 export default function HomeScreen() {
   const [challengeName, setChallengeName] = useState("");
@@ -60,23 +61,3 @@ export default function HomeScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-  subtitle: {
-    fontSize: 18,
-    color: "#666",
-    marginBottom: 40,
-    textAlign: "center",
-  },
-});
