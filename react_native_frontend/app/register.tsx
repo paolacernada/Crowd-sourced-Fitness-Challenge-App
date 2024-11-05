@@ -10,6 +10,7 @@ import {
 import { useRouter } from "expo-router";
 import { supabase } from "../src/config/supabaseClient";
 import { useTheme } from "../src/context/ThemeContext";
+import styles from "../components/ScreenStyles";
 
 export default function RegisterScreen() {
   const [email, setEmail] = useState("");
@@ -152,94 +153,3 @@ export default function RegisterScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 20,
-  },
-  darkContainer: {
-    backgroundColor: "#121212",
-  },
-  lightContainer: {
-    backgroundColor: "#f7f9fc",
-  },
-  appName: {
-    fontSize: 26,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-  darkAppName: {
-    color: "#b05600",
-  },
-  lightAppName: {
-    color: "#f48c42",
-  },
-  darkText: {
-    color: "#fff",
-  },
-  lightText: {
-    color: "#000",
-  },
-  formContainer: {
-    width: "90%",
-    maxWidth: 400,
-    padding: 20,
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-  },
-  darkForm: {
-    backgroundColor: "#333",
-  },
-  lightForm: {
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  input: {
-    borderWidth: 1,
-    padding: 10,
-    marginBottom: 15,
-    borderRadius: 8,
-    fontSize: 16,
-  },
-  darkInput: {
-    borderColor: "#666",
-    color: "#fff",
-  },
-  lightInput: {
-    borderColor: "#ccc",
-    color: "#000",
-  },
-  button: {
-    backgroundColor: "#f48c42",
-    paddingVertical: 12,
-    borderRadius: 30,
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  darkButton: {
-    backgroundColor: "#b05600",
-  },
-  lightButton: {
-    backgroundColor: "#f48c42",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  linkText: {
-    fontSize: 14,
-    textAlign: "center",
-  },
-});
