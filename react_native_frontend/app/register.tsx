@@ -9,11 +9,12 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 // import { supabase } from "../src/config/supabaseClient";
-import { SUPABASE_URL } from "@env"; // Import your environment variables
-import { SUPABASE_ANON_KEY } from "@env"; // Import your environment variables
+import { SUPABASE_URL } from "@env";
+import { SUPABASE_ANON_KEY } from "@env";
 
 import { useTheme } from "../src/context/ThemeContext";
 const edgeFunctionUrl = `${SUPABASE_URL}/auth/v1/signup`; // Edge function URL
+// const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/users`; // Replace with your actual function path
 
 // const SUPABASE_URL = process.env.SUPABASE_URL;
 
@@ -38,16 +39,16 @@ export default function RegisterScreen() {
       return;
     }
 
-    // Debugging: Log the registration request data
+    // Debugging: Log registration request data
     console.log("Registering user:", { email, firstName, lastName, username });
 
     try {
-      // Attempt to sign up the user using the Edge Function
+      // Attempt to sign up the user using Edge Function instead of embedded Supabase code
       const response = await fetch(edgeFunctionUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "apikey": SUPABASE_ANON_KEY, // Add your API key here    
+          "apikey": SUPABASE_ANON_KEY,
         },
         body: JSON.stringify({
           email,
@@ -57,7 +58,7 @@ export default function RegisterScreen() {
         }),
       });
 
-      // Debugging: Log the response status and data
+      // Debugging: Log response status and data
       console.log("Response status:", response.status);
       const data = await response.json();
       console.log("Response data:", data);

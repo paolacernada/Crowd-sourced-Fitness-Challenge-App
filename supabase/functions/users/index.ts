@@ -9,8 +9,13 @@ const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
 // Todo: add supabaseServiceKey equivalent to localbackend users route(s) too
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_KEY"); // Service key for authenticated requests
 
+// For testing
+console.log("SUPABASE_URL:", supabaseUrl);
+console.log("SUPABASE_SERVICE_KEY:", supabaseAnonKey);
+console.log("SUPABASE_ANON_KEY:", supabaseServiceKey);
+
 // Validate env variables
-if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
+if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error("Environment variables are not set correctly.");
 }
 
@@ -130,7 +135,7 @@ const createUser = async (body: {
     );
   }
 
-  // First, sign up the user with Supabase Auth by calling the API
+  // Sign up user with Supabase Auth
   const response = await supabaseFetch(`${supabaseUrl}/auth/v1/signup`, {
     method: "POST",
     body: JSON.stringify({
@@ -139,7 +144,7 @@ const createUser = async (body: {
     }),
   });
 
-  const authData = await handleResponse(response); // Handle the response from the signup
+  const authData = await handleResponse(response);
 
   if (!response.ok) {
     return new Response(
@@ -149,12 +154,28 @@ const createUser = async (body: {
   }
 
   // After successful signup, insert user details into the database
-  const { user } = authData; // Get the user object from the response
+  const { user } = authData; // Get user object from response
+  // Test if there is no user ID to be found
+  if (!user || !user.id) {
+    return new Response(
+      JSON.stringify({ error: "User creation failed, no user ID" }),
+      { status: 500 }
+    );
+  }
+
+  console.log("Inserting into users table with data:", {
+    name: body.name,
+    username: body.username,
+    uuid: user.id,
+  });
+
   const dbResponse = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${authData.access_token}`, // Use the access token
+      // "Authorization": `Bearer ${authData.access_token}`, // Use Supabase-granted access token
+      // "Authorization": `Bearer ${supabaseServiceKey}`, // Use Supabase-granted access token
+      "Authorization": `Bearer ${authData.access_token}`, // Use Supabase-granted access token
     },
     body: JSON.stringify({
       name: body.name,
@@ -164,24 +185,93 @@ const createUser = async (body: {
   });
 
   const data = await handleResponse(dbResponse);
+
+  // Check for errors from the database
+  if (!dbResponse.ok) {
+    return new Response(
+      JSON.stringify({
+        error: data.error || "Failed to insert into database",
+      }),
+      { status: 400 }
+    );
+  }
+
   return new Response(JSON.stringify(data), {
     status: 201,
     headers: { "Content-Type": "application/json" },
   });
 };
 
-//   const response = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
+// // POST
+// const createUser = async (body: {
+//   name: string;
+//   username: string;
+//   email: string;
+//   password: string;
+// }) => {
+//   if (!body.name || !body.username || !body.email || !body.password) {
+//     return new Response(
+//       JSON.stringify({
+//         error: "You must enter a name, username, email, and password",
+//       }),
+//       { status: 400 }
+//     );
+//   }
+
+//   // Sign up user with Supabase Auth
+//   const response = await supabaseFetch(`${supabaseUrl}/auth/v1/signup`, {
 //     method: "POST",
 //     body: JSON.stringify({
-//       name: body.name,
-//       username: body.username,
-//       uuid: user.id,
+//       email: body.email,
+//       password: body.password,
 //     }),
 //   });
 
-//   const { user } = authData; // Get the user object from the response
+//   const authData = await handleResponse(response);
 
-//   const data = await handleResponse(response);
+//   if (!response.ok) {
+//     return new Response(
+//       JSON.stringify({ error: authData.error || "Failed to sign up" }),
+//       { status: 400 }
+//     );
+//   }
+
+//   // After successful signup, insert user details into the database
+//   const { user } = authData; // Get user object from response
+//   // Test if there is no user ID to be found
+//   if (!user || !user.id) {
+//     return new Response(
+//       JSON.stringify({ error: "User creation failed, no user ID" }),
+//       { status: 500 }
+//     );
+//   }
+
+//   const dbResponse = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//       // "Authorization": `Bearer ${authData.access_token}`, // Use Supabase-granted access token
+//       "Authorization": `Bearer ${supabaseServiceKey}`, // Use Supabase-granted access token
+//     },
+//     body: JSON.stringify({
+//       name: body.name,
+//       username: body.username,
+//       uuid: user.id, // Use the UUID provided by Supabase Auth
+//     }),
+//   });
+
+//   const data = await handleResponse(dbResponse);
+
+//   // Check for errors from the database
+//   if (!dbResponse.ok) {
+//     return new Response(
+//       JSON.stringify({
+//         error: data.error || "Failed to insert into database",
+//       }),
+//       { status: 400 }
+//     );
+//   }
+
 //   return new Response(JSON.stringify(data), {
 //     status: 201,
 //     headers: { "Content-Type": "application/json" },
