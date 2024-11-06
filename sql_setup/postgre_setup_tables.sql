@@ -31,7 +31,7 @@ CREATE TABLE users (
   registration_date TIMESTAMP DEFAULT NOW(),
   uuid uuid DEFAULT gen_random_uuid() NOT NULL,  -- Supabase Auth UUID, nullable.  Todo: add UNIQUE
   username VARCHAR(50) UNIQUE NOT NULL  -- New username field   NOTE: I 
-);supabase functions deploy 
+);
 
 -- Previous table
 -- CREATE TABLE users (

@@ -1,25 +1,28 @@
 import { config } from "https://deno.land/x/dotenv/mod.ts";
 
 // Load env variables
-// eslint-disable-next-line no-unused-vars
+// Note: I used eslint-disable-next-line no-unused-vars
 const env = config({ path: "../../.env.supabase" });
 
+console.log("All environment variables:", Deno.env.toObject());
+
+// Set up environment variables
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
 // Todo: add supabaseServiceKey equivalent to localbackend users route(s) too
-const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_KEY"); // Service key for authenticated requests
+const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
 // For testing
+console.log("SUPABASE_ANON_KEY:", supabaseAnonKey);
 console.log("SUPABASE_URL:", supabaseUrl);
-console.log("SUPABASE_SERVICE_KEY:", supabaseAnonKey);
-console.log("SUPABASE_ANON_KEY:", supabaseServiceKey);
+console.log("SUPABASE_SERVICE_KEY:", supabaseServiceKey);
 
 // Validate env variables
-if (!supabaseUrl || !supabaseAnonKey) {
+if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
   throw new Error("Environment variables are not set correctly.");
 }
 
-// Fetches data
+// Fetch data
 const supabaseFetch = async (url: string, options: RequestInit) => {
   const response = await fetch(url, {
     ...options,
@@ -32,7 +35,6 @@ const supabaseFetch = async (url: string, options: RequestInit) => {
   return response;
 };
 
-// Utility function -> Handles responses
 const handleResponse = async (response: Response) => {
   if (!response.ok) {
     const errorData = await response.json();
@@ -57,7 +59,6 @@ const validateJWT = async (token: string) => {
   return await response.json();
 };
 
-// Handles requests
 const handleRequest = async (req: Request) => {
   const url = new URL(req.url);
   const path = url.pathname.split("/");
@@ -81,7 +82,7 @@ const handleRequest = async (req: Request) => {
         return await updateUser(id, await req.json());
 
       case "DELETE":
-        return await deleteUser(id); // todo: the code works, but this probably still needs to be fixed
+        return await deleteUser(id);
 
       default:
         return new Response("Method Not Allowed", { status: 405 });
@@ -153,9 +154,8 @@ const createUser = async (body: {
     );
   }
 
-  // After successful signup, insert user details into the database
-  const { user } = authData; // Get user object from response
-  // Test if there is no user ID to be found
+  // Insert user data into PostgreSQL users table
+  const { user } = authData;
   if (!user || !user.id) {
     return new Response(
       JSON.stringify({ error: "User creation failed, no user ID" }),
@@ -173,20 +173,18 @@ const createUser = async (body: {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      // "Authorization": `Bearer ${authData.access_token}`, // Use Supabase-granted access token
-      // "Authorization": `Bearer ${supabaseServiceKey}`, // Use Supabase-granted access token
-      "Authorization": `Bearer ${authData.access_token}`, // Use Supabase-granted access token
+      "Authorization": `Bearer ${supabaseServiceKey}`, // Service Role Key for database insert
     },
     body: JSON.stringify({
       name: body.name,
       username: body.username,
-      uuid: user.id, // Use the UUID provided by Supabase Auth
+      // Use the UUID provided by Supabase Auth
+      uuid: user.id,
     }),
   });
 
   const data = await handleResponse(dbResponse);
 
-  // Check for errors from the database
   if (!dbResponse.ok) {
     return new Response(
       JSON.stringify({
@@ -201,82 +199,6 @@ const createUser = async (body: {
     headers: { "Content-Type": "application/json" },
   });
 };
-
-// // POST
-// const createUser = async (body: {
-//   name: string;
-//   username: string;
-//   email: string;
-//   password: string;
-// }) => {
-//   if (!body.name || !body.username || !body.email || !body.password) {
-//     return new Response(
-//       JSON.stringify({
-//         error: "You must enter a name, username, email, and password",
-//       }),
-//       { status: 400 }
-//     );
-//   }
-
-//   // Sign up user with Supabase Auth
-//   const response = await supabaseFetch(`${supabaseUrl}/auth/v1/signup`, {
-//     method: "POST",
-//     body: JSON.stringify({
-//       email: body.email,
-//       password: body.password,
-//     }),
-//   });
-
-//   const authData = await handleResponse(response);
-
-//   if (!response.ok) {
-//     return new Response(
-//       JSON.stringify({ error: authData.error || "Failed to sign up" }),
-//       { status: 400 }
-//     );
-//   }
-
-//   // After successful signup, insert user details into the database
-//   const { user } = authData; // Get user object from response
-//   // Test if there is no user ID to be found
-//   if (!user || !user.id) {
-//     return new Response(
-//       JSON.stringify({ error: "User creation failed, no user ID" }),
-//       { status: 500 }
-//     );
-//   }
-
-//   const dbResponse = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//       // "Authorization": `Bearer ${authData.access_token}`, // Use Supabase-granted access token
-//       "Authorization": `Bearer ${supabaseServiceKey}`, // Use Supabase-granted access token
-//     },
-//     body: JSON.stringify({
-//       name: body.name,
-//       username: body.username,
-//       uuid: user.id, // Use the UUID provided by Supabase Auth
-//     }),
-//   });
-
-//   const data = await handleResponse(dbResponse);
-
-//   // Check for errors from the database
-//   if (!dbResponse.ok) {
-//     return new Response(
-//       JSON.stringify({
-//         error: data.error || "Failed to insert into database",
-//       }),
-//       { status: 400 }
-//     );
-//   }
-
-//   return new Response(JSON.stringify(data), {
-//     status: 201,
-//     headers: { "Content-Type": "application/json" },
-//   });
-// };
 
 // PATCH
 const updateUser = async (id: string | undefined, body: { name: string }) => {

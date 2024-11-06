@@ -10,7 +10,10 @@ import {
 import { useRouter } from "expo-router";
 import { supabase } from "../src/config/supabaseClient";
 import { useTheme } from "../src/context/ThemeContext";
+<<<<<<< HEAD
 import styles from "../components/ScreenStyles";
+=======
+>>>>>>> 0e759db (Implement authentication + postgresql users entry (Use embedded supabase code in react native))
 
 export default function RegisterScreen() {
   const [email, setEmail] = useState("");
@@ -54,7 +57,11 @@ export default function RegisterScreen() {
     }
 
     // Insert new user data (with uuid) into PostgreSQL database
+<<<<<<< HEAD
     // todo: update local and deployed Supabase Edge Functions and use those instead of Supabase code
+=======
+    // todo: use deployed Supabase Edge Functions instead of embedded Supabase code
+>>>>>>> 0e759db (Implement authentication + postgresql users entry (Use embedded supabase code in react native))
     const { error: dbError } = await supabase.from("users").insert([
       {
         name: `${firstName} ${lastName}`,
