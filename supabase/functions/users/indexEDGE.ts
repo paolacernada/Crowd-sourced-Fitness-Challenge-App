@@ -1,34 +1,38 @@
 import { config } from "https://deno.land/x/dotenv/mod.ts";
 
 // Load env variables
-// eslint-disable-next-line no-unused-vars
+// Note: I used eslint-disable-next-line no-unused-vars
 const env = config({ path: "../../.env.supabase" });
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+// Todo: add supabaseServiceKey equivalent to localbackend users routes too
+// Service key for authenticated requests.
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_KEY");
+
+// For testing
+// console.log("SUPABASE_URL:", supabaseUrl);
+// console.log("SUPABASE_SERVICE_KEY:", supabaseAnonKey);
+// console.log("SUPABASE_ANON_KEY:", supabaseServiceKey);
 
 // Validate env variables
 if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
-  // if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error("Environment variables are not set correctly.");
 }
 
-// Fetches data
+// Fetch data
 const supabaseFetch = async (url: string, options: RequestInit) => {
   const response = await fetch(url, {
     ...options,
     headers: {
       ...options.headers,
       "apikey": supabaseAnonKey,
-      "Authorization": `Bearer ${supabaseAnonKey}`,
       "Content-Type": "application/json",
     },
   });
   return response;
 };
 
-// Utility function -> Handles responses
 const handleResponse = async (response: Response) => {
   if (!response.ok) {
     const errorData = await response.json();
@@ -37,13 +41,34 @@ const handleResponse = async (response: Response) => {
   return await response.json();
 };
 
-// Handles requests
+// Validate JWT
+const validateJWT = async (token: string) => {
+  const response = await supabaseFetch(`${supabaseUrl}/auth/v1/user`, {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Invalid JWT");
+  }
+
+  return await response.json();
+};
+
 const handleRequest = async (req: Request) => {
   const url = new URL(req.url);
   const path = url.pathname.split("/");
   const id = path.pop();
+  const token = req.headers.get("Authorization")?.split("Bearer ")[1];
 
   try {
+    // Validate JWT if provided
+    if (token) {
+      await validateJWT(token);
+    }
+
     switch (req.method) {
       case "GET":
         return id && !isNaN(Number(id)) ? await getUser(id) : await getUsers();
@@ -94,20 +119,82 @@ const getUser = async (id: string) => {
 };
 
 // POST
-const createUser = async (body: { name: string }) => {
-  if (!body.name) {
+const createUser = async (body: {
+  name: string;
+  username: string;
+  email: string;
+  password: string;
+}) => {
+  if (!body.name || !body.username || !body.email || !body.password) {
     return new Response(
-      JSON.stringify({ error: "You must enter a username" }),
+      JSON.stringify({
+        error: "You must enter a name, username, email, and password",
+      }),
       { status: 400 }
     );
   }
 
-  const response = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
+  // Sign up user with Supabase Auth
+  const response = await supabaseFetch(`${supabaseUrl}/auth/v1/signup`, {
     method: "POST",
-    body: JSON.stringify({ name: body.name }),
+    body: JSON.stringify({
+      email: body.email,
+      password: body.password,
+    }),
   });
 
-  const data = await handleResponse(response);
+  const authData = await handleResponse(response);
+
+  if (!response.ok) {
+    return new Response(
+      JSON.stringify({ error: authData.error || "Failed to sign up" }),
+      { status: 400 }
+    );
+  }
+
+  // After successful signup, insert user details into the database
+  const { user } = authData;
+  // Test if there is no user ID to be found
+  if (!user || !user.id) {
+    return new Response(
+      JSON.stringify({ error: "User creation failed, no user ID" }),
+      { status: 500 }
+    );
+  }
+
+  console.log("Inserting into users table with data:", {
+    name: body.name,
+    username: body.username,
+    uuid: user.id,
+  });
+
+  const dbResponse = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      // "Authorization": `Bearer ${supabaseServiceKey}`, // Use Supabase-granted access token
+      "Authorization": `Bearer ${authData.access_token}`, // Use Supabase-granted access token
+    },
+    body: JSON.stringify({
+      name: body.name,
+      username: body.username,
+      // Use the UUID provided by Supabase Auth
+      uuid: user.id,
+    }),
+  });
+
+  const data = await handleResponse(dbResponse);
+
+  // Check for errors from the postgreSQL database
+  if (!dbResponse.ok) {
+    return new Response(
+      JSON.stringify({
+        error: data.error || "Failed to insert into database",
+      }),
+      { status: 400 }
+    );
+  }
+
   return new Response(JSON.stringify(data), {
     status: 201,
     headers: { "Content-Type": "application/json" },
