@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Button, TextInput, Alert } from "react-native";
+import { View, Text, Button, TextInput, Alert } from "react-native";
 import { supabase } from "../src/config/supabaseClient";
 import { useRouter } from "expo-router";
 import styles from "../components/ScreenStyles";
