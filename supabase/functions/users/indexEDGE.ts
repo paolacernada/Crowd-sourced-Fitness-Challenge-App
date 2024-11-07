@@ -4,18 +4,16 @@ import { config } from "https://deno.land/x/dotenv/mod.ts";
 // Note: I used eslint-disable-next-line no-unused-vars
 const env = config({ path: "../../.env.supabase" });
 
-console.log("All environment variables:", Deno.env.toObject());
-
-// Set up environment variables
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
-// Todo: add supabaseServiceKey equivalent to localbackend users route(s) too
-const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+// Todo: add supabaseServiceKey equivalent to localbackend users routes too
+// Service key for authenticated requests.
+const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_KEY");
 
 // For testing
-console.log("SUPABASE_ANON_KEY:", supabaseAnonKey);
-console.log("SUPABASE_URL:", supabaseUrl);
-console.log("SUPABASE_SERVICE_KEY:", supabaseServiceKey);
+// console.log("SUPABASE_URL:", supabaseUrl);
+// console.log("SUPABASE_SERVICE_KEY:", supabaseAnonKey);
+// console.log("SUPABASE_ANON_KEY:", supabaseServiceKey);
 
 // Validate env variables
 if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
@@ -82,7 +80,7 @@ const handleRequest = async (req: Request) => {
         return await updateUser(id, await req.json());
 
       case "DELETE":
-        return await deleteUser(id);
+        return await deleteUser(id); // todo: the code works, but this probably still needs to be fixed
 
       default:
         return new Response("Method Not Allowed", { status: 405 });
@@ -154,8 +152,9 @@ const createUser = async (body: {
     );
   }
 
-  // Insert user data into PostgreSQL users table
+  // After successful signup, insert user details into the database
   const { user } = authData;
+  // Test if there is no user ID to be found
   if (!user || !user.id) {
     return new Response(
       JSON.stringify({ error: "User creation failed, no user ID" }),
@@ -173,7 +172,8 @@ const createUser = async (body: {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${supabaseServiceKey}`, // Service Role Key for database insert
+      // "Authorization": `Bearer ${supabaseServiceKey}`, // Use Supabase-granted access token
+      "Authorization": `Bearer ${authData.access_token}`, // Use Supabase-granted access token
     },
     body: JSON.stringify({
       name: body.name,
@@ -185,6 +185,7 @@ const createUser = async (body: {
 
   const data = await handleResponse(dbResponse);
 
+  // Check for errors from the postgreSQL database
   if (!dbResponse.ok) {
     return new Response(
       JSON.stringify({
