@@ -2,20 +2,17 @@ import { config } from "https://deno.land/x/dotenv/mod.ts";
 
 // Load env variables
 // Note: I used eslint-disable-next-line no-unused-vars
-const env = config({ path: "../../.env.supabase" });
+const env = config({ path: "../../.env.edge" });
 
-console.log("All environment variables:", Deno.env.toObject());
-
-// Set up environment variables
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
-// Todo: add supabaseServiceKey equivalent to localbackend users route(s) too
+// Service key for authenticated requests.
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
 // For testing
-console.log("SUPABASE_ANON_KEY:", supabaseAnonKey);
 console.log("SUPABASE_URL:", supabaseUrl);
-console.log("SUPABASE_SERVICE_KEY:", supabaseServiceKey);
+console.log("SUPABASE_SERVICE_ROLE_KEY:", supabaseServiceKey);
+console.log("SUPABASE_ANON_KEY:", supabaseAnonKey);
 
 // Validate env variables
 if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
@@ -76,13 +73,13 @@ const handleRequest = async (req: Request) => {
         return id && !isNaN(Number(id)) ? await getUser(id) : await getUsers();
 
       case "POST":
-        return await createUser(await req.json());
+        return await createUser(await req.json(), token); // Pass JWT token to the createUser function
 
       case "PATCH":
         return await updateUser(id, await req.json());
 
       case "DELETE":
-        return await deleteUser(id);
+        return await deleteUser(id); // todo: the code works, but this probably still needs to be fixed
 
       default:
         return new Response("Method Not Allowed", { status: 405 });
@@ -121,12 +118,15 @@ const getUser = async (id: string) => {
 };
 
 // POST
-const createUser = async (body: {
-  name: string;
-  username: string;
-  email: string;
-  password: string;
-}) => {
+const createUser = async (
+  body: {
+    name: string;
+    username: string;
+    email: string;
+    password: string;
+  },
+  token: string
+) => {
   if (!body.name || !body.username || !body.email || !body.password) {
     return new Response(
       JSON.stringify({
@@ -147,6 +147,8 @@ const createUser = async (body: {
 
   const authData = await handleResponse(response);
 
+  console.log("Auth Response:", authData); // Log response for debugging
+
   if (!response.ok) {
     return new Response(
       JSON.stringify({ error: authData.error || "Failed to sign up" }),
@@ -154,8 +156,9 @@ const createUser = async (body: {
     );
   }
 
-  // Insert user data into PostgreSQL users table
+  // After successful signup, insert user details into the database
   const { user } = authData;
+  // Test if there is no user ID to be found
   if (!user || !user.id) {
     return new Response(
       JSON.stringify({ error: "User creation failed, no user ID" }),
@@ -173,7 +176,8 @@ const createUser = async (body: {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${supabaseServiceKey}`, // Service Role Key for database insert
+      // "Authorization": `Bearer ${supabaseServiceKey}`, // Use Supabase-granted access token
+      "Authorization": `Bearer ${token}`, // Use Supabase-granted access token
     },
     body: JSON.stringify({
       name: body.name,
@@ -185,6 +189,7 @@ const createUser = async (body: {
 
   const data = await handleResponse(dbResponse);
 
+  // Check for errors from the postgreSQL database
   if (!dbResponse.ok) {
     return new Response(
       JSON.stringify({
@@ -261,3 +266,107 @@ Deno.serve(handleRequest);
 // const port = 8000; // or any port of your choice
 // Deno.serve({ port }, handler);
 // console.log(`Server running on http://localhost:${port}`);
+
+// import { config } from "https://deno.land/x/dotenv/mod.ts";
+// import { verifyJwt } from "https://deno.land/x/jwt/mod.ts"; // You may need a JWT verification library
+
+// const env = config({ path: "../../.env.supabase" });
+
+// const supabaseUrl = Deno.env.get("SUPABASE_URL");
+// const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+
+// // Validate environment variables
+// if (!supabaseUrl || !supabaseServiceKey) {
+//   throw new Error("Environment variables are not set correctly.");
+// }
+
+// // Fetch data
+// const supabaseFetch = async (url: string, options: RequestInit) => {
+//   const response = await fetch(url, {
+//     ...options,
+//     headers: {
+//       ...options.headers,
+//       "Authorization": `Bearer ${supabaseServiceKey}`,
+//       "Content-Type": "application/json",
+//     },
+//   });
+//   return response;
+// };
+
+// // Function to decode and verify the JWT token
+// const verifyJwtToken = async (token: string) => {
+//   const response = await fetch(`${supabaseUrl}/auth/v1/token?token=${token}`, {
+//     method: "GET",
+//     headers: { "Authorization": `Bearer ${token}` },
+//   });
+
+//   if (!response.ok) {
+//     throw new Error("Invalid or expired token");
+//   }
+
+//   return await response.json();
+// };
+
+// const handleRequest = async (req: Request) => {
+//   const token = req.headers.get("Authorization")?.split("Bearer ")[1];
+
+//   if (!token) {
+//     return new Response(
+//       JSON.stringify({ error: "Authorization token is missing" }),
+//       { status: 400 }
+//     );
+//   }
+
+//   try {
+//     const user = await verifyJwtToken(token);
+
+//     const { userId, name, username } = await req.json();
+
+//     if (!userId || !name || !username) {
+//       return new Response(
+//         JSON.stringify({ error: "User ID, name, and username are required" }),
+//         { status: 400 }
+//       );
+//     }
+
+//     // Insert user data into PostgreSQL users table
+//     const response = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
+//       method: "POST",
+//       body: JSON.stringify({
+//         uuid: userId,
+//         name,
+//         username,
+//       }),
+//     });
+
+//     const data = await response.json();
+
+//     if (!response.ok) {
+//       return new Response(
+//         JSON.stringify({
+//           error: data.error || "Failed to insert into database",
+//         }),
+//         { status: 400 }
+//       );
+//     }
+
+//     return new Response(JSON.stringify(data), {
+//       status: 201,
+//       headers: { "Content-Type": "application/json" },
+//     });
+//   } catch (error) {
+//     console.error("Internal Error:", error);
+//     return new Response(JSON.stringify({ error: error.message }), {
+//       status: 500,
+//     });
+//   }
+// };
+
+// // Start the server
+// Deno.serve(handleRequest);
+
+// // REMOVE THIS BLOCK WHEN DEPLOYING
+// // // Start the server
+// // const port = 8000; // or any port of your choice
+// // Deno.serve({ port }, handler);
+// // console.log(`Server running on http://localhost:${port}`);
