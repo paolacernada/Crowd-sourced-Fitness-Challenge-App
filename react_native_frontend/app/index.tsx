@@ -23,31 +23,17 @@ export default function Index() {
 
   if (loading) {
     return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+      <View style={styles.container}>
         <ActivityIndicator size="large" color="#0000ff" />
       </View>
     );
   }
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text style={{ fontSize: 24, fontWeight: "bold" }}>
-        FitTogether Users:
-      </Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>FitTogether Users:</Text>
       {users.map((user, index) => (
-        <Text key={index} style={{ fontSize: 18 }}>
+        <Text key={index} style={styles.subtitle}>
           {user.name}
         </Text>
       ))}

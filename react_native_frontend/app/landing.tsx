@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Switch } from "react-native";
+import { View, Text, TouchableOpacity, Switch } from "react-native";
 import { useRouter } from "expo-router";
 import { useTheme } from "../src/context/ThemeContext";
 import styles from "../components/ScreenStyles";

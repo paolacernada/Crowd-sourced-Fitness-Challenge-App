@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Button, TextInput, Alert } from "react-native";
+import { View, Text, TextInput, Alert, TouchableOpacity } from "react-native";
 import { supabase } from "../src/config/supabaseClient";
 import { useRouter } from "expo-router";
 import styles from "../components/ScreenStyles";
@@ -42,22 +42,22 @@ export default function HomeScreen() {
         placeholder="Enter a new challenge name"
         value={challengeName}
         onChangeText={setChallengeName}
-        style={{
-          borderWidth: 1,
-          marginBottom: 20,
-          padding: 8,
-          borderRadius: 5,
-          width: "80%",
-        }}
+        style={[styles.input, styles.lightInput]}
       />
 
-      <Button
-        title={loading ? "Creating Challenge..." : "Start a New Challenge"}
+      <TouchableOpacity
+        style={[styles.button, loading ? { opacity: 0.5 } : null]}
         onPress={handleCreateChallenge}
         disabled={loading}
-      />
+      >
+        <Text style={styles.buttonText}>
+          {loading ? "Creating Challenge..." : "Start a New Challenge"}
+        </Text>
+      </TouchableOpacity>
 
-      <Button title="Log out" onPress={() => router.replace("/login")} />
+      <TouchableOpacity onPress={() => router.replace("/login")}>
+        <Text style={styles.linkText}>Log out</Text>
+      </TouchableOpacity>
     </View>
   );
 }
