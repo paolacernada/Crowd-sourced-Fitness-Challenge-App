@@ -1,8 +1,10 @@
 node_modules/
 dist/
 .env
+.env/
 .env.server
 .env.frontend
 .env.supabase
+.env.edge
 .eslintcache
 .vscode/

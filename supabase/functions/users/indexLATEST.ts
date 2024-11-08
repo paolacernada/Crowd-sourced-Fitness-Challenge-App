@@ -2,20 +2,6 @@ import { config } from "https://deno.land/x/dotenv/mod.ts";
 
 // Load env variables
 // Note: I used eslint-disable-next-line no-unused-vars
-<<<<<<< HEAD
-const env = config({ path: "../../.env.supabase" });
-
-const supabaseUrl = Deno.env.get("SUPABASE_URL");
-const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
-// Todo: add supabaseServiceKey equivalent to localbackend users routes too
-// Service key for authenticated requests.
-const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_KEY");
-
-// For testing
-// console.log("SUPABASE_URL:", supabaseUrl);
-// console.log("SUPABASE_SERVICE_KEY:", supabaseAnonKey);
-// console.log("SUPABASE_ANON_KEY:", supabaseServiceKey);
-=======
 const env = config({ path: "../../.env.edge" });
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -27,7 +13,6 @@ const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 console.log("SUPABASE_URL:", supabaseUrl);
 console.log("SUPABASE_SERVICE_ROLE_KEY:", supabaseServiceKey);
 console.log("SUPABASE_ANON_KEY:", supabaseAnonKey);
->>>>>>> 3058f518ccdcb9eafad4307f5c13a72829d90a14
 
 // Validate env variables
 if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
@@ -88,11 +73,7 @@ const handleRequest = async (req: Request) => {
         return id && !isNaN(Number(id)) ? await getUser(id) : await getUsers();
 
       case "POST":
-<<<<<<< HEAD
-        return await createUser(await req.json());
-=======
         return await createUser(await req.json(), token); // Pass JWT token to the createUser function
->>>>>>> 3058f518ccdcb9eafad4307f5c13a72829d90a14
 
       case "PATCH":
         return await updateUser(id, await req.json());
@@ -137,14 +118,6 @@ const getUser = async (id: string) => {
 };
 
 // POST
-<<<<<<< HEAD
-const createUser = async (body: {
-  name: string;
-  username: string;
-  email: string;
-  password: string;
-}) => {
-=======
 const createUser = async (
   body: {
     name: string;
@@ -154,7 +127,6 @@ const createUser = async (
   },
   token: string
 ) => {
->>>>>>> 3058f518ccdcb9eafad4307f5c13a72829d90a14
   if (!body.name || !body.username || !body.email || !body.password) {
     return new Response(
       JSON.stringify({
@@ -174,6 +146,8 @@ const createUser = async (
   });
 
   const authData = await handleResponse(response);
+
+  console.log("Auth Response:", authData); // Log response for debugging
 
   if (!response.ok) {
     return new Response(
@@ -203,11 +177,7 @@ const createUser = async (
     headers: {
       "Content-Type": "application/json",
       // "Authorization": `Bearer ${supabaseServiceKey}`, // Use Supabase-granted access token
-<<<<<<< HEAD
-      "Authorization": `Bearer ${authData.access_token}`, // Use Supabase-granted access token
-=======
       "Authorization": `Bearer ${token}`, // Use Supabase-granted access token
->>>>>>> 3058f518ccdcb9eafad4307f5c13a72829d90a14
     },
     body: JSON.stringify({
       name: body.name,
@@ -296,8 +266,6 @@ Deno.serve(handleRequest);
 // const port = 8000; // or any port of your choice
 // Deno.serve({ port }, handler);
 // console.log(`Server running on http://localhost:${port}`);
-<<<<<<< HEAD
-=======
 
 // import { config } from "https://deno.land/x/dotenv/mod.ts";
 // import { verifyJwt } from "https://deno.land/x/jwt/mod.ts"; // You may need a JWT verification library
@@ -402,4 +370,3 @@ Deno.serve(handleRequest);
 // // const port = 8000; // or any port of your choice
 // // Deno.serve({ port }, handler);
 // // console.log(`Server running on http://localhost:${port}`);
->>>>>>> 3058f518ccdcb9eafad4307f5c13a72829d90a14
