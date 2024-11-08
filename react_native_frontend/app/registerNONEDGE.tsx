@@ -8,12 +8,8 @@ import {
   StyleSheet,
 } from "react-native";
 import { useRouter } from "expo-router";
-// import { supabase } from "../src/config/supabaseClient";
-import { SUPABASE_URL } from "@env";
-import { SUPABASE_ANON_KEY } from "@env";
-
+import { supabase } from "../src/config/supabaseClient";
 import { useTheme } from "../src/context/ThemeContext";
-const edgeFunctionUrl = `${SUPABASE_URL}/auth/v1/signup`; // Edge function URL
 
 export default function RegisterScreen() {
   const [email, setEmail] = useState("");
@@ -36,41 +32,43 @@ export default function RegisterScreen() {
       return;
     }
 
-    // Debugging: Log registration request data
-    console.log("Registering user:", { email, firstName, lastName, username });
+    // Attempt to sign up the user
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
 
-    try {
-      // Attempt to sign up the user using Edge Function instead of embedded Supabase code
-      const response = await fetch(edgeFunctionUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "apikey": SUPABASE_ANON_KEY,
-        },
-        body: JSON.stringify({
-          email,
-          password,
-          name: `${firstName} ${lastName}`,
-          username,
-        }),
-      });
+    const user = data?.user; // Accessing user from the data object
 
-      // Debugging: Log response status and data
-      console.log("Response status:", response.status);
-      const data = await response.json();
-      console.log("Response data:", data);
+    // Debugging output
+    console.log("Sign-up response:", { user, error });
+    // // Note: delete this after figuring out whiy the uuid isn't being inserted in the users entry
+    // console.log("User object:", user, error);
 
-      if (!response.ok) {
-        Alert.alert("Registration Error", data.error || "Failed to register");
-      } else {
-        Alert.alert("Success", "Account created! Please log in.");
-        router.push("/login");
-      }
-    } catch (error) {
-      console.error("Error during registration:", error);
-      Alert.alert("Error", "Something went wrong. Please try again.");
-    } finally {
+    if (error) {
+      console.error("Sign-up error:", error);
+      Alert.alert("Registration Error", error.message);
       setLoading(false);
+      return; // todo: doublecheck if returning here is the best approach
+    }
+
+    // Insert new user data (with uuid) into PostgreSQL database
+    // todo: use deployed Supabase Edge Functions instead of embedded Supabase code
+    const { error: dbError } = await supabase.from("users").insert([
+      {
+        name: `${firstName} ${lastName}`,
+        username, // Include username
+        uuid: user?.id, // Using the Supabase Auth UUID
+      },
+    ]);
+
+    if (dbError) {
+      Alert.alert("Database Error", dbError.message);
+      setLoading(false);
+    } else {
+      Alert.alert("Success", "Account created! Please log in.");
+      setLoading(false);
+      router.push("/login");
     }
   };
 
