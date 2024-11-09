@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useTheme } from "../src/context/ThemeContext";
 import { fetchUserProfile } from "../src/services/userService";
