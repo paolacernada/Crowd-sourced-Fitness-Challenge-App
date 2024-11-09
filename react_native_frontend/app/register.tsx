@@ -1,15 +1,9 @@
 import React, { useState } from "react";
-import {
-  View,
-  TextInput,
-  TouchableOpacity,
-  Text,
-  Alert,
-  StyleSheet,
-} from "react-native";
+import { View, TextInput, TouchableOpacity, Text, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { supabase } from "../src/config/supabaseClient";
 import { useTheme } from "../src/context/ThemeContext";
+import ScreenContainer from "../components/ScreenContainer";
 import styles from "../components/ScreenStyles";
 
 export default function RegisterScreen() {
@@ -43,17 +37,18 @@ export default function RegisterScreen() {
 
     // Debugging output
     console.log("Sign-up response:", { user, error });
+    // // Note: delete this after figuring out why the uuid isn't being inserted in the users entry
     // console.log("User object:", user, error);
 
     if (error) {
       console.error("Sign-up error:", error);
       Alert.alert("Registration Error", error.message);
       setLoading(false);
-      return; // todo: doublecheck if returning here is the best approach
+      return; // todo: double check if returning here is the best approach
     }
 
     // Insert new user data (with uuid) into PostgreSQL database
-    // todo: update local and deployed Supabase Edge Functions and use those instead of Supabase code
+    // todo: use deployed Supabase Edge Functions instead of embedded Supabase code
     const { error: dbError } = await supabase.from("users").insert([
       {
         name: `${firstName} ${lastName}`,
@@ -73,12 +68,7 @@ export default function RegisterScreen() {
   };
 
   return (
-    <View
-      style={[
-        styles.container,
-        theme === "dark" ? styles.darkContainer : styles.lightContainer,
-      ]}
-    >
+    <ScreenContainer>
       <Text
         style={[
           styles.appName,
@@ -92,6 +82,7 @@ export default function RegisterScreen() {
         style={[
           styles.formContainer,
           theme === "dark" ? styles.darkForm : styles.lightForm,
+          { alignItems: "center", paddingVertical: 20 },
         ]}
       >
         <Text
@@ -125,7 +116,7 @@ export default function RegisterScreen() {
         <TextInput
           placeholder="Username"
           placeholderTextColor={theme === "dark" ? "#999" : "#999"}
-          value={username} // New username input
+          value={username}
           onChangeText={setUsername}
           style={[
             styles.input,
@@ -170,6 +161,7 @@ export default function RegisterScreen() {
           style={[
             styles.button,
             theme === "dark" ? styles.darkButton : styles.lightButton,
+            { width: "45%" },
           ]}
           onPress={handleRegister}
           disabled={loading}
@@ -187,6 +179,6 @@ export default function RegisterScreen() {
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScreenContainer>
   );
 }
