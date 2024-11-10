@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useTheme } from "../src/context/ThemeContext";
 import HomeScreen from "./home";
 import IndexScreen from "./index";
+import SettingsScreen from "./settings";
 
 const Tab = createBottomTabNavigator();
 
@@ -31,6 +32,11 @@ export default function BottomTabs() {
         name="Users"
         component={IndexScreen}
         options={{ title: "Users", headerShown: false }}
+      />
+      <Tab.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{ title: "Settings", headerShown: false }}
       />
     </Tab.Navigator>
   );
