@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-import { View, Text, Switch, Button } from "react-native";
+import { View, Text, Switch, TouchableOpacity, Button } from "react-native";
 import styles from "../components/ScreenStyles";
+import ScreenContainer from "@/components/ScreenContainer";
+import { useTheme } from "../src/context/ThemeContext";
 
 export default function SettingsScreen() {
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(false);
   const toggleSwitch = () =>
     setIsNotificationsEnabled((previousState) => !previousState);
+  const { theme } = useTheme();
 
   const handleSave = () => {
     console.log("Saved settings:", { isNotificationsEnabled });
@@ -13,20 +16,65 @@ export default function SettingsScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Settings</Text>
+    <ScreenContainer>
+      <View
+        style={[
+          styles.container,
+          theme === "dark" ? styles.darkContainer : styles.lightContainer,
+        ]}
+      >
+        <Text
+          style={[
+            styles.appName,
+            theme === "dark" ? styles.darkAppName : styles.lightAppName,
+          ]}
+        >
+          FitTogether Challenges
+        </Text>
 
-      <View style={styles.setting}>
-        <Text>Enable Notifications</Text>
-        <Switch
-          value={isNotificationsEnabled}
-          onValueChange={toggleSwitch}
-          thumbColor="#f48c42"
-          trackColor={{ false: "#ccc", true: "#333" }}
-        />
+        <View
+          style={[
+            styles.formContainer,
+            theme === "dark" ? styles.darkForm : styles.lightForm,
+            { alignItems: "center", paddingVertical: 20 },
+          ]}
+        >
+          <Text
+            style={[
+              styles.title,
+              theme === "dark" ? styles.darkText : styles.lightText,
+            ]}
+          >
+            Settings
+          </Text>
+          <View style={styles.setting}>
+            <Text
+              style={[
+                styles.labelText,
+                theme === "dark" ? styles.darkText : styles.lightText,
+              ]}
+            >
+              Enable Notifications
+            </Text>
+            <Switch
+              trackColor={{ false: "#ccc", true: "#333" }}
+              thumbColor="#f48c42"
+              onValueChange={toggleSwitch}
+              value={isNotificationsEnabled}
+            />
+          </View>
+        </View>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            theme === "dark" ? styles.darkButton : styles.lightButton,
+            { width: "45%" },
+          ]}
+          onPress={handleSave}
+        >
+          <Text style={styles.buttonText}>Save Changes</Text>
+        </TouchableOpacity>
       </View>
-
-      <Button title="Save Settings" onPress={handleSave} />
-    </View>
+    </ScreenContainer>
   );
 }

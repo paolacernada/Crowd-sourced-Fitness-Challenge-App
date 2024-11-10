@@ -36,6 +36,21 @@ const styles = StyleSheet.create({
   lightText: {
     color: "#000",
   },
+  searchInput: {
+    borderWidth: 1,
+    padding: 8,
+    marginBottom: 16,
+  },
+  searchResult: {
+    padding: 8,
+    borderBottomWidth: 1,
+  },
+  errorText: {
+    color: "red",
+    fontSize: 16,
+    textAlign: "center",
+    margin: 20,
+  },
   formContainer: {
     width: "90%",
     maxWidth: 400,
@@ -100,6 +115,10 @@ const styles = StyleSheet.create({
   linkText: {
     fontSize: 14,
     textAlign: "center",
+  },
+  labelText: {
+    fontSize: 14,
+    justifyContent: "space-between",
   },
   usernameText: {
     fontSize: 16,
