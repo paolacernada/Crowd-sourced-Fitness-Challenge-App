@@ -11,8 +11,6 @@ const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
 // const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_KEY");
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
-
-
 // For testing
 console.log("SUPABASE_URL:", supabaseUrl);
 console.log("SUPABASE_ANON_KEY:", supabaseAnonKey);
@@ -60,16 +58,17 @@ const validateJWT = async (token: string) => {
   return await response.json();
 };
 
-const handleRequest = async (req: Request) => {
-  // CORS headers to be added to all responses
-  // Todo: That means all responses for all routes
-  const corsHeaders = {
-    "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*", // Replace '*' with the frontend domain once its deployed (for security reasons)
-    "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS", // Allow the HTTP methods
-    "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey", // Allow headers for the request
-  };
+// Defines CORS globally, so we don't need to paste it in to every route function
+// CORS headers to be added to all responses
+// Todo: That means all responses for all routes
+const corsHeaders = {
+  "Content-Type": "application/json",
+  "Access-Control-Allow-Origin": "*", // Replace '*' with the frontend domain once its deployed (for security reasons)
+  "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS", // Allow the HTTP methods
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey", // Allow headers for the request
+};
 
+const handleRequest = async (req: Request) => {
   // Handle preflight OPTIONS requests
   if (req.method === "OPTIONS") {
     console.log("Handling OPTIONS request");
@@ -143,87 +142,191 @@ const getUser = async (id: string) => {
 };
 
 // POST
+// POST route: Create a user
 const createUser = async (body: {
   name: string;
   username: string;
   email: string;
   password: string;
 }) => {
+  // Check that required fields are provided
   if (!body.name || !body.username || !body.email || !body.password) {
     return new Response(
       JSON.stringify({
         error: "You must enter a name, username, email, and password",
       }),
-      { status: 400, headers: corsHeaders }
+      {
+        status: 400,
+        headers: corsHeaders, // Include CORS headers on error responses
+      }
     );
   }
 
-  // Sign up user with Supabase Auth
-  const response = await supabaseFetch(`${supabaseUrl}/auth/v1/signup`, {
-    method: "POST",
-    body: JSON.stringify({
-      email: body.email,
-      password: body.password,
-    }),
-  });
+  try {
+    // Sign up user with Supabase Auth
+    const response = await supabaseFetch(`${supabaseUrl}/auth/v1/signup`, {
+      method: "POST",
+      body: JSON.stringify({
+        email: body.email,
+        password: body.password,
+      }),
+    });
 
-  const authData = await handleResponse(response);
+    const authData = await handleResponse(response);
 
-  if (!response.ok) {
-    return new Response(
-      JSON.stringify({ error: authData.error || "Failed to sign up" }),
-      { status: 400 }
-    );
-  }
+    if (!response.ok) {
+      return new Response(
+        JSON.stringify({ error: authData.error || "Failed to sign up" }),
+        { status: 400, headers: corsHeaders } // CORS headers included
+      );
+    }
 
-  // After successful signup, insert user details into the database
-  const { user } = authData;
-  // Test if there is no user ID to be found
-  if (!user || !user.id) {
-    return new Response(
-      JSON.stringify({ error: "User creation failed, no user ID" }),
-      { status: 500 }
-    );
-  }
 
-  console.log("Inserting into users table with data:", {
-    name: body.name,
-    username: body.username,
-    uuid: user.id,
-  });
+    // After successful signup, insert user details into the database
+    const { user } = authData;
 
-  const dbResponse = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${supabaseServiceKey}`, // Use Supabase-granted access token
-      // "Authorization": `Bearer ${authData.access_token}`, // Use Supabase-granted access token
-    },
-    body: JSON.stringify({
+    // For authData debugging:
+    console.log(user.id);
+
+    // Test if there is no user ID to be found
+    if (!user || !user.id) {
+      return new Response(
+        JSON.stringify({ error: "User creation failed, no user ID" }),
+        { status: 500, headers: corsHeaders } // CORS headers included
+      );
+    }
+
+    console.log("Inserting into users table with data:", {
       name: body.name,
       username: body.username,
-      // Use the UUID provided by Supabase Auth
       uuid: user.id,
-    }),
-  });
+    });
 
-  const data = await handleResponse(dbResponse);
-
-  // Check for errors from the postgreSQL database
-  if (!dbResponse.ok) {
-    return new Response(
-      JSON.stringify({
-        error: data.error || "Failed to insert into database",
+    // Insert user data into the "users" table
+    const dbResponse = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${supabaseServiceKey}`, // Use Supabase service key
+      },
+      body: JSON.stringify({
+        name: body.name,
+        username: body.username,
+        uuid: user.id, // UUID from Supabase Auth
       }),
-      { status: 400 }
+    });
+
+    const data = await handleResponse(dbResponse);
+
+    // Check for any errors from the database
+    if (!dbResponse.ok) {
+      return new Response(
+        JSON.stringify({
+          error: data.error || "Failed to insert into database",
+        }),
+        { status: 400, headers: corsHeaders } // CORS headers included
+      );
+    }
+
+    // Return the success response
+    return new Response(JSON.stringify(data), {
+      status: 201, // Created
+      headers: corsHeaders, // Include CORS headers
+    });
+  } catch (error) {
+    console.error("Error during user creation:", error);
+
+    // Return a generic error if something went wrong
+    return new Response(
+      JSON.stringify({ error: error.message || "Internal Server Error" }),
+      {
+        status: 500, // Internal Server Error
+        headers: corsHeaders, // CORS headers included
+      }
     );
   }
-
-  return new Response(JSON.stringify(data), {
-    status: 201,
-    headers: corsHeaders,
-  });
 };
+// const createUser = async (body: {
+//   name: string;
+//   username: string;
+//   email: string;
+//   password: string;
+// }) => {
+//   if (!body.name || !body.username || !body.email || !body.password) {
+//     return new Response(
+//       JSON.stringify({
+//         error: "You must enter a name, username, email, and password",
+//       }),
+//       { status: 400, headers: corsHeaders }
+//     );
+//   }
+
+//   // Sign up user with Supabase Auth
+//   const response = await supabaseFetch(`${supabaseUrl}/auth/v1/signup`, {
+//     method: "POST",
+//     body: JSON.stringify({
+//       email: body.email,
+//       password: body.password,
+//     }),
+//   });
+
+//   const authData = await handleResponse(response);
+
+//   if (!response.ok) {
+//     return new Response(
+//       JSON.stringify({ error: authData.error || "Failed to sign up" }),
+//       { status: 400 }
+//     );
+//   }
+
+//   // After successful signup, insert user details into the database
+//   const { user } = authData;
+//   // Test if there is no user ID to be found
+//   if (!user || !user.id) {
+//     return new Response(
+//       JSON.stringify({ error: "User creation failed, no user ID" }),
+//       { status: 500 }
+//     );
+//   }
+
+//   console.log("Inserting into users table with data:", {
+//     name: body.name,
+//     username: body.username,
+//     uuid: user.id,
+//   });
+
+//   const dbResponse = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//       "Authorization": `Bearer ${supabaseServiceKey}`, // Use Supabase-granted access token
+//       // "Authorization": `Bearer ${authData.access_token}`, // Use Supabase-granted access token
+//     },
+//     body: JSON.stringify({
+//       name: body.name,
+//       username: body.username,
+//       // Use the UUID provided by Supabase Auth
+//       uuid: user.id,
+//     }),
+//   });
+
+//   const data = await handleResponse(dbResponse);
+
+//   // Check for errors from the postgreSQL database
+//   if (!dbResponse.ok) {
+//     return new Response(
+//       JSON.stringify({
+//         error: data.error || "Failed to insert into database",
+//       }),
+//       { status: 400 }
+//     );
+//   }
+
+//   return new Response(JSON.stringify(data), {
+//     status: 201,
+//     headers: corsHeaders,
+//   });
+// };
 
 // PATCH
 const updateUser = async (id: string | undefined, body: { name: string }) => {
