@@ -8,7 +8,6 @@ const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
 // Todo: add supabaseServiceKey equivalent to localbackend users routes too
 // Service key for authenticated requests.
-// const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_KEY");
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
 // For testing
@@ -59,13 +58,6 @@ const handleResponse = async (response: Response) => {
     return {};
   }
 };
-// const handleResponse = async (response: Response) => {
-//   if (!response.ok) {
-//     const errorData = await response.json();
-//     throw new Error(errorData.message);
-//   }
-//   return await response.json();
-// };
 
 // Validate JWT
 const validateJWT = async (token: string) => {
@@ -207,11 +199,11 @@ const createUser = async (body: {
     );
   }
 
-  // Log the full authData for debugging purposes
+  // Log full authData for debugging
   console.log("Auth data from signup:", authData);
 
   // Step 2: Extract user id from authData (user ID is returned directly in authData)
-  const userId = authData.id; // Access 'id' directly from authData, not as a nested 'user' object
+  const userId = authData.id; // Access 'id' directly from authData, not as a nested 'user' object NOTE: this was the key error I was making
   if (!userId) {
     // If there's no user ID, log the error and return a failure response
     console.error("User creation failed, no user ID", authData);
@@ -256,128 +248,6 @@ const createUser = async (body: {
     headers: corsHeaders,
   });
 };
-
-// POST route: Create a user
-// const createUser = async (body: {
-//   name: string;
-//   username: string;
-//   email: string;
-//   password: string;
-// }) => {
-//   // Check that required fields are provided
-//   if (!body.name || !body.username || !body.email || !body.password) {
-//     return new Response(
-//       JSON.stringify({
-//         error: "You must enter a name, username, email, and password",
-//       }),
-//       {
-//         status: 400,
-//         headers: corsHeaders, // Include CORS headers on error responses
-//       }
-//     );
-//   }
-
-//   try {
-//     // Sign up user with Supabase Auth
-//     const response = await supabaseFetch(`${supabaseUrl}/auth/v1/signup`, {
-//       method: "POST",
-//       body: JSON.stringify({
-//         email: body.email,
-//         password: body.password,
-//       }),
-//     });
-
-//     // const authData = await handleResponse(response);
-//     // Handle the response and check for errors
-//     let authData;
-//     try {
-//       authData = await handleResponse(response);
-//     } catch (error) {
-//       // Log the error from Supabase if the response is not ok
-//       console.error("Error from signup request:", error);
-//       return new Response(
-//         JSON.stringify({
-//           error: error.message || "Failed to sign up user",
-//         }),
-//         { status: 400, headers: corsHeaders }
-//       );
-//     }
-
-//     // Debugging: Log the response from the signup request
-//     console.log("Auth data from signup:", authData);
-
-//     if (!response.ok) {
-//       return new Response(
-//         JSON.stringify({ error: authData.error || "Failed to sign up" }),
-//         { status: 400, headers: corsHeaders } // CORS headers included
-//       );
-//     }
-
-//     // After successful signup, insert user details into the database
-//     const { user } = authData;
-
-//     // For authData debugging:
-//     console.log(user.id);
-
-//     // Test if there is no user ID to be found
-//     if (!user || !user.id) {
-//       console.error("User creation failed, no user ID", authData); // Log error with response
-//       return new Response(
-//         JSON.stringify({ error: "User creation failed, no user ID" }),
-//         { status: 500, headers: corsHeaders } // CORS headers included
-//       );
-//     }
-
-//     console.log("Inserting into users table with data:", {
-//       name: body.name,
-//       username: body.username,
-//       uuid: user.id,
-//     });
-
-//     // Insert user data into the "users" table
-//     const dbResponse = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//         "Authorization": `Bearer ${supabaseServiceKey}`, // Use Supabase service key
-//       },
-//       body: JSON.stringify({
-//         name: body.name,
-//         username: body.username,
-//         uuid: user.id, // UUID from Supabase Auth
-//       }),
-//     });
-
-//     const data = await handleResponse(dbResponse);
-
-//     // Check for any errors from the database
-//     if (!dbResponse.ok) {
-//       return new Response(
-//         JSON.stringify({
-//           error: data.error || "Failed to insert into database",
-//         }),
-//         { status: 400, headers: corsHeaders } // CORS headers included
-//       );
-//     }
-
-//     // Return the success response
-//     return new Response(JSON.stringify(data), {
-//       status: 201, // Created
-//       headers: corsHeaders, // Include CORS headers
-//     });
-//   } catch (error) {
-//     console.error("Error during user creation:", error);
-
-//     // Return a generic error if something went wrong
-//     return new Response(
-//       JSON.stringify({ error: error.message || "Internal Server Error" }),
-//       {
-//         status: 500, // Internal Server Error
-//         headers: corsHeaders, // CORS headers included
-//       }
-//     );
-//   }
-// };
 
 // PATCH
 const updateUser = async (id: string | undefined, body: { name: string }) => {
