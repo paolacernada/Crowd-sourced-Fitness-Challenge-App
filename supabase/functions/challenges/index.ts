@@ -1,7 +1,7 @@
 // import { config } from "https://deno.land/x/dotenv/mod.ts";
 
 // Load environment variables
-// eslint-disable-next-line no-unused-vars
+
 // const env = config({ path: "../../.env.supabase" });
 
 // Use environment variables for deployment

@@ -31,7 +31,7 @@ validateSupabaseEnvVariables();
 //   return new Response(
 //     JSON.stringify( {error: message} ),
 //     { status, headers: corsHeaders(*) }
-//   );  
+//   );
 // };
 
 // Fetch data from Supabase
