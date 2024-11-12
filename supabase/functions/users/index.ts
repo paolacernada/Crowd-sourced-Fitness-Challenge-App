@@ -33,7 +33,6 @@ const supabaseFetch = async (url: string, options: RequestInit) => {
   return response;
 };
 
-
 const handleResponse = async (response: Response) => {
   if (!response.ok) {
     // If response not successful, throw error with response message
