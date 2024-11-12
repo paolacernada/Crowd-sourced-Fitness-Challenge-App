@@ -11,9 +11,9 @@ const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
 // For testing
-console.log("SUPABASE_URL:", supabaseUrl);
-console.log("SUPABASE_ANON_KEY:", supabaseAnonKey);
-console.log("SUPABASE_SERVICE_KEY:", supabaseServiceKey);
+// console.log("SUPABASE_URL:", supabaseUrl);
+// console.log("SUPABASE_ANON_KEY:", supabaseAnonKey);
+// console.log("SUPABASE_SERVICE_KEY:", supabaseServiceKey);
 
 // Validate env variables
 if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
@@ -33,27 +33,27 @@ const supabaseFetch = async (url: string, options: RequestInit) => {
   return response;
 };
 
+
 const handleResponse = async (response: Response) => {
-  // Check if the response was successful (status 200-299)
   if (!response.ok) {
-    // If the response is not OK, throw an error with the message from the response
+    // If response not successful, throw error with response message
     const errorData = await response.json();
     throw new Error(errorData.message);
   }
 
-  // Read the response text (could be empty)
+  // Read response text (can be empty, which is why text() is used)
   const text = await response.text();
 
-  // If the response body is empty, return an empty object
+  // If response body empty, return empty object
   if (!text) {
     return {};
   }
 
+  // Try to parse text as JSON
   try {
-    // Try to parse the text as JSON
     return JSON.parse(text);
   } catch (error) {
-    // If parsing fails, log the error and return an empty object
+    // If parsing fails, log error and return empty object
     console.error("Error parsing response:", error);
     return {};
   }
@@ -76,17 +76,16 @@ const validateJWT = async (token: string) => {
 };
 
 // Defines CORS globally, so we don't need to paste it in to every route function
-// CORS headers to be added to all responses
-// Todo: That means all responses for all routes
+// todo: CORS headers to be added to all responses-- That means all responses for all routes
 const corsHeaders = {
   "Content-Type": "application/json",
   "Access-Control-Allow-Origin": "*", // Replace '*' with the frontend domain once its deployed (for security reasons)
-  "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS", // Allow the HTTP methods
+  "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS", // Allow the HTTP methods + Options (for CORS)
   "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey", // Allow headers for the request
 };
 
 const handleRequest = async (req: Request) => {
-  // Handle preflight OPTIONS requests
+  // Handle preflight OPTIONS requests. Note: this is what was causing the main issues
   if (req.method === "OPTIONS") {
     console.log("Handling OPTIONS request");
     return new Response(null, {
@@ -165,7 +164,7 @@ const createUser = async (body: {
   email: string;
   password: string;
 }) => {
-  // Basic validation: check if all required fields are present
+  // Check if all required fields are present
   if (!body.name || !body.username || !body.email || !body.password) {
     return new Response(
       JSON.stringify({
@@ -215,7 +214,7 @@ const createUser = async (body: {
 
   console.log("User ID from signup:", userId);
 
-  // Step 3: Insert user details into the 'users' table in the Supabase database
+  // Step 3: Insert user details into the 'users' table in the Supabase PostgreSQL database
   const dbResponse = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {
     method: "POST",
     headers: {
@@ -225,11 +224,11 @@ const createUser = async (body: {
     body: JSON.stringify({
       name: body.name,
       username: body.username,
-      uuid: userId,  // Use the 'id' from authData as the UUID for the user
+      uuid: userId, // Use the 'id' from authData as the UUID for the user
     }),
   });
 
-  // Handle the response from the database
+  // Handle response from database
   const data = await handleResponse(dbResponse);
 
   // If there's an error inserting into the database, return an error response
@@ -242,9 +241,9 @@ const createUser = async (body: {
     );
   }
 
-  // Step 4: Return the newly created user data
+  // Step 4: Return newly created user data
   return new Response(JSON.stringify(data), {
-    status: 201, // 201 Created
+    status: 201,
     headers: corsHeaders,
   });
 };
