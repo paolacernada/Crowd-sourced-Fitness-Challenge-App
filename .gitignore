@@ -4,5 +4,6 @@ dist/
 .env.server
 .env.frontend
 .env.supabase
+.env.edge
 .eslintcache
 .vscode/
