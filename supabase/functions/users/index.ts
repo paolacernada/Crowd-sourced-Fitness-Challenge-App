@@ -15,12 +15,26 @@ const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 // console.log("SUPABASE_ANON_KEY:", supabaseAnonKey);
 // console.log("SUPABASE_SERVICE_KEY:", supabaseServiceKey);
 
-// Validate env variables
-if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
-  throw new Error("Environment variables are not set correctly.");
-}
+// Helper function to validate env variables
+// Todo: refactor to return specific environment variable that isn't working
+const validateSupabaseEnvVariables = () => {
+  if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
+    throw new Error("Environment variables are not set correctly.");
+  }
+};
 
-// Fetch data
+validateSupabaseEnvVariables();
+
+// note: maybe
+// Standardized error resonse creation helper function
+// const createErrorResponse = (message: string, status: number) => {
+//   return new Response(
+//     JSON.stringify( {error: message} ),
+//     { status, headers: corsHeaders(*) }
+//   );  
+// };
+
+// Fetch data from Supabase
 const supabaseFetch = async (url: string, options: RequestInit) => {
   const response = await fetch(url, {
     ...options,
@@ -71,7 +85,13 @@ const validateJWT = async (token: string) => {
     throw new Error("Invalid JWT");
   }
 
-  return await response.json();
+  const userData = await response.json();
+  // Note: following three lines should handle expired token if needed --
+  // todo: Need to test this once JWT are enabled
+  // if (new Date(userData.expires_at) < new Date()) {
+  //   throw new Error("Token has expired");
+  // }
+  return userData;
 };
 
 // Defines CORS globally, so we don't need to paste it in to every route function
@@ -107,13 +127,10 @@ const handleRequest = async (req: Request) => {
     switch (req.method) {
       case "GET":
         return id && !isNaN(Number(id)) ? await getUser(id) : await getUsers();
-
       case "POST":
         return await createUser(await req.json());
-
       case "PATCH":
         return await updateUser(id, await req.json());
-
       case "DELETE":
         return await deleteUser(id); // todo: the code works, but this probably still needs to be fixed
 
@@ -211,7 +228,7 @@ const createUser = async (body: {
     );
   }
 
-  console.log("User ID from signup:", userId);
+  // console.log("User ID from signup:", userId);
 
   // Step 3: Insert user details into the 'users' table in the Supabase PostgreSQL database
   const dbResponse = await supabaseFetch(`${supabaseUrl}/rest/v1/users`, {

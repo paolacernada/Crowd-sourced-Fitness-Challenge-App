@@ -1,15 +1,16 @@
-import { config } from "https://deno.land/x/dotenv/mod.ts";
+// import { config } from "https://deno.land/x/dotenv/mod.ts";
 
 // Load environment variables
 // eslint-disable-next-line no-unused-vars
-const env = config({ path: "../../.env.supabase" });
+// const env = config({ path: "../../.env.supabase" });
 
 // Use environment variables for deployment
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"); // Add service key if needed
 
 // Validate environment variables
-if (!supabaseUrl || !supabaseAnonKey) {
+if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
   throw new Error("Environment variables are not set correctly.");
 }
 
