@@ -9,7 +9,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
 
 const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`; // Edge function URL for challenges
 
-export default function HomeScreen() {
+export default function CreateChallengeScreen() {
   const [challengeName, setChallengeName] = useState("");
   const [challengeDescription, setChallengeDescription] = useState("");
   const [challengeDifficulty, setChallengeDifficulty] = useState("");
@@ -82,44 +82,80 @@ export default function HomeScreen() {
         FitTogether Challenges
       </Text>
 
-      <View style={{ alignItems: "center", width: "100%", marginTop: 12 }}>
-        <TouchableOpacity
+      <View
+        style={[
+          styles.formContainer,
+          theme === "dark" ? styles.darkForm : styles.lightForm,
+          { paddingVertical: 20 },
+        ]}
+      >
+        <Text
           style={[
-            styles.button,
-            theme === "dark" ? styles.darkButton : styles.lightButton,
-            { width: "70%" },
+            styles.title,
+            theme === "dark" ? styles.darkText : styles.lightText,
           ]}
-          onPress={() => router.push("/searchChallenges")}
-          disabled={loading}
         >
-          <Text style={styles.buttonText}>
-            {loading ? "Search Challenges..." : "Search Existing Challenges"}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.button,
-            theme === "dark" ? styles.darkButton : styles.lightButton,
-            { width: "70%" },
-          ]}
-          onPress={() => router.push("/createChallenge")}
-          disabled={loading}
-        >
-          <Text style={styles.buttonText}>
-            {loading ? "Create Challenge..." : "Create a New Challenges"}
-          </Text>
-        </TouchableOpacity>
+          Create a New Challenge
+        </Text>
 
-        <TouchableOpacity
+        <TextInput
+          placeholder="Enter a new challenge name"
+          placeholderTextColor={theme === "dark" ? "#999" : "#999"}
+          value={challengeName}
+          onChangeText={setChallengeName}
           style={[
-            styles.button,
-            theme === "dark" ? styles.darkButton : styles.lightButton,
-            { marginTop: 4, width: "35%" },
+            styles.input,
+            theme === "dark" ? styles.darkInput : styles.lightInput,
           ]}
-          onPress={handleLogout}
-        >
-          <Text style={styles.buttonText}>Log Out</Text>
-        </TouchableOpacity>
+        />
+        <TextInput
+          placeholder="Enter challenge description"
+          placeholderTextColor={theme === "dark" ? "#999" : "#999"}
+          value={challengeDescription}
+          onChangeText={setChallengeDescription}
+          style={[
+            styles.input,
+            theme === "dark" ? styles.darkInput : styles.lightInput,
+          ]}
+        />
+
+<TextInput
+          placeholder="Enter challenge difficulty"
+          placeholderTextColor={theme === "dark" ? "#999" : "#999"}
+          value={challengeDifficulty}
+          onChangeText={setChallengeDifficulty}
+          style={[
+            styles.input,
+            theme === "dark" ? styles.darkInput : styles.lightInput,
+          ]}
+        />
+
+        <View style={{ alignItems: "center", width: "100%", marginTop: 12 }}>
+          <TouchableOpacity
+            style={[
+              styles.button,
+              theme === "dark" ? styles.darkButton : styles.lightButton,
+              { width: "70%" },
+            ]}
+            onPress={handleCreateChallenge}
+            disabled={loading}
+          >
+            <Text style={styles.buttonText}>
+              {loading ? "Creating Challenge..." : "Create a New Challenge"}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.button,
+              theme === "dark" ? styles.darkButton : styles.lightButton,
+              { marginTop: 4, width: "35%" },
+            ]}
+            onPress={handleLogout}
+          >
+            <Text style={styles.buttonText}>Log Out</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </ScreenContainer>
   );
