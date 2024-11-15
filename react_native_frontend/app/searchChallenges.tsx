@@ -71,12 +71,34 @@ export default function SearchChallengeScreen() {
     fetchChallenges();
   }, []);
 
+  // Handle deleting a challenge
+  const handleDelete = (id: number) => {
+    // First, delete the challenge from the database (API call)
+    fetch(`${edgeFunctionUrl}/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to delete challenge");
+        }
+        // If the delete is successful, remove it from the state
+        setChallenges(challenges.filter((challenge) => challenge.id !== id));
+        Alert.alert("Success", "Challenge deleted!");
+      })
+      .catch((error) => {
+        Alert.alert("Error", error.message || "Something went wrong.");
+      });
+  };
+
   // Render each challenge in the list
   const renderChallenge = ({ item }: { item: Challenge }) => (
     <View style={styles.challengeItem}>
       <Text
         style={[
-          styles.input,
+          styles.challengeText,
           theme === "dark" ? styles.darkText : styles.lightText,
         ]}
       >
@@ -84,7 +106,7 @@ export default function SearchChallengeScreen() {
       </Text>
       <Text
         style={[
-          styles.input,
+          styles.challengeText,
           theme === "dark" ? styles.darkText : styles.lightText,
         ]}
       >
@@ -92,12 +114,13 @@ export default function SearchChallengeScreen() {
       </Text>
       <Text
         style={[
-          styles.input,
+          styles.challengeText,
           theme === "dark" ? styles.darkText : styles.lightText,
         ]}
       >
         {item.description}
       </Text>
+      <button onClick={() => handleDelete(item.id)}>Delete</button>
     </View>
   );
 
