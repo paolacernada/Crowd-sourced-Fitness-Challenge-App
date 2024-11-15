@@ -12,13 +12,25 @@ export default function HomeScreen() {
   const [challengeDescription, setChallengeDescription] = useState("");
   const [challengeDifficulty, setChallengeDifficulty] = useState("");
 
+  const [challengeDescription, setChallengeDescription] = useState("");
+  const [challengeDifficulty, setChallengeDifficulty] = useState("");
+
   const [loading, setLoading] = useState(false);
   const { theme } = useTheme();
 
   const handleCreateChallenge = async () => {
     // todo: use a map to make this code cleaner
+    // todo: use a map to make this code cleaner
     if (!challengeName) {
       Alert.alert("Error", "Challenge name cannot be empty.");
+      return;
+    }
+    if (!challengeDescription) {
+      Alert.alert("Error", "Challenge description cannot be empty.");
+      return;
+    }
+    if (!challengeDifficulty) {
+      Alert.alert("Error", "Challenge difficulty cannot be empty.");
       return;
     }
     if (!challengeDescription) {
@@ -39,6 +51,11 @@ export default function HomeScreen() {
           "Content-Type": "application/json",
           "apikey": SUPABASE_ANON_KEY,
         },
+        body: JSON.stringify({
+          name: challengeName,
+          description: challengeDescription,
+          difficulty: challengeDifficulty,
+        }),
         body: JSON.stringify({
           name: challengeName,
           description: challengeDescription,
@@ -81,11 +98,11 @@ export default function HomeScreen() {
             theme === "dark" ? styles.darkButton : styles.lightButton,
             { width: "70%" },
           ]}
-          onPress={() => router.push("/displayAllChallenges")}
+          onPress={() => router.push("/searchChallenges")}
           disabled={loading}
         >
           <Text style={styles.buttonText}>
-            {loading ? "View Challenges..." : "View Existing Challenges"}
+            {loading ? "Search Challenges..." : "Search Existing Challenges"}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -102,6 +119,16 @@ export default function HomeScreen() {
           </Text>
         </TouchableOpacity>
 
+        <TouchableOpacity
+          style={[
+            styles.button,
+            theme === "dark" ? styles.darkButton : styles.lightButton,
+            { marginTop: 4, width: "35%" },
+          ]}
+          onPress={handleLogout}
+        >
+          <Text style={styles.buttonText}>Log Out</Text>
+        </TouchableOpacity>
         <TouchableOpacity
           style={[
             styles.button,
