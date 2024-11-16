@@ -7,7 +7,6 @@ import { ThemeProvider } from "../src/context/ThemeContext";
 export default function RootLayout() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [initialRoute, setInitialRoute] = useState("");
 
   useEffect(() => {
     const checkSession = async () => {
@@ -17,29 +16,19 @@ export default function RootLayout() {
 
       if (session) {
         setIsAuthenticated(true);
-        setInitialRoute("tabs"); // Redirect to tabs if logged in
-        router.replace("/tabs"); // Ensure proper navigation
+        router.replace("/tabs"); // Redirect to tabs if logged in
       } else {
         setIsAuthenticated(false);
-        setInitialRoute("landing"); // Redirect to landing if not logged in
-        router.replace("/landing");
+        router.replace("/landing"); // Redirect to landing if not logged in
       }
     };
 
     checkSession();
-  }, [router]);
-
-  // Avoid rendering the layout until the initial route is determined
-  if (initialRoute === "") {
-    return null;
-  }
+  }, []);
 
   return (
     <ThemeProvider>
-      <Stack
-        screenOptions={{ headerShown: false }}
-        initialRouteName={initialRoute}
-      >
+      <Stack screenOptions={{ headerShown: false }}>
         {!isAuthenticated ? (
           <>
             <Stack.Screen name="landing" />
