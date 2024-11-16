@@ -137,6 +137,35 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingVertical: 10,
   },
+  searchInput: {
+    borderWidth: 1,
+    padding: 8,
+    marginBottom: 16,
+  },
+  searchResult: {
+    padding: 8,
+    borderBottomWidth: 1,
+  },
+  errorText: {
+    color: "red",
+    fontSize: 16,
+    textAlign: "center",
+    margin: 20,
+  },
+  labelText: {
+    fontSize: 14,
+    justifyContent: "space-between",
+  },
+  section: {
+    marginBottom: 20,
+    width: "100%",
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+    textAlign: "left",
+  },
 });
 
 export default styles;
