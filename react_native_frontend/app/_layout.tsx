@@ -7,6 +7,7 @@ import { ThemeProvider } from "../src/context/ThemeContext";
 export default function RootLayout() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [initialRoute, setInitialRoute] = useState("");
 
   useEffect(() => {
     const checkSession = async () => {
@@ -16,19 +17,29 @@ export default function RootLayout() {
 
       if (session) {
         setIsAuthenticated(true);
-        router.replace("/tabs"); // Redirect to tabs if logged in
+        setInitialRoute("tabs"); // Redirect to tabs if logged in
+        router.replace("/tabs"); // Ensure proper navigation
       } else {
         setIsAuthenticated(false);
-        router.replace("/landing"); // Redirect to landing if not logged in
+        setInitialRoute("landing"); // Redirect to landing if not logged in
+        router.replace("/landing");
       }
     };
 
     checkSession();
-  }, []);
+  }, [router]);
+
+  // Avoid rendering the layout until the initial route is determined
+  if (initialRoute === "") {
+    return null;
+  }
 
   return (
     <ThemeProvider>
-      <Stack screenOptions={{ headerShown: false }}>
+      <Stack
+        screenOptions={{ headerShown: false }}
+        initialRouteName={initialRoute}
+      >
         {!isAuthenticated ? (
           <>
             <Stack.Screen name="landing" />
@@ -38,6 +49,8 @@ export default function RootLayout() {
         ) : (
           <>
             <Stack.Screen name="tabs" />
+            <Stack.Screen name="searchChallenges" />
+            <Stack.Screen name="challengeDetails" />
           </>
         )}
       </Stack>
