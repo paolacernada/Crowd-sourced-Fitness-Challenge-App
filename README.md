@@ -6,8 +6,8 @@ This app enables users to create and participate in community-driven fitness cha
 
 ### Key Objectives:
 - **🔐 User Accounts**: Secure login and registration for users.
-- **🏋️‍♂️ Challenge Creation**: Users can create fitness challenges, set goals, select images, and add badges.
-- **🔎 Challenge Participation**: Users can search for challenges, chat with others, upload media, and complete goals.
+- **🏋️‍♂️ Challenge Creation**: Create fitness challenges with goals, descriptions, tags, and badges.
+- **🔎 Challenge Participation**: Search challenges by tags, view favorites, and complete goals.
 - **🏅 Badges and Wall of Fame**: Earn badges and be featured on the Wall of Fame for completing challenges.
 
 ## 🛠️ Technologies
@@ -89,7 +89,7 @@ This app enables users to create and participate in community-driven fitness cha
    git checkout -b <branch-name>
    ```
 
-2. Auto-fix any linting issues:
+2. Fix linting issues:
    ```bash
    npm run lint:fix
 
@@ -98,7 +98,7 @@ This app enables users to create and participate in community-driven fitness cha
    git push origin <branch-name>
    ```
 
-4. Open a pull request on GitHub. The GitHub Actions workflow will automatically check the code for linting errors before the merge.
+4. Open a pull request on GitHub. GitHub Actions will automatically check for linting errors before merging.
 
 5. Upon review, the pull request will be approved and merged to the `main` branch, or revisions will be requested.
 
