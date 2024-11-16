@@ -1,6 +1,6 @@
 import React from "react";
 import { View } from "react-native";
-import SearchChallengesScreen from "../src/screens/SearchChallengesScreen";
+import SearchChallengesScreen from "../app/SearchChallengesScreen";
 
 export default function SearchChallenges() {
   return (

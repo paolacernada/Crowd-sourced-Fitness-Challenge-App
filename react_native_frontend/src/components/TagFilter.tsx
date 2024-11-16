@@ -1,3 +1,5 @@
+// src/components/TagFilter.tsx
+
 import React, { useState, useEffect } from "react";
 import { View } from "react-native";
 import MultiSelect from "react-native-multiple-select";
@@ -16,14 +18,9 @@ const TagFilter: React.FC<TagFilterProps> = ({
 
   useEffect(() => {
     const fetchTags = async () => {
-      try {
-        const tags = await getTags();
-        setAvailableTags(tags);
-      } catch (error) {
-        console.error("Error fetching tags:", error);
-      }
+      const tags = await getTags();
+      setAvailableTags(tags);
     };
-
     fetchTags();
   }, []);
 
