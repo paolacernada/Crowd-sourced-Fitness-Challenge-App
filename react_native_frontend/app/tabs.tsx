@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useTheme } from "../src/context/ThemeContext";
 import HomeScreen from "./home";
 import IndexScreen from "./index";
+import SearchChallenges from "./searchChallenges";
 
 const Tab = createBottomTabNavigator();
 
@@ -31,6 +32,11 @@ export default function BottomTabs() {
         name="Users"
         component={IndexScreen}
         options={{ title: "Users", headerShown: false }}
+      />
+      <Tab.Screen
+        name="SearchChallenges"
+        component={SearchChallenges}
+        options={{ title: "Search", headerShown: false }}
       />
     </Tab.Navigator>
   );

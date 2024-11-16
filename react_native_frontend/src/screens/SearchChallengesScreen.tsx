@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { View, ActivityIndicator } from "react-native";
+import { ActivityIndicator, View, Text } from "react-native";
 import TagFilter from "../components/TagFilter";
 import ChallengeList from "../components/ChallengeList";
 import { getChallenges } from "../services/challengeService";
+import { useTheme } from "../context/ThemeContext";
+import ScreenContainer from "../components/ScreenContainer";
 import { useRouter } from "expo-router";
+import styles from "../components/ScreenStyles";
 
 const SearchChallengesScreen: React.FC = () => {
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
   const [challenges, setChallenges] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const { theme } = useTheme();
   const router = useRouter();
 
   const fetchChallenges = async () => {
@@ -26,25 +30,51 @@ const SearchChallengesScreen: React.FC = () => {
     fetchChallenges();
   }, [selectedTags]);
 
-  const handleChallengeSelect = (challengeId: number) => {
-    router.push({ pathname: "/challengeDetails", params: { challengeId } });
-  };
-
   return (
-    <View style={{ flex: 1, padding: 16 }}>
-      <TagFilter
-        selectedTags={selectedTags}
-        onSelectedTagsChange={setSelectedTags}
-      />
-      {loading ? (
-        <ActivityIndicator size="large" />
-      ) : (
-        <ChallengeList
-          challenges={challenges}
-          onChallengeSelect={handleChallengeSelect}
+    <ScreenContainer>
+      {/* Title */}
+      <Text
+        style={[
+          styles.title,
+          theme === "dark" ? styles.darkAppName : styles.lightAppName,
+        ]}
+      >
+        FitTogether Challenges
+      </Text>
+
+      {/* Content Container */}
+      <View
+        style={[
+          styles.formContainer,
+          theme === "dark" ? styles.darkForm : styles.lightForm,
+        ]}
+      >
+        {/* Tag Filter */}
+        <TagFilter
+          selectedTags={selectedTags}
+          onSelectedTagsChange={setSelectedTags}
         />
-      )}
-    </View>
+
+        {/* Loading Indicator or Challenge List */}
+        {loading ? (
+          <ActivityIndicator
+            size="large"
+            color={theme === "dark" ? "#fff" : "#f48c42"}
+            style={{ marginTop: 20 }}
+          />
+        ) : (
+          <ChallengeList
+            challenges={challenges}
+            onChallengeSelect={(challengeId) =>
+              router.push({
+                pathname: "/challengeDetails",
+                params: { challengeId },
+              })
+            }
+          />
+        )}
+      </View>
+    </ScreenContainer>
   );
 };
 

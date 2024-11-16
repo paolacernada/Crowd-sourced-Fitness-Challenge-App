@@ -1,11 +1,7 @@
 import React from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
+import { FlatList, Text, TouchableOpacity } from "react-native";
+import { useTheme } from "../context/ThemeContext";
+import styles from "./ScreenStyles";
 
 interface Challenge {
   id: number;
@@ -23,14 +19,30 @@ const ChallengeList: React.FC<ChallengeListProps> = ({
   challenges,
   onChallengeSelect,
 }) => {
+  const { theme } = useTheme();
+
   const renderItem = ({ item }: { item: Challenge }) => (
     <TouchableOpacity
       onPress={() => onChallengeSelect(item.id)}
-      style={styles.item}
+      style={[
+        styles.formContainer,
+        theme === "dark" ? styles.darkForm : styles.lightForm,
+      ]}
     >
-      <Text style={styles.title}>{item.name}</Text>
-      <Text>{item.description}</Text>
-      <Text>Difficulty: {item.difficulty}</Text>
+      <Text
+        style={[
+          styles.title,
+          theme === "dark" ? styles.darkText : styles.lightText,
+        ]}
+      >
+        {item.name}
+      </Text>
+      <Text style={theme === "dark" ? styles.darkText : styles.lightText}>
+        {item.description}
+      </Text>
+      <Text style={theme === "dark" ? styles.darkText : styles.lightText}>
+        Difficulty: {item.difficulty}
+      </Text>
     </TouchableOpacity>
   );
 
@@ -43,19 +55,5 @@ const ChallengeList: React.FC<ChallengeListProps> = ({
     />
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    paddingBottom: 16,
-  },
-  item: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-  },
-  title: {
-    fontWeight: "bold",
-  },
-});
 
 export default ChallengeList;

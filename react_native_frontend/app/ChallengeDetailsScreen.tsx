@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, ActivityIndicator } from "react-native";
 import { getChallengeById } from "../src/services/challengeService";
 
-const ChallengeDetailsScreen = ({ route, navigation }: any) => {
+const ChallengeDetailsScreen = ({ route }: any) => {
   const { challengeId } = route.params;
   const [challenge, setChallenge] = useState<any>(null);
   const [loading, setLoading] = useState(false);

@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import { View, Switch } from "react-native";
-import { useTheme } from "../src/context/ThemeContext";
+import { useTheme } from "../context/ThemeContext";
 import styles from "./ScreenStyles";
 
 interface ScreenContainerProps {
@@ -17,7 +17,6 @@ export default function ScreenContainer({ children }: ScreenContainerProps) {
         theme === "dark" ? styles.darkContainer : styles.lightContainer,
       ]}
     >
-      {/* Theme Toggle Button, Positioned at Top Right */}
       <View style={styles.toggleContainer}>
         <Switch
           value={theme === "dark"}

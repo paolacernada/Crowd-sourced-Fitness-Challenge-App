@@ -3,11 +3,11 @@ import { View, Text, TextInput, Alert, TouchableOpacity } from "react-native";
 import { supabase } from "../src/config/supabaseClient";
 import { useRouter } from "expo-router";
 import { useTheme } from "../src/context/ThemeContext";
-import ScreenContainer from "../components/ScreenContainer";
-import styles from "../components/ScreenStyles";
+import ScreenContainer from "../src/components/ScreenContainer";
+import styles from "../src/components/ScreenStyles";
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
 
-const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`; // Edge function URL for challenges
+const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`;
 
 export default function HomeScreen() {
   const [challengeName, setChallengeName] = useState("");
@@ -117,18 +117,6 @@ export default function HomeScreen() {
             onPress={handleLogout}
           >
             <Text style={styles.buttonText}>Log Out</Text>
-          </TouchableOpacity>
-
-          {/* Button to navigate to Search Challenges */}
-          <TouchableOpacity
-            style={[
-              styles.button,
-              theme === "dark" ? styles.darkButton : styles.lightButton,
-              { marginTop: 12, width: "60%" },
-            ]}
-            onPress={() => router.push("/searchChallenges")}
-          >
-            <Text style={styles.buttonText}>Search Challenges</Text>
           </TouchableOpacity>
         </View>
       </View>
