@@ -118,6 +118,18 @@ export default function HomeScreen() {
           >
             <Text style={styles.buttonText}>Log Out</Text>
           </TouchableOpacity>
+
+          {/* Button to navigate to Search Challenges */}
+          <TouchableOpacity
+            style={[
+              styles.button,
+              theme === "dark" ? styles.darkButton : styles.lightButton,
+              { marginTop: 12, width: "60%" },
+            ]}
+            onPress={() => router.push("/searchChallenges")}
+          >
+            <Text style={styles.buttonText}>Search Challenges</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </ScreenContainer>
