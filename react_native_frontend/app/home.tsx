@@ -81,7 +81,7 @@ export default function HomeScreen() {
             theme === "dark" ? styles.darkButton : styles.lightButton,
             { width: "70%" },
           ]}
-          onPress={() => router.push("/searchChallenges")}
+          onPress={() => router.push("/searchChallengesSAM")}
           disabled={loading}
         >
           <Text style={styles.buttonText}>
