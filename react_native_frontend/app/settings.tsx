@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -11,23 +11,111 @@ import {
 import ScreenContainer from "../src/components/ScreenContainer";
 import globalStyles from "../src/components/ScreenStyles";
 import { useTheme } from "../src/context/ThemeContext";
+import { supabase } from "../src/config/supabaseClient";
 
 export default function SettingsScreen() {
-  const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(true);
+  const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(false);
   const [isDataSharingEnabled, setIsDataSharingEnabled] = useState(false);
-  const [userName, setUserName] = useState("John Doe");
-  const [email, setEmail] = useState("johndoe@example.com");
-  const { theme, toggleTheme } = useTheme();
+  const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
+  const { theme } = useTheme();
 
-  const handleSave = () => {
-    Alert.alert("Settings Saved", "Your changes have been saved successfully!");
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (user) {
+          setEmail(user.email || "Email");
+          const { data, error } = await supabase
+            .from("users")
+            .select("name")
+            .eq("uuid", user.id)
+            .single();
+
+          if (!error) {
+            setUserName(data.name || "Full Name");
+          }
+
+          // PROBLEM: The settings table does not exist, so these calls fail.
+          // FUTURE WORK: Create a `settings` table in the database with fields
+          // `notifications` and `data_sharing` to store user preferences.
+          const { data: settings, error: settingsError } = await supabase
+            .from("settings")
+            .select("*")
+            .eq("user_id", user.id)
+            .single();
+
+          if (!settingsError) {
+            setIsNotificationsEnabled(settings.notifications || false);
+            setIsDataSharingEnabled(settings.data_sharing || false);
+          }
+        }
+      } catch (err) {
+        if (err instanceof Error) {
+          console.error("Error fetching user details:", err.message);
+        } else {
+          console.error("Unexpected error:", err);
+        }
+      }
+    };
+
+    fetchUserDetails();
+  }, []);
+
+  const handleSave = async () => {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        // PROBLEM: This operation targets a `settings` table that doesn’t exist.
+        // FUTURE WORK: Add a `settings` table to store these preferences. Fields
+        // should include `user_id`, `notifications` (boolean), and `data_sharing` (boolean).
+        // cspell: disable-next-line
+        await supabase.from("settings").upsert({
+          user_id: user.id,
+          notifications: isNotificationsEnabled,
+          data_sharing: isDataSharingEnabled,
+        });
+
+        // Update user name in the `users` table.
+        const { error: updateNameError } = await supabase
+          .from("users")
+          .update({ name: userName })
+          .eq("uuid", user.id);
+
+        if (updateNameError) {
+          throw updateNameError;
+        }
+
+        // Update user email in Supabase Auth.
+        const { error: updateEmailError } = await supabase.auth.updateUser({
+          email,
+        });
+
+        if (updateEmailError) {
+          throw updateEmailError;
+        }
+
+        // PROBLEM: The Alert does not always show up.
+        // FUTURE WORK: Debug why Alert isn’t firing.
+        Alert.alert("Success", "Your changes have been saved successfully!");
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error("Error saving settings:", err.message);
+      } else {
+        console.error("Unexpected error:", err);
+      }
+      Alert.alert("Error", "Failed to save settings. Please try again.");
+    }
   };
 
-  const handleLogout = () => {
-    Alert.alert("Logged Out", "You have been logged out.");
-  };
-
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = async () => {
     Alert.alert(
       "Delete Account",
       "Are you sure you want to delete your account? This action cannot be undone.",
@@ -36,7 +124,40 @@ export default function SettingsScreen() {
         {
           text: "Delete",
           style: "destructive",
-          onPress: () => console.log("Account Deleted"),
+          onPress: async () => {
+            try {
+              const {
+                data: { user },
+              } = await supabase.auth.getUser();
+
+              if (user) {
+                // PROBLEM: Deleting the user from the `users` table doesn't works, we also need
+                // to handle cleanup in related tables (e.g., `settings` if implemented).
+                // FUTURE WORK: Set up cascade deletes to remove all related data
+                // when a user is deleted.
+                await supabase.from("users").delete().eq("uuid", user.id);
+
+                // Log out the user from Supabase Auth.
+                const { error: signOutError } = await supabase.auth.signOut();
+                if (signOutError) throw signOutError;
+
+                Alert.alert(
+                  "Account Deleted",
+                  "Your account has been deleted."
+                );
+              }
+            } catch (err) {
+              if (err instanceof Error) {
+                console.error("Error deleting account:", err.message);
+              } else {
+                console.error("Unexpected error:", err);
+              }
+              Alert.alert(
+                "Error",
+                "Failed to delete account. Please try again."
+              );
+            }
+          },
         },
       ]
     );
@@ -169,13 +290,15 @@ export default function SettingsScreen() {
             <Text style={styles.buttonText}>Save</Text>
           </TouchableOpacity>
 
-          {/* Account Management */}
+          {/* Delete Account */}
           <View style={styles.section}>
             <TouchableOpacity
               style={[
                 styles.button,
                 styles.smallButton,
-                { backgroundColor: "red" },
+                {
+                  backgroundColor: theme === "dark" ? "#8B0000" : "red",
+                },
               ]}
               onPress={handleDeleteAccount}
             >
@@ -189,7 +312,7 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  ...globalStyles, // Inherit global styles
+  ...globalStyles,
   appName: {
     fontSize: 22,
     fontWeight: "bold",
