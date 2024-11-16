@@ -105,6 +105,38 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginVertical: 4,
   },
+  filterContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "90%",
+  },
+  dropdown: {
+    width: "100%",
+    marginBottom: 20,
+  },
+  darkDropdown: {
+    backgroundColor: "#333",
+    borderColor: "#666",
+    color: "#fff",
+  },
+  lightDropdown: {
+    backgroundColor: "#fff",
+    borderColor: "#ccc",
+    color: "#000",
+  },
+  dropdownItem: {
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+  },
+  dropdownText: {
+    fontSize: 16,
+  },
+  challengeListContainer: {
+    flex: 2,
+    width: "100%",
+    paddingVertical: 10,
+  },
 });
 
 export default styles;

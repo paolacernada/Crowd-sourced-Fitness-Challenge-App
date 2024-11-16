@@ -2,8 +2,8 @@ import React from "react";
 import { View, Text, TouchableOpacity, Switch } from "react-native";
 import { useRouter } from "expo-router";
 import { useTheme } from "../src/context/ThemeContext";
-import styles from "../components/ScreenStyles";
-import ScreenContainer from "../components/ScreenContainer";
+import styles from "../src/components/ScreenStyles";
+import ScreenContainer from "../src/components/ScreenContainer";
 
 export default function LandingScreen() {
   const router = useRouter();

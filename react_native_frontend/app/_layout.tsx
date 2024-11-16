@@ -38,6 +38,8 @@ export default function RootLayout() {
         ) : (
           <>
             <Stack.Screen name="tabs" />
+            <Stack.Screen name="searchChallenges" />
+            <Stack.Screen name="challengeDetails" />
           </>
         )}
       </Stack>

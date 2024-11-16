@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Text, ActivityIndicator, View } from "react-native";
 import { supabase } from "../src/config/supabaseClient";
 import { useTheme } from "../src/context/ThemeContext";
-import ScreenContainer from "../components/ScreenContainer";
-import styles from "../components/ScreenStyles";
+import ScreenContainer from "../src/components/ScreenContainer";
+import styles from "../src/components/ScreenStyles";
 
 export default function IndexScreen() {
   const [users, setUsers] = useState<any[]>([]);

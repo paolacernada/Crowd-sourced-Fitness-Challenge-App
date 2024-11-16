@@ -3,7 +3,7 @@ import { View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useTheme } from "../src/context/ThemeContext";
 import { fetchUserProfile } from "../src/services/userService";
-import styles from "../components/ScreenStyles";
+import styles from "../src/components/ScreenStyles";
 interface Profile {
   id: number;
   name: string;
