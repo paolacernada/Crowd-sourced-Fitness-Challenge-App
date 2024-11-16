@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { View, ActivityIndicator } from "react-native";
-import ChallengeList from "../src/components/ChallengeList";
-import TagFilter from "../src/components/TagFilter";
-import { getChallenges } from "../src/services/challengeService";
+import TagFilter from "../components/TagFilter";
+import ChallengeList from "../components/ChallengeList";
+import { getChallenges } from "../services/challengeService";
+import { useRouter } from "expo-router";
 
-const SearchChallengesScreen = ({ navigation }: any) => {
+const SearchChallengesScreen: React.FC = () => {
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
   const [challenges, setChallenges] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const fetchChallenges = async () => {
     setLoading(true);
@@ -25,7 +27,7 @@ const SearchChallengesScreen = ({ navigation }: any) => {
   }, [selectedTags]);
 
   const handleChallengeSelect = (challengeId: number) => {
-    navigation.navigate("ChallengeDetails", { challengeId });
+    router.push({ pathname: "/challengeDetails", params: { challengeId } });
   };
 
   return (
