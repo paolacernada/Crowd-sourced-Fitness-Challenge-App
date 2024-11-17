@@ -10,61 +10,9 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
 const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`; // Edge function URL for challenges
 
 export default function HomeScreen() {
-  const [challengeName, setChallengeName] = useState("");
-  const [challengeDescription, setChallengeDescription] = useState("");
-  const [challengeDifficulty, setChallengeDifficulty] = useState("");
-
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { theme } = useTheme();
-
-  const handleCreateChallenge = async () => {
-    // todo: use a map to make this code cleaner
-    if (!challengeName) {
-      Alert.alert("Error", "Challenge name cannot be empty.");
-      return;
-    }
-    if (!challengeDescription) {
-      Alert.alert("Error", "Challenge description cannot be empty.");
-      return;
-    }
-    if (!challengeDifficulty) {
-      Alert.alert("Error", "Challenge difficulty cannot be empty.");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const response = await fetch(edgeFunctionUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "apikey": SUPABASE_ANON_KEY,
-        },
-        body: JSON.stringify({
-          name: challengeName,
-          description: challengeDescription,
-          difficulty: challengeDifficulty,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to create challenge");
-      }
-
-      Alert.alert("Success", "Challenge created successfully!");
-      setChallengeName("");
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "An error occurred";
-      Alert.alert("Error", errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -89,19 +37,11 @@ export default function HomeScreen() {
             theme === "dark" ? styles.darkButton : styles.lightButton,
             { width: "70%" },
           ]}
-<<<<<<< HEAD
           onPress={() => router.push("/displayAllChallenges")}
           disabled={loading}
         >
           <Text style={styles.buttonText}>
             {loading ? "View Challenges..." : "View Existing Challenges"}
-=======
-          onPress={() => router.push("/searchChallengesSAM")}
-          disabled={loading}
-        >
-          <Text style={styles.buttonText}>
-            {loading ? "Search Challenges..." : "Search Existing Challenges"}
->>>>>>> 06c7df42f230c55233774cf08970af30a2d42c57
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
