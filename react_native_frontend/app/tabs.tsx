@@ -4,6 +4,9 @@ import { useTheme } from "../src/context/ThemeContext";
 import HomeScreen from "./home";
 import IndexScreen from "./index";
 import SearchChallenges from "./searchChallenges";
+import SettingsScreen from "./settings";
+import { supabase } from "../src/config/supabaseClient";
+import { useRouter } from "expo-router";
 
 const Tab = createBottomTabNavigator();
 
@@ -12,6 +15,12 @@ export default function BottomTabs() {
   const activeColor = theme === "dark" ? "#b05600" : "#f48c42";
   const inactiveColor = theme === "dark" ? "#888" : "#ccc";
   const backgroundColor = theme === "dark" ? "#121212" : "#fff";
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.replace("/landing");
+  };
 
   return (
     <Tab.Navigator
@@ -37,6 +46,25 @@ export default function BottomTabs() {
         name="SearchChallenges"
         component={SearchChallenges}
         options={{ title: "Search", headerShown: false }}
+      />
+      <Tab.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{ title: "Settings", headerShown: false }}
+      />
+      <Tab.Screen
+        name="Logout"
+        component={() => null}
+        listeners={{
+          tabPress: (e) => {
+            e.preventDefault();
+            handleLogout();
+          },
+        }}
+        options={{
+          title: "Logout",
+          tabBarStyle: { display: "none" },
+        }}
       />
     </Tab.Navigator>
   );

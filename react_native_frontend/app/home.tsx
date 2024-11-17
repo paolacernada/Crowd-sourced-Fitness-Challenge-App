@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Alert, TouchableOpacity } from "react-native";
-import { supabase } from "../src/config/supabaseClient";
-import { useRouter } from "expo-router";
 import { useTheme } from "../src/context/ThemeContext";
 import ScreenContainer from "../src/components/ScreenContainer";
 import styles from "../src/components/ScreenStyles";
@@ -12,7 +10,6 @@ const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`;
 export default function HomeScreen() {
   const [challengeName, setChallengeName] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
   const { theme } = useTheme();
 
   const handleCreateChallenge = async () => {
@@ -48,11 +45,6 @@ export default function HomeScreen() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.replace("/landing");
   };
 
   return (
@@ -106,17 +98,6 @@ export default function HomeScreen() {
             <Text style={styles.buttonText}>
               {loading ? "Creating Challenge..." : "Start a New Challenge"}
             </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.button,
-              theme === "dark" ? styles.darkButton : styles.lightButton,
-              { marginTop: 4, width: "35%" },
-            ]}
-            onPress={handleLogout}
-          >
-            <Text style={styles.buttonText}>Log Out</Text>
           </TouchableOpacity>
         </View>
       </View>
