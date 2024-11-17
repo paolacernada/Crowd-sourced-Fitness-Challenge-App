@@ -69,3 +69,34 @@ VALUES
 (1, 3),
 (2, 2),
 (3, 1)
+
+-- Insert starter chaellnge-goals data
+INSERT INTO challenge_goals (challenge_id, goal_id) 
+VALUES
+(1, 3),
+(1, 4),
+(2, 2),
+(2, 3)
+(3, 1),
+(3, 3)
+;
+
+-- Insert starter users_challenges data
+INSERT INTO users_challenges (user_id, challenge_id) 
+VALUES
+(1, 3),
+(1, 5),
+(1, 8),
+(2, 3),
+(2, 4),
+(2, 8),
+(3, 4),
+(3, 6),
+(3, 8),
+(61, 3),
+(61, 4),
+(61, 5),
+(64, 5),
+(64, 6),
+(64, 8)
+;
