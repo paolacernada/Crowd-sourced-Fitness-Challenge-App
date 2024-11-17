@@ -74,7 +74,7 @@ CREATE TABLE users_badges (
 CREATE TABLE users_challenges (
   id bigint primary key generated always as identity,
   user_id INT,
-  FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   challenge_id INT,
-  FOREIGN KEY (challenge_id) REFERENCES challenges(id) ON DELETE CASCADE,
+  FOREIGN KEY (challenge_id) REFERENCES challenges(id) ON DELETE CASCADE
 );
