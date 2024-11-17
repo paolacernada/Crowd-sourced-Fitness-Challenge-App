@@ -4,9 +4,13 @@ import { useTheme } from "../src/context/ThemeContext";
 import HomeScreen from "./home";
 import IndexScreen from "./index";
 import SearchChallenges from "./searchChallenges";
+<<<<<<< HEAD
 import SettingsScreen from "./settings";
 import { supabase } from "../src/config/supabaseClient";
 import { useRouter } from "expo-router";
+=======
+import DisplayAllChallengesScreen from "./displayAllChallenges";
+>>>>>>> 8f7acd8 (Use Challenge Interface for displayAllChallenges.tsx)
 
 const Tab = createBottomTabNavigator();
 
@@ -41,6 +45,11 @@ export default function BottomTabs() {
         name="Users"
         component={IndexScreen}
         options={{ title: "Users", headerShown: false }}
+      />
+      <Tab.Screen
+        name="DisplayAllChallengesScreen"
+        component={DisplayAllChallengesScreen}
+        options={{ title: "ViewChallenges", headerShown: false }}
       />
       <Tab.Screen
         name="SearchChallenges"

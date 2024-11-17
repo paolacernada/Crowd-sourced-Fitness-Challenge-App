@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Alert, TouchableOpacity } from "react-native";
 import { useTheme } from "../src/context/ThemeContext";
-import ScreenContainer from "../src/components/ScreenContainer";
 import styles from "../src/components/ScreenStyles";
+import ScreenContainer from "../src/components/ScreenContainer";
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
 
-const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`;
+const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`; // Edge function URL for challenges
 
 export default function HomeScreen() {
   const [challengeName, setChallengeName] = useState("");
@@ -81,11 +81,11 @@ export default function HomeScreen() {
             theme === "dark" ? styles.darkButton : styles.lightButton,
             { width: "70%" },
           ]}
-          onPress={() => router.push("/searchChallengesSAM")}
+          onPress={() => router.push("/displayAllChallenges")}
           disabled={loading}
         >
           <Text style={styles.buttonText}>
-            {loading ? "Search Challenges..." : "Search Existing Challenges"}
+            {loading ? "View Challenges..." : "View Existing Challenges"}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
