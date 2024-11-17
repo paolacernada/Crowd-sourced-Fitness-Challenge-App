@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Alert, TouchableOpacity } from "react-native";
+import { supabase } from "../src/config/supabaseClient";
+import { useRouter } from "expo-router";
 import { useTheme } from "../src/context/ThemeContext";
 import styles from "../src/components/ScreenStyles";
 import ScreenContainer from "../src/components/ScreenContainer";
@@ -9,6 +11,7 @@ const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`; // Edge funct
 
 export default function HomeScreen() {
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const { theme } = useTheme();
 
   const handleLogout = async () => {
@@ -65,19 +68,6 @@ export default function HomeScreen() {
         >
           <Text style={styles.buttonText}>Log Out</Text>
         </TouchableOpacity>
-<<<<<<< HEAD
-        <TouchableOpacity
-          style={[
-            styles.button,
-            theme === "dark" ? styles.darkButton : styles.lightButton,
-            { marginTop: 4, width: "35%" },
-          ]}
-          onPress={handleLogout}
-        >
-          <Text style={styles.buttonText}>Log Out</Text>
-        </TouchableOpacity>
-=======
->>>>>>> af352bf4127bbc45f95a69824ed61849cd61659f
       </View>
     </ScreenContainer>
   );

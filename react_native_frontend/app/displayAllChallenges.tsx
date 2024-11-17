@@ -1,42 +1,24 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  FlatList,
-  ActivityIndicator,
-  Alert,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
-// import { View, Text, TextInput, Alert, TouchableOpacity } from "react-native";
+import { View, Text, FlatList, ActivityIndicator, Alert } from "react-native";
 
-import { supabase } from "../src/config/supabaseClient";
-import { useRouter } from "expo-router";
+import { getAllChallenges } from "@/src/services/challengeService";
 import { useTheme } from "../src/context/ThemeContext";
 import styles from "../src/components/ScreenStyles";
 import ScreenContainer from "../src/components/ScreenContainer";
+import { Challenge } from "@/src/types/Challenge";
 
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
 
-interface Challenge {
-  id: number;
-  name: string;
-  description: string;
-  difficulty: string;
-}
-
-const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`; // Edge function URL for challenges
+// Edge function URL for challenges
+const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`;
 
 export default function SearchChallengeScreen() {
-  const [challenges, setChallenges] = useState<Challenge[]>([]); // Challenges data state
-  // const [challenges, setChallenges] = useState("");
-
-  // const [loading, setLoading] = useState(false);
+  // Challenges data state
+  const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
 
-  // todo: do I need these 3?
+  // todo: check if I need the following
   // const [searchTerm, setSearchTerm] = useState<string>(""); // Search input state
   // const router = useRouter();
 
@@ -48,14 +30,7 @@ export default function SearchChallengeScreen() {
       // setError(''); // This clears the previous error (if one exists)
 
       try {
-        const response = await fetch(edgeFunctionUrl);
-
-        // Check if response is OK
-        if (!response.ok) {
-          throw new Error(`Error: ${response.statusText}`);
-        }
-
-        const data = await response.json();
+        const data = await getAllChallenges();
         setChallenges(data); // This sets the data to the state
       } catch (err) {
         setError("Failed to load challenges");
@@ -71,14 +46,9 @@ export default function SearchChallengeScreen() {
     fetchChallenges();
   }, []);
 
-  // // Handle updating a challenge
-  // const handleUpdate = (id: number) => {
-
-  // }
-
   // Handle deleting a challenge
   const handleDelete = (id: number) => {
-    // First, delete the challenge from the database (API call)
+    // Delete challenge from database
     fetch(`${edgeFunctionUrl}/${id}`, {
       method: "DELETE",
       headers: {
@@ -89,7 +59,7 @@ export default function SearchChallengeScreen() {
         if (!response.ok) {
           throw new Error("Failed to delete challenge");
         }
-        // If the delete is successful, remove it from the state
+        // If delete successful, remove it from the state
         setChallenges(challenges.filter((challenge) => challenge.id !== id));
         Alert.alert("Success", "Challenge deleted!");
       })

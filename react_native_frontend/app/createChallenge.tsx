@@ -3,21 +3,9 @@ import { View, Text, TextInput, Alert, TouchableOpacity } from "react-native";
 import { supabase } from "../src/config/supabaseClient";
 import { useRouter } from "expo-router";
 import { useTheme } from "../src/context/ThemeContext";
-<<<<<<< HEAD
-<<<<<<< HEAD
 import ScreenContainer from "../src/components/ScreenContainer";
 import styles from "../src/components/ScreenStyles";
-=======
-import ScreenContainer from "../components/ScreenContainer";
-import styles from "../components/ScreenStyles";
->>>>>>> 69d3837 (Render all challenges at searchChallenges.tsx (placeholder styling))
-=======
-import ScreenContainer from "../src/components/ScreenContainer";
-import styles from "../src/components/ScreenStyles";
->>>>>>> af352bf4127bbc45f95a69824ed61849cd61659f
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
-
-const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`; // Edge function URL for challenges
+import { createChallenge } from "@/src/services/challengeService";
 
 export default function CreateChallengeScreen() {
   const [challengeName, setChallengeName] = useState("");
@@ -45,28 +33,26 @@ export default function CreateChallengeScreen() {
 
     setLoading(true);
 
+    // todo: check if I can handle challenge.id better
+    const newChallenge = {
+      id: challengeId,
+      name: challengeName,
+      description: challengeDescription,
+      difficulty: challengeDifficulty,
+    };
+
     try {
-      const response = await fetch(edgeFunctionUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "apikey": SUPABASE_ANON_KEY,
-        },
-        body: JSON.stringify({
-          name: challengeName,
-          description: challengeDescription,
-          difficulty: challengeDifficulty,
-        }),
-      });
+      // Call createChallenge function from challenge services
+      const createdChallenge = await createChallenge(newChallenge);
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to create challenge");
-      }
-
+      // If challenge successfully created
       Alert.alert("Success", "Challenge created successfully!");
+
+      // reset input fields
       setChallengeName("");
+      setChallengeDescription("");
+      setChallengeDifficulty("");
+
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "An error occurred";
@@ -128,16 +114,7 @@ export default function CreateChallengeScreen() {
             theme === "dark" ? styles.darkInput : styles.lightInput,
           ]}
         />
-
-<<<<<<< HEAD
-<<<<<<< HEAD
         <TextInput
-=======
-<TextInput
->>>>>>> 69d3837 (Render all challenges at searchChallenges.tsx (placeholder styling))
-=======
-        <TextInput
->>>>>>> af352bf4127bbc45f95a69824ed61849cd61659f
           placeholder="Enter challenge difficulty"
           placeholderTextColor={theme === "dark" ? "#999" : "#999"}
           value={challengeDifficulty}
