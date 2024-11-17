@@ -4,6 +4,7 @@ import { useTheme } from "../src/context/ThemeContext";
 import HomeScreen from "./home";
 import IndexScreen from "./index";
 import SearchChallenges from "./searchChallenges";
+import DisplayAllChallengesScreen from "./displayAllChallenges";
 
 const Tab = createBottomTabNavigator();
 
@@ -32,6 +33,11 @@ export default function BottomTabs() {
         name="Users"
         component={IndexScreen}
         options={{ title: "Users", headerShown: false }}
+      />
+      <Tab.Screen
+        name="DisplayAllChallengesScreen"
+        component={DisplayAllChallengesScreen}
+        options={{ title: "ViewChallenges", headerShown: false }}
       />
       <Tab.Screen
         name="SearchChallenges"
