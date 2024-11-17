@@ -52,7 +52,6 @@ export default function CreateChallengeScreen() {
       setChallengeName("");
       setChallengeDescription("");
       setChallengeDifficulty("");
-
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "An error occurred";
