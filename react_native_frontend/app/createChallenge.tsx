@@ -4,12 +4,17 @@ import { supabase } from "../src/config/supabaseClient";
 import { useRouter } from "expo-router";
 import { useTheme } from "../src/context/ThemeContext";
 <<<<<<< HEAD
+<<<<<<< HEAD
 import ScreenContainer from "../src/components/ScreenContainer";
 import styles from "../src/components/ScreenStyles";
 =======
 import ScreenContainer from "../components/ScreenContainer";
 import styles from "../components/ScreenStyles";
 >>>>>>> 69d3837 (Render all challenges at searchChallenges.tsx (placeholder styling))
+=======
+import ScreenContainer from "../src/components/ScreenContainer";
+import styles from "../src/components/ScreenStyles";
+>>>>>>> af352bf4127bbc45f95a69824ed61849cd61659f
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
 
 const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`; // Edge function URL for challenges
@@ -125,10 +130,14 @@ export default function CreateChallengeScreen() {
         />
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         <TextInput
 =======
 <TextInput
 >>>>>>> 69d3837 (Render all challenges at searchChallenges.tsx (placeholder styling))
+=======
+        <TextInput
+>>>>>>> af352bf4127bbc45f95a69824ed61849cd61659f
           placeholder="Enter challenge difficulty"
           placeholderTextColor={theme === "dark" ? "#999" : "#999"}
           value={challengeDifficulty}

@@ -65,6 +65,7 @@ export default function HomeScreen() {
         >
           <Text style={styles.buttonText}>Log Out</Text>
         </TouchableOpacity>
+<<<<<<< HEAD
         <TouchableOpacity
           style={[
             styles.button,
@@ -75,6 +76,8 @@ export default function HomeScreen() {
         >
           <Text style={styles.buttonText}>Log Out</Text>
         </TouchableOpacity>
+=======
+>>>>>>> af352bf4127bbc45f95a69824ed61849cd61659f
       </View>
     </ScreenContainer>
   );

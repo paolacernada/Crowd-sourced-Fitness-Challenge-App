@@ -5,12 +5,16 @@ import HomeScreen from "./home";
 import IndexScreen from "./index";
 import SearchChallenges from "./searchChallenges";
 <<<<<<< HEAD
+<<<<<<< HEAD
 import SettingsScreen from "./settings";
 import { supabase } from "../src/config/supabaseClient";
 import { useRouter } from "expo-router";
 =======
 import DisplayAllChallengesScreen from "./displayAllChallenges";
 >>>>>>> 8f7acd8 (Use Challenge Interface for displayAllChallenges.tsx)
+=======
+import DisplayAllChallengesScreen from "./displayAllChallenges";
+>>>>>>> af352bf4127bbc45f95a69824ed61849cd61659f
 
 const Tab = createBottomTabNavigator();
 
