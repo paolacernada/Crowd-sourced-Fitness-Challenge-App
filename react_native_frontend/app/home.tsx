@@ -89,11 +89,19 @@ export default function HomeScreen() {
             theme === "dark" ? styles.darkButton : styles.lightButton,
             { width: "70%" },
           ]}
+<<<<<<< HEAD
           onPress={() => router.push("/displayAllChallenges")}
           disabled={loading}
         >
           <Text style={styles.buttonText}>
             {loading ? "View Challenges..." : "View Existing Challenges"}
+=======
+          onPress={() => router.push("/searchChallengesSAM")}
+          disabled={loading}
+        >
+          <Text style={styles.buttonText}>
+            {loading ? "Search Challenges..." : "Search Existing Challenges"}
+>>>>>>> 06c7df42f230c55233774cf08970af30a2d42c57
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
