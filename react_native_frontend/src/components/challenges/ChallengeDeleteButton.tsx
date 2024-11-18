@@ -6,7 +6,7 @@ import styles from "../ScreenStyles";
 
 interface ChallengeDeleteButtonProps {
   challengeId: number;
-  onDeleted: () => void; // This callback will notify the parent component to refresh the list
+  onDeleted: () => void; // Empty callback-- notifes parent component to refresh list
 }
 
 const ChallengeDeleteButton: React.FC<ChallengeDeleteButtonProps> = ({ challengeId, onDeleted }) => {
@@ -15,7 +15,7 @@ const ChallengeDeleteButton: React.FC<ChallengeDeleteButtonProps> = ({ challenge
   const handleDelete = async () => {
     try {
       await deleteChallenge(challengeId);
-      onDeleted(); // Refresh the challenge list after deletion
+      onDeleted(); // Refresh challenge list after deletion
       Alert.alert("Success", "Challenge deleted!");
     } catch (error) {
       Alert.alert("Error", "Failed to delete challenge");

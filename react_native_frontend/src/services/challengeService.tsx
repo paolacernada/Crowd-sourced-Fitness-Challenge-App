@@ -3,7 +3,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
 
 const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`; // Edge function URL for challenges
 
-// Function to fetch all challenges
+// Fetch all challenges
 // Todo: refactor for DRY for the routes
 export const getAllChallenges = async (): Promise<Challenge[]> => {
   try {
@@ -20,7 +20,7 @@ export const getAllChallenges = async (): Promise<Challenge[]> => {
   }
 };
 
-// Function to fetch a challenge by ID
+// Fetch challenge by ID
 export const getChallengeById = async (id: number): Promise<Challenge> => {
   try {
     const response = await fetch(`${edgeFunctionUrl}/${id}`);
@@ -36,7 +36,7 @@ export const getChallengeById = async (id: number): Promise<Challenge> => {
   }
 };
 
-// Function to create a new challenge
+// Helper function to create a new challenge
 export const createChallenge = async (
   challenge: Omit<Challenge, 'id'> // Exclude 'id' when creating a new challenge
 ): Promise<Challenge> => {
