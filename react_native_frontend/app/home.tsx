@@ -31,12 +31,19 @@ export default function HomeScreen() {
         FitTogether Challenges
       </Text>
 
-      <View style={{ alignItems: "center", width: "100%", marginTop: 12 }}>
+      <View
+        style={[
+          styles.formContainer,
+          theme === "dark" ? styles.darkForm : styles.lightForm,
+          { paddingVertical: 20 },
+        ]}
+      >
+        {" "}
         <TouchableOpacity
           style={[
             styles.button,
             theme === "dark" ? styles.darkButton : styles.lightButton,
-            { width: "70%" },
+            { width: "70%", marginBottom: 14, marginTop: 16 },
           ]}
           // onPress={() => router.push("/displayAllChallenges")}
           onPress={() => router.push(ROUTES.allChallenges)}
@@ -50,7 +57,7 @@ export default function HomeScreen() {
           style={[
             styles.button,
             theme === "dark" ? styles.darkButton : styles.lightButton,
-            { width: "70%" },
+            { width: "70%", marginBottom: 14 },
           ]}
           // onPress={() => router.push("/CreateChallengeScreen")}
           onPress={() => router.push(ROUTES.createChallenge)}
@@ -60,12 +67,11 @@ export default function HomeScreen() {
             {loading ? "Create Challenge..." : "Create a New Challenges"}
           </Text>
         </TouchableOpacity>
-
         <TouchableOpacity
           style={[
             styles.button,
             theme === "dark" ? styles.darkButton : styles.lightButton,
-            { marginTop: 4, width: "35%" },
+            { width: "35%", marginBottom: 14, marginTop: 14 },
           ]}
           onPress={handleLogout}
         >

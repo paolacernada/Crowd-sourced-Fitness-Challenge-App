@@ -37,6 +37,8 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   formContainer: {
+    justifyContent: "center",
+    alignItems: "center",
     width: "90%",
     maxWidth: 400,
     padding: 20,
