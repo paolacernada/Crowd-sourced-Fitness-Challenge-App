@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, ActivityIndicator, Alert } from "react-native";
 
 import { getAllChallenges } from "@/src/services/challengeService";
-import { useTheme } from "../src/context/ThemeContext";
-import styles from "../src/components/ScreenStyles";
-import ScreenContainer from "../src/components/ScreenContainer";
+import { useTheme } from "../../src/context/ThemeContext";
+import styles from "../../src/components/ScreenStyles";
+import ScreenContainer from "../../src/components/ScreenContainer";
 import { Challenge } from "@/src/types/Challenge";
 
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
 
-// Edge function URL for challenges
+// Supabase Edge Function URL for challenges
 const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`;
 
 export default function SearchChallengeScreen() {
@@ -26,6 +26,7 @@ export default function SearchChallengeScreen() {
 
   useEffect(() => {
     const fetchChallenges = async () => {
+      // todo: figure out if I want to incorporate this or not
       // setLoading(true);
       // setError(''); // This clears the previous error (if one exists)
 
@@ -46,9 +47,9 @@ export default function SearchChallengeScreen() {
     fetchChallenges();
   }, []);
 
-  // Handle deleting a challenge
+  // helper for deleting a challenge
   const handleDelete = (id: number) => {
-    // Delete challenge from database
+    // Delete challenge from backend database
     fetch(`${edgeFunctionUrl}/${id}`, {
       method: "DELETE",
       headers: {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ActivityIndicator, View, Text } from "react-native";
 import TagFilter from "../components/TagFilter";
-import ChallengeList from "../components/ChallengeList";
+import ChallengeList from "../components/challenges/ChallengeList";
 import { getChallenges } from "../services/challengeService";
 import { useTheme } from "../context/ThemeContext";
 import ScreenContainer from "../components/ScreenContainer";

@@ -1,14 +1,8 @@
 import React from "react";
 import { FlatList, Text, TouchableOpacity } from "react-native";
-import { useTheme } from "../context/ThemeContext";
-import styles from "./ScreenStyles";
-
-interface Challenge {
-  id: number;
-  name: string;
-  description: string;
-  difficulty: string;
-}
+import { useTheme } from "../../context/ThemeContext";
+import styles from "../ScreenStyles";
+import { Challenge } from "../../types/Challenge"; // Adjust the import path based on your folder structure
 
 interface ChallengeListProps {
   challenges: Challenge[];
@@ -49,7 +43,10 @@ const ChallengeList: React.FC<ChallengeListProps> = ({
   return (
     <FlatList
       data={challenges}
-      keyExtractor={(item) => item.id.toString()}
+      // keyExtractor={(item) => item.id.toString()}
+      keyExtractor={(item) =>
+        item.id ? item.id.toString() : item.name || "unknown-id"
+      } // Handles cases where the id does or does not exist
       renderItem={renderItem}
       contentContainerStyle={styles.container}
     />
