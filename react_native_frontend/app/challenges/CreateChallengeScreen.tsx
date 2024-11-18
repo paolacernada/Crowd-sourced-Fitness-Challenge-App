@@ -24,7 +24,6 @@ export default function CreateChallengeScreen() {
     difficulty: "",
   });
 
-
   const router = useRouter();
   const { theme } = useTheme();
 
@@ -47,16 +46,19 @@ export default function CreateChallengeScreen() {
     try {
       // Call the service function to create the challenge in the backend
       const createdChallenge = await createChallenge(challengeData);
-      
+
       // Alert the user and reset form state
       Alert.alert("Success", "Challenge created successfully!");
       setChallengeData({ name: "", description: "", difficulty: "" });
-      
+
       // Navigate to the "All Challenges" screen, showing newly-created challenge included with the other challenges
       router.push(ROUTES.allChallenges); // Navigate to all challenges screen
     } catch (error) {
       // Handle errors that occur during the challenge creation
-      Alert.alert("Error", error.message || "An error occurred while creating the challenge.");
+      Alert.alert(
+        "Error",
+        error.message || "An error occurred while creating the challenge."
+      );
     } finally {
       setLoading(false);
     }
@@ -74,11 +76,24 @@ export default function CreateChallengeScreen() {
       </Text>
 
       {/* Challenge form */}
-      <View style={[styles.formContainer, theme === "dark" ? styles.darkForm : styles.lightForm]}>
-        <ChallengeForm challengeData={challengeData} setChallengeData={setChallengeData} theme={theme} />
-        
+      <View
+        style={[
+          styles.formContainer,
+          theme === "dark" ? styles.darkForm : styles.lightForm,
+        ]}
+      >
+        <ChallengeForm
+          challengeData={challengeData}
+          setChallengeData={setChallengeData}
+          theme={theme}
+        />
+
         {/* Button to submit the form */}
-        <CreateChallengeButton loading={loading} onPress={handleCreateChallenge} theme={theme} />
+        <CreateChallengeButton
+          loading={loading}
+          onPress={handleCreateChallenge}
+          theme={theme}
+        />
       </View>
     </ScreenContainer>
   );

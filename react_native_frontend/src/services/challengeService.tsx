@@ -38,7 +38,7 @@ export const getChallengeById = async (id: number): Promise<Challenge> => {
 
 // Helper function to create a new challenge
 export const createChallenge = async (
-  challenge: Omit<Challenge, 'id'> // Exclude 'id' when creating a new challenge
+  challenge: Omit<Challenge, "id"> // Exclude 'id' when creating a new challenge
 ): Promise<Challenge> => {
   try {
     const response = await fetch(edgeFunctionUrl, {

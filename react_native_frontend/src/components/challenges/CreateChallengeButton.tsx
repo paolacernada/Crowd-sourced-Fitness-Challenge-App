@@ -14,10 +14,15 @@ export const CreateChallengeButton: React.FC<CreateChallengeButtonProps> = ({
   theme,
 }) => (
   <TouchableOpacity
-    style={[styles.button, theme === "dark" ? styles.darkButton : styles.lightButton]}
+    style={[
+      styles.button,
+      theme === "dark" ? styles.darkButton : styles.lightButton,
+    ]}
     onPress={onPress}
     disabled={loading}
   >
-    <Text style={styles.buttonText}>{loading ? "Creating..." : "Create Challenge"}</Text>
+    <Text style={styles.buttonText}>
+      {loading ? "Creating..." : "Create Challenge"}
+    </Text>
   </TouchableOpacity>
 );

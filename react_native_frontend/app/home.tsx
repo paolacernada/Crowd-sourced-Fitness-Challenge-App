@@ -6,7 +6,7 @@ import { useTheme } from "../src/context/ThemeContext";
 import styles from "../src/components/ScreenStyles";
 import ScreenContainer from "../src/components/ScreenContainer";
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
-import { ROUTES } from '../src/config/routes';
+import { ROUTES } from "../src/config/routes";
 
 const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`; // Edge function URL for challenges
 

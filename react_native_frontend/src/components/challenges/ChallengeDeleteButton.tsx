@@ -9,7 +9,10 @@ interface ChallengeDeleteButtonProps {
   onDeleted: () => void; // Empty callback-- notifes parent component to refresh list
 }
 
-const ChallengeDeleteButton: React.FC<ChallengeDeleteButtonProps> = ({ challengeId, onDeleted }) => {
+const ChallengeDeleteButton: React.FC<ChallengeDeleteButtonProps> = ({
+  challengeId,
+  onDeleted,
+}) => {
   const { theme } = useTheme();
 
   const handleDelete = async () => {
@@ -24,7 +27,10 @@ const ChallengeDeleteButton: React.FC<ChallengeDeleteButtonProps> = ({ challenge
 
   return (
     <TouchableOpacity
-      style={[styles.button, theme === "dark" ? styles.darkButton : styles.lightButton]}
+      style={[
+        styles.button,
+        theme === "dark" ? styles.darkButton : styles.lightButton,
+      ]}
       onPress={handleDelete}
     >
       <Text style={styles.buttonText}>Delete</Text>

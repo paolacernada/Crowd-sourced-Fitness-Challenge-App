@@ -44,7 +44,9 @@ const ChallengeList: React.FC<ChallengeListProps> = ({
     <FlatList
       data={challenges}
       // keyExtractor={(item) => item.id.toString()}
-      keyExtractor={(item) => (item.id ? item.id.toString() : item.name || "unknown-id")} // Handles cases where the id does or does not exist
+      keyExtractor={(item) =>
+        item.id ? item.id.toString() : item.name || "unknown-id"
+      } // Handles cases where the id does or does not exist
       renderItem={renderItem}
       contentContainerStyle={styles.container}
     />
