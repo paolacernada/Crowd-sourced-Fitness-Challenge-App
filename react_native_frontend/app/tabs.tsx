@@ -7,7 +7,7 @@ import SearchChallenges from "./searchChallenges";
 import SettingsScreen from "./settings";
 import { supabase } from "../src/config/supabaseClient";
 import { useRouter } from "expo-router";
-import DisplayAllChallengesScreen from "./displayAllChallenges";
+import DisplayAllChallengesScreen from "./challenges/DisplayAllChallengesScreen";
 
 const Tab = createBottomTabNavigator();
 

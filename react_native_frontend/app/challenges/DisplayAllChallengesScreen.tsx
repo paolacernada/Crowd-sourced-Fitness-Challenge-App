@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, ActivityIndicator, Alert } from "react-native";
 
 import { getAllChallenges } from "@/src/services/challengeService";
-import { useTheme } from "../src/context/ThemeContext";
-import styles from "../src/components/ScreenStyles";
-import ScreenContainer from "../src/components/ScreenContainer";
+import { useTheme } from "../../src/context/ThemeContext";
+import styles from "../../src/components/ScreenStyles";
+import ScreenContainer from "../../src/components/ScreenContainer";
 import { Challenge } from "@/src/types/Challenge";
 
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";

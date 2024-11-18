@@ -3,6 +3,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
 
 const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`; // Edge function URL for challenges
 
+// Function to fetch all challenges
 // Todo: refactor for DRY for the routes
 export const getAllChallenges = async (): Promise<Challenge[]> => {
   try {
@@ -37,7 +38,7 @@ export const getChallengeById = async (id: number): Promise<Challenge> => {
 
 // Function to create a new challenge
 export const createChallenge = async (
-  challenge: Challenge
+  challenge: Omit<Challenge, 'id'> // Exclude 'id' when creating a new challenge
 ): Promise<Challenge> => {
   try {
     const response = await fetch(edgeFunctionUrl, {

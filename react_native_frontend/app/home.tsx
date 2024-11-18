@@ -6,6 +6,7 @@ import { useTheme } from "../src/context/ThemeContext";
 import styles from "../src/components/ScreenStyles";
 import ScreenContainer from "../src/components/ScreenContainer";
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
+import { ROUTES } from '../src/config/routes';
 
 const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`; // Edge function URL for challenges
 
@@ -37,7 +38,8 @@ export default function HomeScreen() {
             theme === "dark" ? styles.darkButton : styles.lightButton,
             { width: "70%" },
           ]}
-          onPress={() => router.push("/displayAllChallenges")}
+          // onPress={() => router.push("/displayAllChallenges")}
+          onPress={() => router.push(ROUTES.allChallenges)}
           disabled={loading}
         >
           <Text style={styles.buttonText}>
@@ -50,7 +52,8 @@ export default function HomeScreen() {
             theme === "dark" ? styles.darkButton : styles.lightButton,
             { width: "70%" },
           ]}
-          onPress={() => router.push("/CreateChallengeScreen")}
+          // onPress={() => router.push("/CreateChallengeScreen")}
+          onPress={() => router.push(ROUTES.createChallenge)}
           disabled={loading}
         >
           <Text style={styles.buttonText}>
