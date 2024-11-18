@@ -50,7 +50,7 @@ export default function HomeScreen() {
             theme === "dark" ? styles.darkButton : styles.lightButton,
             { width: "70%" },
           ]}
-          onPress={() => router.push("/createChallenge")}
+          onPress={() => router.push("/CreateChallengeScreen")}
           disabled={loading}
         >
           <Text style={styles.buttonText}>

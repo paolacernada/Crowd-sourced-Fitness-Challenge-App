@@ -8,6 +8,7 @@ import styles from "../src/components/ScreenStyles";
 import { createChallenge } from "@/src/services/challengeService";
 
 export default function CreateChallengeScreen() {
+  const [challengeId, setChallengeId] = useState("");
   const [challengeName, setChallengeName] = useState("");
   const [challengeDescription, setChallengeDescription] = useState("");
   const [challengeDifficulty, setChallengeDifficulty] = useState("");
