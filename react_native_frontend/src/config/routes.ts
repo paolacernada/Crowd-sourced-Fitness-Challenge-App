@@ -3,6 +3,10 @@ export const ROUTES = {
     createChallenge: '/challenges/CreateChallengeScreen',
     allChallenges: '/challenges/DisplayAllChallengesScreen',
     challengeDetails: '/challenges/ChallengeDetailsScreen',    
+
     // Other routes
-    LANDING: "/landing", // todo: decide on a landing screen, and eliminate the earlier placeholder code/files
-  };
+    // todo: this is more of a placeholder, to remind us to decide on a 
+    //   landing screen, and to eliminate the earlier placeholder code/files
+    LANDING: "/landing",
+
+};

@@ -4,13 +4,6 @@ import { useTheme } from "../../context/ThemeContext";
 import styles from "../ScreenStyles";
 import { Challenge } from "../../types/Challenge"; // Adjust the import path based on your folder structure
 
-// interface Challenge {
-//   id: number;
-//   name: string;
-//   description: string;
-//   difficulty: string;
-// }
-
 interface ChallengeListProps {
   challenges: Challenge[];
   onChallengeSelect: (challengeId: number) => void;
