@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -7,11 +7,12 @@ import {
   Alert,
   TouchableOpacity,
 } from "react-native";
-import { getAllChallenges } from "@/src/services/challengeService";
 import { useTheme } from "../../src/context/ThemeContext";
 import styles from "../../src/components/ScreenStyles";
 import ScreenContainer from "../../src/components/ScreenContainer";
 import { Challenge } from "@/src/types/Challenge";
+import { getAllChallenges } from "@/src/services/challengeService";
+import { useFocusEffect } from "@react-navigation/native";
 import { SUPABASE_URL } from "@env";
 
 // Supabase Edge Function URL for challenges
@@ -29,28 +30,36 @@ export default function SearchChallengeScreen() {
 
   const { theme } = useTheme();
 
-  useEffect(() => {
-    const fetchChallenges = async () => {
-      // todo: figure out if I want to incorporate this or not
-      // setLoading(true);
-      // setError(''); // This clears the previous error (if one exists)
+  const fetchChallenges = async () => {
+    // todo: figure out if I want to incorporate this or not
+    // setLoading(true);
+    // setError(''); // This clears the previous error (if one exists)
 
-      try {
-        const data = await getAllChallenges();
-        setChallenges(data); // This sets the data to the state
-      } catch (err) {
-        setError("Failed to load challenges");
-        Alert.alert(
-          "Error",
-          "Could net fetch challenges. Please try again later."
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
+    setLoading(true);
+    setError(""); // Clear previous errors
+    try {
+      const data = await getAllChallenges();
 
-    fetchChallenges();
-  }, []);
+      const sortedChallenges = data.sort((a, b) => a.id - b.id); // Ascending order
+
+      setChallenges(sortedChallenges); // Update state with fetched challenges
+    } catch (err) {
+      setError("Failed to load challenges");
+      Alert.alert(
+        "Error",
+        "Could not fetch challenges. Please try again later."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Use focus effect to refresh data when navigating to the screen
+  useFocusEffect(
+    useCallback(() => {
+      fetchChallenges();
+    }, [])
+  );
 
   // helper for deleting a challenge
   const handleDelete = (id: number) => {
