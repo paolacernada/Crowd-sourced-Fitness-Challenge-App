@@ -135,6 +135,7 @@ const handleRequest = async (req: Request) => {
         // Regular user GET route
         return id && !isNaN(Number(id)) ? await getUser(id) : await getUsers();
 
+
       case "POST":
         return await createUser(await req.json());
       case "PATCH":
