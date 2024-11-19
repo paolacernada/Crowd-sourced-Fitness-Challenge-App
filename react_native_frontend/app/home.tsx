@@ -49,6 +49,36 @@ export default function HomeScreen() {
     fetchUserData();
   }, []); // Only run once when component mounts
 
+  // Fetch challenges once userId is set
+  useEffect(() => {
+    const fetchUserChallenges = async () => {
+      if (!userId) return;
+
+      setLoading(true);
+      setError(null); // Reset error state before fetching
+
+      try {
+        const response = await getUserChallenges(userId); // Assuming this function makes the API call
+        if ('error' in response) {  // Check if error is in the response
+          if (typeof response.error === 'string') {
+            setError(response.error);  // If error exists, set the error message
+          } else {
+            setError("An unknown error occurred.");
+          }
+        } else {
+          setChallenges(response); // Store the fetched challenges
+        }
+      } catch (err) {
+        console.error("Error fetching user challenges:", err);
+        setError("Failed to load user challenges.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserChallenges();
+  }, [userId]); // This effect runs when userId is set
+
   // Logout handler
   const handleLogout = async () => {
     await supabase.auth.signOut();
