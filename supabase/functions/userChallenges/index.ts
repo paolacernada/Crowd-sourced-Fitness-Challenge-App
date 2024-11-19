@@ -1,4 +1,3 @@
-
 // import { config } from "https://deno.land/x/dotenv/mod.ts";
 
 // Load env variables
@@ -64,10 +63,10 @@ const getUserChallenges = async (userUuid: string | null) => {
   const data = await handleResponse(response);
 
   if (data.length === 0) {
-    return new Response(
-      JSON.stringify({ error: `No challenges found.` }),
-      { status: 404, headers: corsHeaders }
-    );
+    return new Response(JSON.stringify({ error: `No challenges found.` }), {
+      status: 404,
+      headers: corsHeaders,
+    });
   }
 
   return new Response(JSON.stringify(data), {
@@ -116,10 +115,10 @@ const createUserChallenge = async (req: Request) => {
     );
     const userData = await handleResponse(userResponse);
     if (!userData.length) {
-      return new Response(
-        JSON.stringify({ error: "User not found." }),
-        { status: 404, headers: corsHeaders }
-      );
+      return new Response(JSON.stringify({ error: "User not found." }), {
+        status: 404,
+        headers: corsHeaders,
+      });
     }
 
     // Check if the challenge exists
@@ -129,10 +128,10 @@ const createUserChallenge = async (req: Request) => {
     );
     const challengeData = await handleResponse(challengeResponse);
     if (!challengeData.length) {
-      return new Response(
-        JSON.stringify({ error: "Challenge not found." }),
-        { status: 404, headers: corsHeaders }
-      );
+      return new Response(JSON.stringify({ error: "Challenge not found." }), {
+        status: 404,
+        headers: corsHeaders,
+      });
     }
 
     // Create the user-challenge relationship
@@ -141,7 +140,7 @@ const createUserChallenge = async (req: Request) => {
       {
         method: "POST",
         body: JSON.stringify({
-          user_uuid: body.user_uuid,  // Save the user_uuid instead of user_id
+          user_uuid: body.user_uuid, // Save the user_uuid instead of user_id
           challenge_id: body.challenge_id,
         }),
       }
@@ -155,7 +154,9 @@ const createUserChallenge = async (req: Request) => {
   } catch (error) {
     console.error("Error creating user challenge:", error);
     return new Response(
-      JSON.stringify({ error: `Failed to create user challenge: ${error.message}` }),
+      JSON.stringify({
+        error: `Failed to create user challenge: ${error.message}`,
+      }),
       { status: 500, headers: corsHeaders }
     );
   }
@@ -252,7 +253,7 @@ const handleRequest = async (req: Request) => {
   const url = new URL(req.url);
   const path = url.pathname.split("/").filter(Boolean);
   const id = path.pop();
-  const userUuid = url.searchParams.get("user_uuid");  // Get user_uuid from query params
+  const userUuid = url.searchParams.get("user_uuid"); // Get user_uuid from query params
 
   try {
     switch (req.method) {
