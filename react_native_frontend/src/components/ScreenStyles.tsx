@@ -191,6 +191,20 @@ const styles = StyleSheet.create({
   lightScrollbar: {
     backgroundColor: "#e0e0e0",
   },
+  darkPicker: {
+    color: "#fff",
+    backgroundColor: "#121212",
+    borderRadius: 8,
+    marginVertical: 10,
+    paddingHorizontal: 10,
+  },
+  lightPicker: {
+    color: "#000",
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    marginVertical: 10,
+    paddingHorizontal: 10,
+  },
 });
 
 export default styles;

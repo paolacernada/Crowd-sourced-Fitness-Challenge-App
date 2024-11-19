@@ -284,6 +284,7 @@ export default function SettingsScreen() {
             style={[
               styles.button,
               theme === "dark" ? styles.darkButton : styles.lightButton,
+              { width: "60%" },
             ]}
             onPress={handleSave}
           >
@@ -296,6 +297,7 @@ export default function SettingsScreen() {
               style={[
                 styles.button,
                 styles.smallButton,
+
                 {
                   backgroundColor: theme === "dark" ? "#8B0000" : "red",
                 },

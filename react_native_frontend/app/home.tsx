@@ -18,6 +18,7 @@ export default function HomeScreen() {
 
   return (
     <ScreenContainer>
+      {/* App name */}
       <Text
         style={[
           styles.appName,
@@ -27,6 +28,7 @@ export default function HomeScreen() {
         FitTogether Challenges
       </Text>
 
+      {/* Form container */}
       <View
         style={[
           styles.formContainer,
@@ -34,14 +36,24 @@ export default function HomeScreen() {
           { paddingVertical: 20 },
         ]}
       >
-        {" "}
+        {/* Page title */}
+        <Text
+          style={[
+            styles.title,
+            theme === "dark" ? styles.darkText : styles.lightText,
+            { marginBottom: 20 },
+          ]}
+        >
+          Start Your Journey
+        </Text>
+
+        {/* Buttons */}
         <TouchableOpacity
           style={[
             styles.button,
             theme === "dark" ? styles.darkButton : styles.lightButton,
-            { width: "70%", marginBottom: 14, marginTop: 16 },
+            { width: "70%", marginBottom: 14, marginTop: 5 },
           ]}
-          // onPress={() => router.push("/displayAllChallenges")}
           onPress={() => navigation.navigate("Challenges")}
           disabled={loading}
         >
@@ -55,7 +67,6 @@ export default function HomeScreen() {
             theme === "dark" ? styles.darkButton : styles.lightButton,
             { width: "70%", marginBottom: 14 },
           ]}
-          // onPress={() => router.push("/CreateChallengeScreen")}
           onPress={() => navigation.navigate("CreateChallenge")}
           disabled={loading}
         >
@@ -67,7 +78,7 @@ export default function HomeScreen() {
           style={[
             styles.button,
             theme === "dark" ? styles.darkButton : styles.lightButton,
-            { width: "35%", marginBottom: 14, marginTop: 14 },
+            { width: "35%", marginBottom: 4, marginTop: 10 },
           ]}
           onPress={handleLogout}
         >

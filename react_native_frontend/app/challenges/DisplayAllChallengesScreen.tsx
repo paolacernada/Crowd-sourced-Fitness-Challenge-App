@@ -182,7 +182,7 @@ export default function SearchChallengeScreen() {
           { marginBottom: 20 },
         ]}
       >
-        All Challenges
+        Explore All Challenges
       </Text>
 
       <FlatList

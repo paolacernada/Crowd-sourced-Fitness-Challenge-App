@@ -25,6 +25,7 @@ export const ChallengeForm: React.FC<ChallengeFormProps> = ({
         styles.input,
         theme === "dark" ? styles.darkInput : styles.lightInput,
       ]}
+      placeholderTextColor={theme === "dark" ? "#999" : "#666"}
     />
     <TextInput
       placeholder="Challenge Description"
@@ -36,6 +37,7 @@ export const ChallengeForm: React.FC<ChallengeFormProps> = ({
         styles.input,
         theme === "dark" ? styles.darkInput : styles.lightInput,
       ]}
+      placeholderTextColor={theme === "dark" ? "#999" : "#666"}
     />
     <Picker
       selectedValue={challengeData.difficulty}
@@ -44,8 +46,9 @@ export const ChallengeForm: React.FC<ChallengeFormProps> = ({
       }
       style={[
         styles.input,
-        theme === "dark" ? styles.darkInput : styles.lightInput,
+        theme === "dark" ? styles.darkPicker : styles.lightPicker,
       ]}
+      dropdownIconColor={theme === "dark" ? "#fff" : "#000"}
     >
       <Picker.Item label="Select Difficulty" value="" />
       <Picker.Item label="Easy" value="Easy" />
