@@ -3,6 +3,14 @@
 // // Load env variables
 // const env = config({ path: "../../.env.supabase" });
 
+// CORS headers to allow frontend access (adjust as needed)
+const corsHeaders = {
+  "Content-Type": "application/json",
+  "Access-Control-Allow-Origin": "*", // Replace "*" with your frontend's URL once it's deployed
+  "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS", // Allow methods for CORS
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey", // Allow headers for requests
+};
+
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
 
@@ -34,6 +42,13 @@ const handleResponse = async (response: Response) => {
 };
 
 const handleRequest = async (req: Request) => {
+// Handle preflight OPTIONS requests for CORS
+  if (req.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: corsHeaders,
+    });
+  }
   const url = new URL(req.url);
   const path = url.pathname.split("/").filter(Boolean);
   const id = path.pop();
@@ -53,8 +68,11 @@ const handleRequest = async (req: Request) => {
       case "DELETE":
         return await deleteUserChallenge(id);
 
-      default:
-        return new Response("Method Not Allowed", { status: 405 });
+        default:
+          return new Response("Method Not Allowed", {
+            status: 405,
+            headers: corsHeaders,
+          });
     }
   } catch (error) {
     console.error("Internal Error:", error);
@@ -76,16 +94,18 @@ const getUserChallenges = async () => {
   );
   const data = await handleResponse(response);
   return new Response(JSON.stringify(data), {
-    headers: { "Content-Type": "application/json" },
+    headers: corsHeaders, 
   });
 };
 
-// GET (user-challenge relationship) by ID with challenge details
+// GET (user-challenge relationship) by ID with challenge details and user details
 const getUserChallenge = async (userId: string) => {
   try {
-    // Query users_challenges table; SQL join with 'challenges' table to get challenge details instead of id#
+    console.log("Fetching challenges for user ID:", userId); // Log the user ID
+
+    // Query users_challenges table; SQL join with 'users' and 'challenges' to get both user and challenge details
     const response = await supabaseFetch(
-      `${supabaseUrl}/rest/v1/users_challenges?user_id=eq.${userId}&select=id,challenge_id,challenges(id,name,description,difficulty)`,
+      `${supabaseUrl}/rest/v1/users_challenges?user_id=eq.${userId}&select=id,challenge_id,users(id,name,uuid),challenges(id,name,description,difficulty)`,
       {
         method: "GET",
       }
@@ -97,23 +117,55 @@ const getUserChallenge = async (userId: string) => {
     if (data.length === 0) {
       return new Response(
         JSON.stringify({ error: `No challenges found for user ID ${userId}.` }),
-        { status: 404, headers: { "Content-Type": "application/json" } }
+        { status: 404, headers: corsHeaders }
       );
     }
 
-    // Return the challenges associated with the user
-    return new Response(JSON.stringify(data), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(JSON.stringify(data), { status: 200, headers: corsHeaders });
   } catch (error) {
-    console.error("Error fetching user challenges:", error);
+    console.error("Error fetching user challenges:", error); // Log detailed error
     return new Response(
       JSON.stringify({ error: "Failed to fetch user challenges." }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      { status: 500, headers: corsHeaders }
     );
   }
 };
+
+// const getUserChallenge = async (userId: string) => {
+//   try {
+//     // Query users_challenges table; SQL join with 'challenges' table to get challenge details instead of id#
+//     const response = await supabaseFetch(
+//       // `${supabaseUrl}/rest/v1/users_challenges?user_id=eq.${userId}&select=id,challenge_id,challenges(id,name,description,difficulty)`,
+//       `${supabaseUrl}/rest/v1/users_challenges?user_id=eq.${userUuid}&select=id,challenge_id,users(id,name,uuid),challenges(id,name,description,difficulty)`,
+      
+//       {
+//         method: "GET",
+//       }
+//     );
+
+//     const data = await handleResponse(response);
+
+//     // If no challenges are found for the user, return a 404 response
+//     if (data.length === 0) {
+//       return new Response(
+//         JSON.stringify({ error: `No challenges found for user ID ${userId}.` }),
+//         { status: 404, headers: corsHeaders }
+//       );
+//     }
+
+//     // Return the challenges associated with the user
+//     return new Response(JSON.stringify(data), {
+//       status: 200,
+//       headers: corsHeaders,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching user challenges:", error);
+//     return new Response(
+//       JSON.stringify({ error: "Failed to fetch user challenges." }),
+//       { status: 500, headers: corsHeaders }
+//     );
+//   }
+// };
 
 // POST
 const createUserChallenge = async (req: Request) => {
@@ -124,7 +176,7 @@ const createUserChallenge = async (req: Request) => {
     if (!body.user_id || !body.challenge_id) {
       return new Response(
         JSON.stringify({ error: "User ID and Challenge ID are required." }),
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -137,7 +189,7 @@ const createUserChallenge = async (req: Request) => {
     if (!userData.length) {
       return new Response(
         JSON.stringify({ error: "User not found." }),
-        { status: 404 }
+        { status: 404, headers: corsHeaders }
       );
     }
 
@@ -150,7 +202,7 @@ const createUserChallenge = async (req: Request) => {
     if (!challengeData.length) {
       return new Response(
         JSON.stringify({ error: "Challenge not found." }),
-        { status: 404 }
+        { status: 404, headers: corsHeaders }
       );
     }
 
@@ -172,13 +224,13 @@ const createUserChallenge = async (req: Request) => {
     
     return new Response(JSON.stringify(data), {
       status: 201,
-      headers: { "Content-Type": "application/json" },
+      headers: corsHeaders,
     });
   } catch (error) {
     console.error("Error creating user challenge:", error); // More detailed error logging
     return new Response(
       JSON.stringify({ error: `Failed to create user challenge: ${error.message}` }),
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 };
@@ -253,7 +305,7 @@ const deleteUserChallenge = async (id: string) => {
     throw new Error(errorData);
   }
 
-  return new Response(null, { status: 204 });
+  return new Response(null, { status: 204, headers: corsHeaders });
 };
 
 // Start the server
