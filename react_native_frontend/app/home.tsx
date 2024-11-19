@@ -14,9 +14,14 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null); // error state
   const [userUuid, setUserUuid] = useState<string | null>(null); // userUuid state (instead of userId)
+<<<<<<< HEAD
   const navigation = useNavigation();
   const { theme } = useTheme();
   // const router = useRouter();
+=======
+  const { theme } = useTheme();
+  const router = useRouter();
+>>>>>>> 3ca0243 (Display user's challenges on home screen.)
 
   // Fetch user data (userUuid) when the component mounts
   useEffect(() => {
@@ -48,6 +53,7 @@ export default function HomeScreen() {
 
     fetchUserData();
   }, []); // Only run once when component mounts
+<<<<<<< HEAD
 
   // Fetch challenges once userId is set
   useEffect(() => {
@@ -79,6 +85,8 @@ export default function HomeScreen() {
 
     fetchUserChallenges();
   }, [userId]); // This effect runs when userId is set
+=======
+>>>>>>> 3ca0243 (Display user's challenges on home screen.)
 
   // Logout handler
   const handleLogout = async () => {
@@ -141,6 +149,7 @@ export default function HomeScreen() {
             {loading ? "View Challenges..." : "View Existing Challenges"}
           </Text>
         </TouchableOpacity>
+
         <TouchableOpacity
           style={[
             styles.button,
@@ -182,11 +191,19 @@ export default function HomeScreen() {
 // export default function HomeScreen() {
 //   const [loading, setLoading] = useState(false);
 //   const [error, setError] = useState<string | null>(null); // error state
+<<<<<<< HEAD
 //   const [userUuid, setUserUuid] = useState<string | null>(null); // userUuid state (instead of userId)
 //   const { theme } = useTheme();
 //   const router = useRouter();
 
 //   // Fetch user data (userUuid) when the component mounts
+=======
+//   const [userId, setUserId] = useState<string | null>(null); // userId state
+//   const { theme } = useTheme();
+//   const router = useRouter();
+
+//   // Fetch user data (userId) when the component mounts
+>>>>>>> 3ca0243 (Display user's challenges on home screen.)
 //   useEffect(() => {
 //     const fetchUserData = async () => {
 //       setLoading(true);
@@ -199,12 +216,20 @@ export default function HomeScreen() {
 
 //         if (authError || !data?.user?.id) {
 //           setError("User not authenticated or unable to fetch user data.");
+<<<<<<< HEAD
 //           console.log("Auth Error: ", authError); // Log authError if it exists
+=======
+//           console.log("Auth Error: ", authError);  // Log authError if it exists
+>>>>>>> 3ca0243 (Display user's challenges on home screen.)
 //           return;
 //         }
 
 //         const userUuid = data.user.id; // Get the authenticated user UUID
+<<<<<<< HEAD
 //         setUserUuid(userUuid); // Set userUuid in state
+=======
+//         setUserId(userUuid); // Set userId in state
+>>>>>>> 3ca0243 (Display user's challenges on home screen.)
 //         console.log("User UUID from Supabase Auth:", userUuid); // Log the UUID being used
 //       } catch (err) {
 //         console.error("Error fetching user data:", err); // Log error details
@@ -241,8 +266,12 @@ export default function HomeScreen() {
 //       {loading ? (
 //         <Text>Loading user data...</Text>
 //       ) : (
+<<<<<<< HEAD
 //         // userUuid && <UserChallengesList userId={userUuid} /> // Pass userUuid to the list component for fetching challenges
 //         userUuid && <UserChallengesList userUuid={userUuid} /> // Pass userUuid to the list component for fetching challenges
+=======
+//         userId && <UserChallengesList userId={userId} /> // Pass userId to the list component for fetching challenges
+>>>>>>> 3ca0243 (Display user's challenges on home screen.)
 //       )}
 
 //       {/* Action buttons */}

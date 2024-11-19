@@ -73,6 +73,28 @@ const getUserChallenges = async (userUuid: string | null) => {
     headers: corsHeaders,
   });
 };
+// const getUserChallenges = async (userId: string | null) => {
+//   const query = userId
+//     ? `${supabaseUrl}/rest/v1/users_challenges?user_id=eq.${userId}&select=id,challenge_id,users(id,name,uuid),challenges(id,name,description,difficulty)`
+//     : `${supabaseUrl}/rest/v1/users_challenges?select=id,challenge_id,users(id,name,uuid),challenges(id,name,description,difficulty)`;
+
+//   const response = await supabaseFetch(query, {
+//     method: "GET",
+//   });
+
+//   const data = await handleResponse(response);
+
+//   if (data.length === 0) {
+//     return new Response(
+//       JSON.stringify({ error: `No challenges found.` }),
+//       { status: 404, headers: corsHeaders }
+//     );
+//   }
+
+//   return new Response(JSON.stringify(data), {
+//     headers: corsHeaders,
+//   });
+// };
 
 // POST: Create a user-challenge relationship
 const createUserChallenge = async (req: Request) => {

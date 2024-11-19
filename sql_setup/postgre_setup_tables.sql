@@ -71,6 +71,9 @@ CREATE TABLE users_badges (
     FOREIGN KEY (badge_id) REFERENCES badges(id) ON DELETE CASCADE
 );
 
+-- Factor in this (uuid is now an item here):
+-- ALTER TABLE users_challenges
+-- ADD COLUMN user_uuid uuid;
 CREATE TABLE users_challenges (
   id bigint primary key generated always as identity,
   user_id INT,

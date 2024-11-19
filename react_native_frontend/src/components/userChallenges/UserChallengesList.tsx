@@ -9,10 +9,14 @@ interface UserChallengesListProps {
   userUuid: string; // Update prop name to userUuid
 }
 
+<<<<<<< HEAD
 const UserChallengesList: React.FC<UserChallengesListProps> = ({
   userUuid,
 }) => {
   // Use userUuid here
+=======
+const UserChallengesList: React.FC<UserChallengesListProps> = ({ userUuid }) => { // Use userUuid here
+>>>>>>> 3ca0243 (Display user's challenges on home screen.)
   const [loading, setLoading] = useState<boolean>(false);
   const [challenges, setChallenges] = useState<UserChallenge[]>([]); // Use UserChallenge[] type
 
