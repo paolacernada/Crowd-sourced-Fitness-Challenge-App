@@ -126,7 +126,15 @@ const handleRequest = async (req: Request) => {
 
     switch (req.method) {
       case "GET":
+      // return id && !isNaN(Number(id)) ? await getUser(id) : await getUsers();
+
+      // New route for /users/userbyuuid/{uuid}
+        if (path[2] === "userbyuuid" && id) {
+          return await getUserByUuid(id);
+        }
+        // Regular user GET route
         return id && !isNaN(Number(id)) ? await getUser(id) : await getUsers();
+
       case "POST":
         return await createUser(await req.json());
       case "PATCH":
@@ -147,6 +155,27 @@ const handleRequest = async (req: Request) => {
       headers: corsHeaders,
     });
   }
+};
+
+// Handler to fetch user by UUID
+const getUserByUuid = async (uuid: string) => {
+  const response = await supabaseFetch(
+    `${supabaseUrl}/rest/v1/users?uuid=eq.${uuid}`,
+    { method: "GET" }
+  );
+  const data = await handleResponse(response);
+
+  if (!data || data.length === 0) {
+    return new Response(
+      JSON.stringify({ error: "User not found" }),
+      { status: 404, headers: corsHeaders }
+    );
+  }
+
+  return new Response(JSON.stringify(data[0]), {
+    status: 200,
+    headers: corsHeaders,
+  });
 };
 
 // Handlers for different HTTP methods
