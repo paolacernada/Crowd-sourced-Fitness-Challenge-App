@@ -17,9 +17,9 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { theme } = useTheme();
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null); // error state
   const [userId, setUserId] = useState<string | null>(null); // userId state
-  const [challenges, setChallenges] = useState<any[]>([]); // Store user challenges
+  const [challenges, setChallenges] = useState<Challenge[]>([]); // Store user challenges
 
   // Fetch user challenges when the component mounts
   // Fetch user ID and challenges on mount
@@ -29,17 +29,46 @@ export default function HomeScreen() {
       setError(null); // Reset error state before fetching
 
       try {
-        // Fetch the user data from Supabase auth
+        // Fetch the user data from Supabase auth to get the user UUID
         const { data, error: authError } = await supabase.auth.getUser();
         console.log("Fetched user data:", data); // Log user data for debugging
 
         if (authError || !data?.user?.id) {
           setError("User not authenticated or unable to fetch user data.");
+          console.log("Auth Error: ", authError);  // Log authError if it exists
           return;
         }
 
-        // Set the userId in state
-        setUserId(data.user.id);
+        // We now have the user UUID from Supabase Auth (data.user.id)
+        const userUuid = data.user.id; // This is the UUID of the authenticated user
+        console.log("User UUID from Supabase Auth:", userUuid); // Log the UUID being used
+
+        // Fetch user info from your /users/userbyuuid/{uuid} route
+        console.log(`Fetching user by UUID from: ${SUPABASE_URL}/functions/v1/users/userbyuuid/${userUuid}`);
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/users/userbyuuid/${userUuid}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            // Add any necessary headers like authorization token if needed
+          },
+        });
+
+        if (!response.ok) {
+          setError("Failed to fetch user by UUID.");
+          return;
+        }
+
+        const userData = await response.json();
+        console.log("User data received from /users/userbyuuid:", userData); // Log the response data
+        // console.log("User data by UUID:", userData); // Log user data
+
+        // Set the userId in state based on the response
+        if (userData && userData.id) {
+          setUserId(userData.id); // Set the userId from the route response
+          console.log("Set userId in state:", userData.id); // Log the userId being set
+        } else {
+          setError("User data not found.");
+        }
       } catch (err) {
         console.error("Error fetching user data:", err); // Log error details
         setError("Failed to load user data.");
@@ -61,9 +90,10 @@ export default function HomeScreen() {
 
       try {
         const response = await getUserChallenges(userId); // Assuming this function makes the API call
-        if ('error' in response) {  // Check if error is in the response
-          if (typeof response.error === 'string') {
-            setError(response.error);  // If error exists, set the error message
+        console.log("Challenges response:", response); // Log the response
+        if ("error" in response) { // Check if error is in the response
+          if (typeof response.error === "string") {
+            setError(response.error); // If error exists, set the error message
           } else {
             setError("An unknown error occurred.");
           }
@@ -108,6 +138,7 @@ export default function HomeScreen() {
         // Pass the userId to the UserChallengesList component
         userId && <UserChallengesList userId={userId} />
       )}
+
       {/* Action buttons */}
       <View style={{ alignItems: "center", width: "100%", marginTop: 12 }}>
         <TouchableOpacity
@@ -116,7 +147,6 @@ export default function HomeScreen() {
             theme === "dark" ? styles.darkButton : styles.lightButton,
             { width: "70%" },
           ]}
-          // onPress={() => router.push("/displayAllChallenges")}
           onPress={() => router.push(ROUTES.allChallenges)}
           disabled={loading}
         >
@@ -130,7 +160,6 @@ export default function HomeScreen() {
             theme === "dark" ? styles.darkButton : styles.lightButton,
             { width: "70%" },
           ]}
-          // onPress={() => router.push("/CreateChallengeScreen")}
           onPress={() => router.push(ROUTES.createChallenge)}
           disabled={loading}
         >
