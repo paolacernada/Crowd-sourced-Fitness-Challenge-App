@@ -59,9 +59,10 @@ export default function HomeScreen() {
 
       try {
         const response = await getUserChallenges(userId); // Assuming this function makes the API call
-        if ('error' in response) {  // Check if error is in the response
-          if (typeof response.error === 'string') {
-            setError(response.error);  // If error exists, set the error message
+        console.log("Challenges response:", response); // Log the response
+        if ("error" in response) { // Check if error is in the response
+          if (typeof response.error === "string") {
+            setError(response.error); // If error exists, set the error message
           } else {
             setError("An unknown error occurred.");
           }

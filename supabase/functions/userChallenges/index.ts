@@ -145,10 +145,10 @@ const deleteUserChallenge = async (id: string) => {
     { method: "DELETE" }
   );
 
-  if (!response.ok) {
-    const errorData = await response.text();
-    throw new Error(errorData);
-  }
+//   if (!response.ok) {
+//     const errorData = await response.text();
+//     throw new Error(errorData);
+//   }
 
   return new Response(null, { status: 204, headers: corsHeaders });
 };
@@ -200,5 +200,5 @@ const handleRequest = async (req: Request) => {
   }
 };
 
-// Start the server
-Deno.serve(handleRequest);
+// // Start the server
+// Deno.serve(handleRequest);
