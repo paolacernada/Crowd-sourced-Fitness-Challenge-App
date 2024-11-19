@@ -3,11 +3,12 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useTheme } from "../src/context/ThemeContext";
 import HomeScreen from "./home";
 import IndexScreen from "./index";
+import DisplayAllChallengesScreen from "./challenges/DisplayAllChallengesScreen";
 import SearchChallenges from "./searchChallenges";
 import SettingsScreen from "./settings";
+import CreateChallengeScreen from "./challenges/CreateChallengeScreen";
 import { supabase } from "../src/config/supabaseClient";
 import { useRouter } from "expo-router";
-import DisplayAllChallengesScreen from "./challenges/DisplayAllChallengesScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -44,9 +45,17 @@ export default function BottomTabs() {
         options={{ title: "Users", headerShown: false }}
       />
       <Tab.Screen
-        name="DisplayAllChallengesScreen"
+        name="Challenges"
         component={DisplayAllChallengesScreen}
-        options={{ title: "ViewChallenges", headerShown: false }}
+        options={{ title: "All Challenges", headerShown: false }}
+      />
+      <Tab.Screen
+        name="CreateChallenge"
+        component={CreateChallengeScreen}
+        options={{
+          title: "Create Challenge",
+          headerShown: false,
+        }}
       />
       <Tab.Screen
         name="SearchChallenges"

@@ -1,15 +1,14 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
-import { View, Text, TextInput, Alert, TouchableOpacity } from "react-native";
-import { supabase } from "../../src/config/supabaseClient";
+import { View, Text, Alert, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "../../src/context/ThemeContext";
 import ScreenContainer from "../../src/components/ScreenContainer";
 import styles from "../../src/components/ScreenStyles";
 
 import { ChallengeForm } from "../../src/components/challenges/ChallengeForm";
-import { CreateChallengeButton } from "../../src/components/challenges/CreateChallengeButton";
 import { createChallenge } from "@/src/services/challengeService";
-import { ROUTES } from "../../src/config/routes";
 
 export default function CreateChallengeScreen() {
   // const [challengeId, setChallengeId] = useState("");
@@ -24,7 +23,7 @@ export default function CreateChallengeScreen() {
     difficulty: "",
   });
 
-  const router = useRouter();
+  const navigation = useNavigation();
   const { theme } = useTheme();
 
   const handleCreateChallenge = async () => {
@@ -52,13 +51,12 @@ export default function CreateChallengeScreen() {
       setChallengeData({ name: "", description: "", difficulty: "" });
 
       // Navigate to the "All Challenges" screen, showing newly-created challenge included with the other challenges
-      router.push(ROUTES.allChallenges); // Navigate to all challenges screen
+      navigation.navigate("Challenges"); // Navigate to all challenges screen
     } catch (error) {
       // Handle errors that occur during the challenge creation
-      Alert.alert(
-        "Error",
-        error.message || "An error occurred while creating the challenge."
-      );
+      const errorMessage =
+        error instanceof Error ? error.message : "An unexpected error occurred";
+      Alert.alert("Error", errorMessage);
     } finally {
       setLoading(false);
     }
@@ -75,13 +73,22 @@ export default function CreateChallengeScreen() {
         FitTogether Challenges
       </Text>
 
-      {/* Challenge form */}
       <View
         style={[
           styles.formContainer,
           theme === "dark" ? styles.darkForm : styles.lightForm,
         ]}
       >
+        {/* Title */}
+        <Text
+          style={[
+            styles.title,
+            theme === "dark" ? styles.darkText : styles.lightText,
+            { marginBottom: 20 },
+          ]}
+        >
+          Start a New Challenge
+        </Text>
         <ChallengeForm
           challengeData={challengeData}
           setChallengeData={setChallengeData}
@@ -89,11 +96,21 @@ export default function CreateChallengeScreen() {
         />
 
         {/* Button to submit the form */}
-        <CreateChallengeButton
-          loading={loading}
-          onPress={handleCreateChallenge}
-          theme={theme}
-        />
+        <View style={{ width: "100%", alignItems: "center", marginTop: 12 }}>
+          <TouchableOpacity
+            style={[
+              styles.button,
+              theme === "dark" ? styles.darkButton : styles.lightButton,
+              { width: "50%", marginTop: -6, marginBottom: 2 },
+            ]}
+            onPress={handleCreateChallenge}
+            disabled={loading}
+          >
+            <Text style={styles.buttonText}>
+              {loading ? "Creating Challenge..." : "Let’s Go!"}
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </ScreenContainer>
   );

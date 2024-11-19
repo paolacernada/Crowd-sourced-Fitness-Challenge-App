@@ -37,6 +37,8 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   formContainer: {
+    justifyContent: "center",
+    alignItems: "center",
     width: "90%",
     maxWidth: 400,
     padding: 20,
@@ -110,17 +112,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   challengeItem: {
-    backgroundColor: "#f9f9f9",
-    padding: 12,
-    marginBottom: 10,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    padding: 16,
+    marginBottom: 20,
+    borderRadius: 12,
+    borderWidth: 2,
   },
   usernameText: {
     fontSize: 16,
@@ -186,6 +181,29 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
     textAlign: "left",
+  },
+  scrollbar: {
+    flex: 1,
+  },
+  darkScrollbar: {
+    backgroundColor: "#303030",
+  },
+  lightScrollbar: {
+    backgroundColor: "#e0e0e0",
+  },
+  darkPicker: {
+    color: "#fff",
+    backgroundColor: "#121212",
+    borderRadius: 8,
+    marginVertical: 10,
+    paddingHorizontal: 10,
+  },
+  lightPicker: {
+    color: "#000",
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    marginVertical: 10,
+    paddingHorizontal: 10,
   },
 });
 

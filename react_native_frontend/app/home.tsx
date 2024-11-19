@@ -1,27 +1,24 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Alert, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { supabase } from "../src/config/supabaseClient";
-import { useRouter } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "../src/context/ThemeContext";
 import styles from "../src/components/ScreenStyles";
 import ScreenContainer from "../src/components/ScreenContainer";
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
-import { ROUTES } from "../src/config/routes";
-
-const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`; // Edge function URL for challenges
 
 export default function HomeScreen() {
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
+  const [loading] = useState(false);
+  const navigation = useNavigation();
   const { theme } = useTheme();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.replace("/landing");
+    navigation.replace("landing");
   };
 
   return (
     <ScreenContainer>
+      {/* App name */}
       <Text
         style={[
           styles.appName,
@@ -31,15 +28,33 @@ export default function HomeScreen() {
         FitTogether Challenges
       </Text>
 
-      <View style={{ alignItems: "center", width: "100%", marginTop: 12 }}>
+      {/* Form container */}
+      <View
+        style={[
+          styles.formContainer,
+          theme === "dark" ? styles.darkForm : styles.lightForm,
+          { paddingVertical: 20 },
+        ]}
+      >
+        {/* Page title */}
+        <Text
+          style={[
+            styles.title,
+            theme === "dark" ? styles.darkText : styles.lightText,
+            { marginBottom: 20 },
+          ]}
+        >
+          Start Your Journey
+        </Text>
+
+        {/* Buttons */}
         <TouchableOpacity
           style={[
             styles.button,
             theme === "dark" ? styles.darkButton : styles.lightButton,
-            { width: "70%" },
+            { width: "70%", marginBottom: 14, marginTop: 5 },
           ]}
-          // onPress={() => router.push("/displayAllChallenges")}
-          onPress={() => router.push(ROUTES.allChallenges)}
+          onPress={() => navigation.navigate("Challenges")}
           disabled={loading}
         >
           <Text style={styles.buttonText}>
@@ -50,22 +65,20 @@ export default function HomeScreen() {
           style={[
             styles.button,
             theme === "dark" ? styles.darkButton : styles.lightButton,
-            { width: "70%" },
+            { width: "70%", marginBottom: 14 },
           ]}
-          // onPress={() => router.push("/CreateChallengeScreen")}
-          onPress={() => router.push(ROUTES.createChallenge)}
+          onPress={() => navigation.navigate("CreateChallenge")}
           disabled={loading}
         >
           <Text style={styles.buttonText}>
-            {loading ? "Create Challenge..." : "Create a New Challenges"}
+            {loading ? "Create Challenge..." : "Create a New Challenge"}
           </Text>
         </TouchableOpacity>
-
         <TouchableOpacity
           style={[
             styles.button,
             theme === "dark" ? styles.darkButton : styles.lightButton,
-            { marginTop: 4, width: "35%" },
+            { width: "35%", marginBottom: 4, marginTop: 10 },
           ]}
           onPress={handleLogout}
         >
