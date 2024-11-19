@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { supabase } from "../src/config/supabaseClient";
-// import { useRouter } from "expo-router";
-import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import { useTheme } from "../src/context/ThemeContext";
 import styles from "../src/components/ScreenStyles";
 import ScreenContainer from "../src/components/ScreenContainer";
@@ -10,18 +9,11 @@ import { ROUTES } from "../src/config/routes";
 import UserChallengesList from "@/src/components/userChallenges/UserChallengesList";
 
 export default function HomeScreen() {
-  // const [loading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null); // error state
   const [userUuid, setUserUuid] = useState<string | null>(null); // userUuid state (instead of userId)
-<<<<<<< HEAD
-  const navigation = useNavigation();
-  const { theme } = useTheme();
-  // const router = useRouter();
-=======
   const { theme } = useTheme();
   const router = useRouter();
->>>>>>> 3ca0243 (Display user's challenges on home screen.)
 
   // Fetch user data (userUuid) when the component mounts
   useEffect(() => {
@@ -53,50 +45,15 @@ export default function HomeScreen() {
 
     fetchUserData();
   }, []); // Only run once when component mounts
-<<<<<<< HEAD
-
-  // Fetch challenges once userId is set
-  useEffect(() => {
-    const fetchUserChallenges = async () => {
-      if (!userId) return;
-
-      setLoading(true);
-      setError(null); // Reset error state before fetching
-
-      try {
-        const response = await getUserChallenges(userId); // Assuming this function makes the API call
-        console.log("Challenges response:", response); // Log the response
-        if ("error" in response) { // Check if error is in the response
-          if (typeof response.error === "string") {
-            setError(response.error); // If error exists, set the error message
-          } else {
-            setError("An unknown error occurred.");
-          }
-        } else {
-          setChallenges(response); // Store the fetched challenges
-        }
-      } catch (err) {
-        console.error("Error fetching user challenges:", err);
-        setError("Failed to load user challenges.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserChallenges();
-  }, [userId]); // This effect runs when userId is set
-=======
->>>>>>> 3ca0243 (Display user's challenges on home screen.)
 
   // Logout handler
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    navigation.replace("landing");
+    router.replace("/landing");
   };
 
   return (
     <ScreenContainer>
-      {/* App name */}
       <Text
         style={[
           styles.appName,
@@ -116,33 +73,15 @@ export default function HomeScreen() {
         userUuid && <UserChallengesList userUuid={userUuid} /> // Pass userUuid to the list component for fetching challenges
       )}
 
-      {/* Form container */}
-      <View
-        style={[
-          styles.formContainer,
-          theme === "dark" ? styles.darkForm : styles.lightForm,
-          { paddingVertical: 20 },
-        ]}
-      >
-        {/* Page title */}
-        <Text
-          style={[
-            styles.title,
-            theme === "dark" ? styles.darkText : styles.lightText,
-            { marginBottom: 20 },
-          ]}
-        >
-          Start Your Journey
-        </Text>
-
-        {/* Buttons */}
+      {/* Action buttons */}
+      <View style={{ alignItems: "center", width: "100%", marginTop: 12 }}>
         <TouchableOpacity
           style={[
             styles.button,
             theme === "dark" ? styles.darkButton : styles.lightButton,
-            { width: "70%", marginBottom: 14, marginTop: 5 },
+            { width: "70%" },
           ]}
-          onPress={() => navigation.navigate("Challenges")}
+          onPress={() => router.push(ROUTES.allChallenges)}
           disabled={loading}
         >
           <Text style={styles.buttonText}>
@@ -154,20 +93,21 @@ export default function HomeScreen() {
           style={[
             styles.button,
             theme === "dark" ? styles.darkButton : styles.lightButton,
-            { width: "70%", marginBottom: 14 },
+            { width: "70%" },
           ]}
-          onPress={() => navigation.navigate("CreateChallenge")}
+          onPress={() => router.push(ROUTES.createChallenge)}
           disabled={loading}
         >
           <Text style={styles.buttonText}>
             {loading ? "Create Challenge..." : "Create a New Challenge"}
           </Text>
         </TouchableOpacity>
+
         <TouchableOpacity
           style={[
             styles.button,
             theme === "dark" ? styles.darkButton : styles.lightButton,
-            { width: "35%", marginBottom: 4, marginTop: 10 },
+            { marginTop: 4, width: "35%" },
           ]}
           onPress={handleLogout}
         >
@@ -191,19 +131,11 @@ export default function HomeScreen() {
 // export default function HomeScreen() {
 //   const [loading, setLoading] = useState(false);
 //   const [error, setError] = useState<string | null>(null); // error state
-<<<<<<< HEAD
-//   const [userUuid, setUserUuid] = useState<string | null>(null); // userUuid state (instead of userId)
-//   const { theme } = useTheme();
-//   const router = useRouter();
-
-//   // Fetch user data (userUuid) when the component mounts
-=======
 //   const [userId, setUserId] = useState<string | null>(null); // userId state
 //   const { theme } = useTheme();
 //   const router = useRouter();
 
 //   // Fetch user data (userId) when the component mounts
->>>>>>> 3ca0243 (Display user's challenges on home screen.)
 //   useEffect(() => {
 //     const fetchUserData = async () => {
 //       setLoading(true);
@@ -216,20 +148,12 @@ export default function HomeScreen() {
 
 //         if (authError || !data?.user?.id) {
 //           setError("User not authenticated or unable to fetch user data.");
-<<<<<<< HEAD
-//           console.log("Auth Error: ", authError); // Log authError if it exists
-=======
 //           console.log("Auth Error: ", authError);  // Log authError if it exists
->>>>>>> 3ca0243 (Display user's challenges on home screen.)
 //           return;
 //         }
 
 //         const userUuid = data.user.id; // Get the authenticated user UUID
-<<<<<<< HEAD
-//         setUserUuid(userUuid); // Set userUuid in state
-=======
 //         setUserId(userUuid); // Set userId in state
->>>>>>> 3ca0243 (Display user's challenges on home screen.)
 //         console.log("User UUID from Supabase Auth:", userUuid); // Log the UUID being used
 //       } catch (err) {
 //         console.error("Error fetching user data:", err); // Log error details
@@ -266,12 +190,7 @@ export default function HomeScreen() {
 //       {loading ? (
 //         <Text>Loading user data...</Text>
 //       ) : (
-<<<<<<< HEAD
-//         // userUuid && <UserChallengesList userId={userUuid} /> // Pass userUuid to the list component for fetching challenges
-//         userUuid && <UserChallengesList userUuid={userUuid} /> // Pass userUuid to the list component for fetching challenges
-=======
 //         userId && <UserChallengesList userId={userId} /> // Pass userId to the list component for fetching challenges
->>>>>>> 3ca0243 (Display user's challenges on home screen.)
 //       )}
 
 //       {/* Action buttons */}

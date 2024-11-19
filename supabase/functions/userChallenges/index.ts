@@ -1,3 +1,4 @@
+
 // import { config } from "https://deno.land/x/dotenv/mod.ts";
 
 // Load env variables
@@ -159,18 +160,81 @@ const createUserChallenge = async (req: Request) => {
     );
   }
 };
+// const createUserChallenge = async (req: Request) => {
+//   try {
+//     const body = JSON.parse(await req.text());
+
+//     if (!body.user_id || !body.challenge_id) {
+//       return new Response(
+//         JSON.stringify({ error: "User ID and Challenge ID are required." }),
+//         { status: 400, headers: corsHeaders }
+//       );
+//     }
+
+//     // Check if the user exists
+//     const userResponse = await supabaseFetch(
+//       `${supabaseUrl}/rest/v1/users?id=eq.${body.user_id}`,
+//       { method: "GET" }
+//     );
+//     const userData = await handleResponse(userResponse);
+//     if (!userData.length) {
+//       return new Response(
+//         JSON.stringify({ error: "User not found." }),
+//         { status: 404, headers: corsHeaders }
+//       );
+//     }
+
+//     // Check if the challenge exists
+//     const challengeResponse = await supabaseFetch(
+//       `${supabaseUrl}/rest/v1/challenges?id=eq.${body.challenge_id}`,
+//       { method: "GET" }
+//     );
+//     const challengeData = await handleResponse(challengeResponse);
+//     if (!challengeData.length) {
+//       return new Response(
+//         JSON.stringify({ error: "Challenge not found." }),
+//         { status: 404, headers: corsHeaders }
+//       );
+//     }
+
+//     // Create the user-challenge relationship
+//     const response = await supabaseFetch(
+//       `${supabaseUrl}/rest/v1/users_challenges`,
+//       {
+//         method: "POST",
+//         body: JSON.stringify({
+//           user_id: body.user_id,
+//           challenge_id: body.challenge_id,
+//         }),
+//       }
+//     );
+
+//     const data = await handleResponse(response);
+//     return new Response(JSON.stringify(data), {
+//       status: 201,
+//       headers: corsHeaders,
+//     });
+//   } catch (error) {
+//     console.error("Error creating user challenge:", error);
+//     return new Response(
+//       JSON.stringify({ error: `Failed to create user challenge: ${error.message}` }),
+//       { status: 500, headers: corsHeaders }
+//     );
+//   }
+// };
 
 // DELETE by ID
+
 const deleteUserChallenge = async (id: string) => {
   const response = await supabaseFetch(
     `${supabaseUrl}/rest/v1/users_challenges?id=eq.${id}`,
     { method: "DELETE" }
   );
 
-//   if (!response.ok) {
-//     const errorData = await response.text();
-//     throw new Error(errorData);
-//   }
+  if (!response.ok) {
+    const errorData = await response.text();
+    throw new Error(errorData);
+  }
 
   return new Response(null, { status: 204, headers: corsHeaders });
 };
@@ -222,5 +286,5 @@ const handleRequest = async (req: Request) => {
   }
 };
 
-// // Start the server
-// Deno.serve(handleRequest);
+// Start the server
+Deno.serve(handleRequest);
