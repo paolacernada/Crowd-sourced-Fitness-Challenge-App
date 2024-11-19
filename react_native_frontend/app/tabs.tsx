@@ -6,6 +6,7 @@ import IndexScreen from "./index";
 import DisplayAllChallengesScreen from "./challenges/DisplayAllChallengesScreen";
 import SearchChallenges from "./searchChallenges";
 import SettingsScreen from "./settings";
+import CreateChallengeScreen from "./challenges/CreateChallengeScreen";
 import { supabase } from "../src/config/supabaseClient";
 import { useRouter } from "expo-router";
 
@@ -47,6 +48,14 @@ export default function BottomTabs() {
         name="Challenges"
         component={DisplayAllChallengesScreen}
         options={{ title: "Challenges", headerShown: false }}
+      />
+      <Tab.Screen
+        name="CreateChallenge"
+        component={CreateChallengeScreen}
+        options={{
+          title: "Create Challenge",
+          headerShown: false,
+        }}
       />
       <Tab.Screen
         name="SearchChallenges"

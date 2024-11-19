@@ -56,7 +56,7 @@ export default function HomeScreen() {
             { width: "70%", marginBottom: 14 },
           ]}
           // onPress={() => router.push("/CreateChallengeScreen")}
-          onPress={() => navigation.navigate("CreateChallengeScreen")}
+          onPress={() => navigation.navigate("CreateChallenge")}
           disabled={loading}
         >
           <Text style={styles.buttonText}>
