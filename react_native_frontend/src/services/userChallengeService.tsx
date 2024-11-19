@@ -12,7 +12,13 @@ const userChallengesUrl = `${SUPABASE_URL}/functions/v1/userChallenges`;
  */
 export const getUserChallenges = async (userId: string): Promise<Challenge[]> => {
   try {
-    const response = await fetch(`${userChallengesUrl}/${userId}`);
+    const response = await fetch(`${userChallengesUrl}/${userId}`, {
+      method: "GET", // Use GET method to fetch challenges
+      headers: {
+        "Content-Type": "application/json",
+        // Add any necessary authorization or headers (e.g., Supabase JWT token if needed)
+      },
+    });
 
     if (!response.ok) {
       throw new Error(`Error: ${response.statusText}`);
