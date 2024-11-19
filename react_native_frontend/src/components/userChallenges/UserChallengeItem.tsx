@@ -1,10 +1,11 @@
+// src/components/UserChallengeItem.tsx
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { Challenge } from "@/src/types/Challenge";
+import { Challenge } from "@/src/types/Challenge"; // Ensure you have imported the Challenge type
 import styles from "@/src/components/ScreenStyles"; // Import your existing styles
 
 interface UserChallengeItemProps {
-  challenge: Challenge;
+  challenge: Challenge; // Expecting a Challenge type here
 }
 
 const UserChallengeItem: React.FC<UserChallengeItemProps> = ({ challenge }) => {
