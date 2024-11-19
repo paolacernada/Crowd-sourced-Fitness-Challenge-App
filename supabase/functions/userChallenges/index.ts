@@ -46,7 +46,9 @@ const handleRequest = async (req: Request) => {
           : await getUserChallenges();
 
       case "POST":
-        return await createUserChallenge(await req.json());
+        // return await createUserChallenge(await req.json());
+        const body = JSON.parse(await req.text());  // Apparently Deno doesn't have req.json() like Node 
+        return await createUserChallenge(body);
 
       case "DELETE":
         return await deleteUserChallenge(id);
@@ -116,7 +118,9 @@ const getUserChallenge = async (userId: string) => {
 // POST
 const createUserChallenge = async (req: Request) => {
   try {
-    const body = await req.json();
+    // Read and parse the JSON body manually
+    const body = JSON.parse(await req.text());
+
     if (!body.user_id || !body.challenge_id) {
       return new Response(
         JSON.stringify({ error: "User ID and Challenge ID are required." }),
@@ -124,27 +128,30 @@ const createUserChallenge = async (req: Request) => {
       );
     }
 
-    // Checks if both user_id and challenge_id exist
+    // Check if the user exists
     const userResponse = await supabaseFetch(
       `${supabaseUrl}/rest/v1/users?id=eq.${body.user_id}`,
       { method: "GET" }
     );
+    const userData = await handleResponse(userResponse);
+    if (!userData.length) {
+      return new Response(
+        JSON.stringify({ error: "User not found." }),
+        { status: 404 }
+      );
+    }
 
+    // Check if the challenge exists
     const challengeResponse = await supabaseFetch(
       `${supabaseUrl}/rest/v1/challenges?id=eq.${body.challenge_id}`,
       { method: "GET" }
     );
-
-    if (!userResponse.ok || !(await userResponse.json()).length) {
-      return new Response(JSON.stringify({ error: "User not found." }), {
-        status: 404,
-      });
-    }
-
-    if (!challengeResponse.ok || !(await challengeResponse.json()).length) {
-      return new Response(JSON.stringify({ error: "Challenge not found." }), {
-        status: 404,
-      });
+    const challengeData = await handleResponse(challengeResponse);
+    if (!challengeData.length) {
+      return new Response(
+        JSON.stringify({ error: "Challenge not found." }),
+        { status: 404 }
+      );
     }
 
     // Create the user-challenge relationship
@@ -159,19 +166,80 @@ const createUserChallenge = async (req: Request) => {
       }
     );
 
+    // Log the response for debugging
     const data = await handleResponse(response);
+    console.log("Created user-challenge:", data); // Debug log
+    
     return new Response(JSON.stringify(data), {
       status: 201,
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Error creating user challenge:", error);
+    console.error("Error creating user challenge:", error); // More detailed error logging
     return new Response(
-      JSON.stringify({ error: "Failed to create user challenge." }),
+      JSON.stringify({ error: `Failed to create user challenge: ${error.message}` }),
       { status: 500 }
     );
   }
 };
+// const createUserChallenge = async (req: Request) => {
+//   try {
+//     const body = await req.json();
+//     if (!body.user_id || !body.challenge_id) {
+//       return new Response(
+//         JSON.stringify({ error: "User ID and Challenge ID are required." }),
+//         { status: 400 }
+//       );
+//     }
+
+//     // Checks if both user_id and challenge_id exist
+//     const userResponse = await supabaseFetch(
+//       `${supabaseUrl}/rest/v1/users?id=eq.${body.user_id}`,
+//       { method: "GET" }
+//     );
+
+//     const challengeResponse = await supabaseFetch(
+//       `${supabaseUrl}/rest/v1/challenges?id=eq.${body.challenge_id}`,
+//       { method: "GET" }
+//     );
+
+//     if (!userResponse.ok || !(await userResponse.json()).length) {
+//       return new Response(JSON.stringify({ error: "User not found." }), {
+//         status: 404,
+//       });
+//     }
+
+//     if (!challengeResponse.ok || !(await challengeResponse.json()).length) {
+//       return new Response(JSON.stringify({ error: "Challenge not found." }), {
+//         status: 404,
+//       });
+//     }
+
+//     // Create the user-challenge relationship
+//     const response = await supabaseFetch(
+//       `${supabaseUrl}/rest/v1/users_challenges`,
+//       {
+//         method: "POST",
+//         body: JSON.stringify({
+//           user_id: body.user_id,
+//           challenge_id: body.challenge_id,
+//         }),
+//       }
+//     );
+
+//     const data = await handleResponse(response);
+//     return new Response(JSON.stringify(data), {
+//       status: 201,
+//       headers: { "Content-Type": "application/json" },
+//     });
+//   } catch (error) {
+//     console.error("Error creating user challenge:", error);
+//     return new Response(
+//       JSON.stringify({ error: "Failed to create user challenge." }),
+//       { status: 500 }
+//     );
+//   }
+// };
 
 // DELETE by ID
 const deleteUserChallenge = async (id: string) => {
