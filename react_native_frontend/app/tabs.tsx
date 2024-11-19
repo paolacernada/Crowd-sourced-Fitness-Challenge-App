@@ -47,7 +47,7 @@ export default function BottomTabs() {
       <Tab.Screen
         name="Challenges"
         component={DisplayAllChallengesScreen}
-        options={{ title: "Challenges", headerShown: false }}
+        options={{ title: "All Challenges", headerShown: false }}
       />
       <Tab.Screen
         name="CreateChallenge"

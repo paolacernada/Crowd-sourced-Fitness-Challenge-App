@@ -1,5 +1,6 @@
 import React from "react";
 import { TextInput, View } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 import styles from "../../components/ScreenStyles";
 
 interface ChallengeFormProps {
@@ -36,16 +37,20 @@ export const ChallengeForm: React.FC<ChallengeFormProps> = ({
         theme === "dark" ? styles.darkInput : styles.lightInput,
       ]}
     />
-    <TextInput
-      placeholder="Difficulty"
-      value={challengeData.difficulty}
-      onChangeText={(text) =>
-        setChallengeData({ ...challengeData, difficulty: text })
+    <Picker
+      selectedValue={challengeData.difficulty}
+      onValueChange={(value: string) =>
+        setChallengeData({ ...challengeData, difficulty: value })
       }
       style={[
         styles.input,
         theme === "dark" ? styles.darkInput : styles.lightInput,
       ]}
-    />
+    >
+      <Picker.Item label="Select Difficulty" value="" />
+      <Picker.Item label="Easy" value="Easy" />
+      <Picker.Item label="Medium" value="Medium" />
+      <Picker.Item label="Hard" value="Hard" />
+    </Picker>
   </View>
 );
