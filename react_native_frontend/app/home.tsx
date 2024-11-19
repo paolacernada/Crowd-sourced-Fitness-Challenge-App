@@ -1,23 +1,19 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { supabase } from "../src/config/supabaseClient";
-import { useRouter } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "../src/context/ThemeContext";
 import styles from "../src/components/ScreenStyles";
 import ScreenContainer from "../src/components/ScreenContainer";
-import { SUPABASE_URL } from "@env";
-import { ROUTES } from "../src/config/routes";
-
-const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`; // Edge function URL for challenges
 
 export default function HomeScreen() {
   const [loading] = useState(false);
-  const router = useRouter();
+  const navigation = useNavigation();
   const { theme } = useTheme();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.replace("/landing");
+    navigation.replace("landing");
   };
 
   return (
@@ -46,7 +42,7 @@ export default function HomeScreen() {
             { width: "70%", marginBottom: 14, marginTop: 16 },
           ]}
           // onPress={() => router.push("/displayAllChallenges")}
-          onPress={() => router.push(ROUTES.allChallenges)}
+          onPress={() => navigation.navigate("Challenges")}
           disabled={loading}
         >
           <Text style={styles.buttonText}>
@@ -60,11 +56,11 @@ export default function HomeScreen() {
             { width: "70%", marginBottom: 14 },
           ]}
           // onPress={() => router.push("/CreateChallengeScreen")}
-          onPress={() => router.push(ROUTES.createChallenge)}
+          onPress={() => navigation.navigate("CreateChallengeScreen")}
           disabled={loading}
         >
           <Text style={styles.buttonText}>
-            {loading ? "Create Challenge..." : "Create a New Challenges"}
+            {loading ? "Create Challenge..." : "Create a New Challenge"}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity

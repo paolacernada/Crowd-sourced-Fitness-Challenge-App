@@ -6,14 +6,13 @@ import {
   ActivityIndicator,
   Alert,
   TouchableOpacity,
-  ScrollView,
 } from "react-native";
 import { getAllChallenges } from "@/src/services/challengeService";
 import { useTheme } from "../../src/context/ThemeContext";
 import styles from "../../src/components/ScreenStyles";
 import ScreenContainer from "../../src/components/ScreenContainer";
 import { Challenge } from "@/src/types/Challenge";
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
+import { SUPABASE_URL } from "@env";
 
 // Supabase Edge Function URL for challenges
 const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`;
@@ -177,29 +176,22 @@ export default function SearchChallengeScreen() {
         All Challenges
       </Text>
 
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{
-          paddingBottom: 20,
-          paddingHorizontal: 10,
-        }}
-      >
-        <FlatList
-          data={challenges}
-          renderItem={renderChallenge}
-          keyExtractor={(item) => item.id.toString()}
-          ListEmptyComponent={
-            <Text
-              style={[
-                styles.lightText,
-                theme === "dark" ? styles.darkText : styles.lightText,
-              ]}
-            >
-              No challenges found.
-            </Text>
-          }
-        />
-      </ScrollView>
+      <FlatList
+        data={challenges}
+        renderItem={renderChallenge}
+        keyExtractor={(item) => item.id.toString()}
+        contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 10 }}
+        ListEmptyComponent={
+          <Text
+            style={[
+              styles.lightText,
+              theme === "dark" ? styles.darkText : styles.lightText,
+            ]}
+          >
+            No challenges found.
+          </Text>
+        }
+      />
     </ScreenContainer>
   );
 }
