@@ -28,7 +28,7 @@ export default function HomeScreen() {
 
         if (authError || !data?.user?.id) {
           setError("User not authenticated or unable to fetch user data.");
-          console.log("Auth Error: ", authError);  // Log authError if it exists
+          console.log("Auth Error: ", authError); // Log authError if it exists
           return;
         }
 
