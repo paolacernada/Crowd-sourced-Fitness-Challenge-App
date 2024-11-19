@@ -3,7 +3,7 @@ INSERT INTO users (name)
 VALUES
 ('Sam'),
 ('Paola'),
-('Liz');
+('Natalia');
 
 -- Insert starter badges data
 INSERT INTO badges (name, description)
