@@ -5,6 +5,12 @@ import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "../src/context/ThemeContext";
 import styles from "../src/components/ScreenStyles";
 import ScreenContainer from "../src/components/ScreenContainer";
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
+import { ROUTES } from "../src/config/routes";
+import { Challenge } from "@/src/types/Challenge";
+
+
+// const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`; // Edge function URL for challenges
 
 export default function HomeScreen() {
   const [loading] = useState(false);
