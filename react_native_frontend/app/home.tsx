@@ -17,8 +17,9 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { theme } = useTheme();
-  const [userId, setUserId] = useState<string | null>(null);  // userId state
   const [error, setError] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null); // userId state
+  const [challenges, setChallenges] = useState<any[]>([]); // Store user challenges
 
   // Fetch user challenges when the component mounts
   // Fetch user ID and challenges on mount
@@ -49,6 +50,36 @@ export default function HomeScreen() {
 
     fetchUserData();
   }, []); // Empty dependency array means this effect runs once on mount
+
+  // Fetch challenges once userId is set
+  useEffect(() => {
+    const fetchUserChallenges = async () => {
+      if (!userId) return;
+
+      setLoading(true);
+      setError(null); // Reset error state before fetching
+
+      try {
+        const response = await getUserChallenges(userId); // Assuming this function makes the API call
+        if ('error' in response) {  // Check if error is in the response
+          if (typeof response.error === 'string') {
+            setError(response.error);  // If error exists, set the error message
+          } else {
+            setError("An unknown error occurred.");
+          }
+        } else {
+          setChallenges(response); // Store the fetched challenges
+        }
+      } catch (err) {
+        console.error("Error fetching user challenges:", err);
+        setError("Failed to load user challenges.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserChallenges();
+  }, [userId]); // This effect runs when userId is set
 
   // Logout handler
   const handleLogout = async () => {

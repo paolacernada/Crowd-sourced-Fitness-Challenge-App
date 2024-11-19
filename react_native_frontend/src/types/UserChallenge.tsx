@@ -1,7 +1,7 @@
 import { Challenge } from "./Challenge";
 
 export interface UserChallenge {
-    id: number;
-    challenge_id: number;
-    challenges: Challenge;
-  }
+  id: number;
+  challenge_id: number;
+  challenges: Challenge;
+}

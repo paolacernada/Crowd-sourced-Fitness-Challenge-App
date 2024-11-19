@@ -10,7 +10,9 @@ const userChallengesUrl = `${SUPABASE_URL}/functions/v1/userChallenges`;
  * @param userId The ID of the user to fetch challenges for
  * @returns A promise that resolves to an array of challenges the user is involved in
  */
-export const getUserChallenges = async (userId: string): Promise<Challenge[]> => {
+export const getUserChallenges = async (
+  userId: string
+): Promise<Challenge[]> => {
   try {
     const response = await fetch(`${userChallengesUrl}/${userId}`, {
       method: "GET", // Use GET method to fetch challenges
@@ -24,10 +26,12 @@ export const getUserChallenges = async (userId: string): Promise<Challenge[]> =>
       throw new Error(`Error: ${response.statusText}`);
     }
 
+    // Parse the response body as Challenge[] if the response is OK
     const data: Challenge[] = await response.json();
-    return data;
+    console.log('Fetched challenges for user:', data);
+    return data; // Return the list of challenges
   } catch (error) {
     console.error("Failed to load user challenges:", error);
-    throw new Error("Failed to load user challenges");
+    return { error: "Failed to load user challenges" }; // Return an error object
   }
 };
