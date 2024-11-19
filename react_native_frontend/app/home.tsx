@@ -1,17 +1,17 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Alert, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { supabase } from "../src/config/supabaseClient";
 import { useRouter } from "expo-router";
 import { useTheme } from "../src/context/ThemeContext";
 import styles from "../src/components/ScreenStyles";
 import ScreenContainer from "../src/components/ScreenContainer";
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
+import { SUPABASE_URL } from "@env";
 import { ROUTES } from "../src/config/routes";
 
 const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`; // Edge function URL for challenges
 
 export default function HomeScreen() {
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const router = useRouter();
   const { theme } = useTheme();
 

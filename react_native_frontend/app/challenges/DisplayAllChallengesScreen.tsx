@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, ActivityIndicator, Alert } from "react-native";
-
+import {
+  View,
+  Text,
+  FlatList,
+  ActivityIndicator,
+  Alert,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import { getAllChallenges } from "@/src/services/challengeService";
 import { useTheme } from "../../src/context/ThemeContext";
 import styles from "../../src/components/ScreenStyles";
 import ScreenContainer from "../../src/components/ScreenContainer";
 import { Challenge } from "@/src/types/Challenge";
-
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
 
 // Supabase Edge Function URL for challenges
@@ -71,11 +77,24 @@ export default function SearchChallengeScreen() {
 
   // Render each challenge in the list
   const renderChallenge = ({ item }: { item: Challenge }) => (
-    <View style={styles.challengeItem}>
+    <View
+      style={[
+        styles.challengeItem,
+        theme === "dark" ? styles.darkForm : styles.lightForm,
+        {
+          padding: 16,
+          marginBottom: 20,
+          borderRadius: 12,
+          borderWidth: 2,
+          borderColor: theme === "dark" ? "#b05600" : "#f48c42",
+        },
+      ]}
+    >
       <Text
         style={[
           styles.challengeText,
           theme === "dark" ? styles.darkText : styles.lightText,
+          { fontWeight: "bold", fontSize: 18, marginBottom: 8 },
         ]}
       >
         {item.name}
@@ -84,29 +103,40 @@ export default function SearchChallengeScreen() {
         style={[
           styles.challengeText,
           theme === "dark" ? styles.darkText : styles.lightText,
+          { fontSize: 14, marginBottom: 6 },
         ]}
       >
-        {item.difficulty}
+        Difficulty: {item.difficulty}
       </Text>
       <Text
         style={[
           styles.challengeText,
           theme === "dark" ? styles.darkText : styles.lightText,
+          { fontSize: 14, marginBottom: 16 },
         ]}
       >
         {item.description}
       </Text>
-      <button onClick={() => handleDelete(item.id)}>Delete</button>
+      <TouchableOpacity
+        style={[
+          styles.button,
+          theme === "dark" ? styles.darkButton : styles.lightButton,
+          { alignSelf: "center", paddingHorizontal: 20, marginBottom: -4 },
+        ]}
+        onPress={() => handleDelete(item.id)}
+      >
+        <Text style={styles.buttonText}>Delete</Text>
+      </TouchableOpacity>
     </View>
   );
 
-  // Shows a spinner if loading
   if (loading) {
     return (
-      <ScreenContainer
-      //  style={styles.container}
-      >
-        <ActivityIndicator size="large" color="#0000ff" />
+      <ScreenContainer>
+        <ActivityIndicator
+          size="large"
+          color={theme === "dark" ? "#fff" : "#000"}
+        />
       </ScreenContainer>
     );
   }
@@ -114,19 +144,62 @@ export default function SearchChallengeScreen() {
   if (error) {
     return (
       <ScreenContainer>
-        <Text>{error}</Text>
+        <Text
+          style={[
+            styles.errorText,
+            theme === "dark" ? styles.darkText : styles.lightText,
+          ]}
+        >
+          {error}
+        </Text>
       </ScreenContainer>
     );
   }
+
   return (
     <ScreenContainer>
-      <FlatList
-        data={challenges}
-        renderItem={renderChallenge}
-        keyExtractor={(item) => item.id.toString()}
-        // style={styles.container}
-        ListEmptyComponent={<Text>No challenges found.</Text>}
-      />
+      <Text
+        style={[
+          styles.appName,
+          theme === "dark" ? styles.darkAppName : styles.lightAppName,
+        ]}
+      >
+        FitTogether Challenges
+      </Text>
+
+      <Text
+        style={[
+          styles.title,
+          theme === "dark" ? styles.darkText : styles.lightText,
+          { marginBottom: 20 },
+        ]}
+      >
+        All Challenges
+      </Text>
+
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          paddingBottom: 20,
+          paddingHorizontal: 10,
+        }}
+      >
+        <FlatList
+          data={challenges}
+          renderItem={renderChallenge}
+          keyExtractor={(item) => item.id.toString()}
+          ListEmptyComponent={
+            <Text
+              style={[
+                styles.lightText,
+                theme === "dark" ? styles.darkText : styles.lightText,
+              ]}
+            >
+              No challenges found.
+            </Text>
+          }
+        />
+      </ScrollView>
     </ScreenContainer>
   );
 }
