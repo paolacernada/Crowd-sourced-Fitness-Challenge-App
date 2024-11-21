@@ -1,17 +1,25 @@
 import { config } from "https://deno.land/x/dotenv/mod.ts";
 
-// Load env variables
+// Load environment variables
 const env = config({ path: "../../.env.supabase" });
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
 
-// Validates env variables
+// Validate environment variables
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error("Environment variables are not set correctly.");
 }
 
-// Fetches data
+// CORS headers to allow frontend access
+const corsHeaders = {
+  "Content-Type": "application/json",
+  "Access-Control-Allow-Origin": "*", // Replace "*" with your frontend URL
+  "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey",
+};
+
+// Helper function to make Supabase API requests
 const supabaseFetch = async (url: string, options: RequestInit) => {
   const response = await fetch(url, {
     ...options,
@@ -22,149 +30,143 @@ const supabaseFetch = async (url: string, options: RequestInit) => {
       "Content-Type": "application/json",
     },
   });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    console.error("Supabase response error:", errorData);
+    throw new Error(errorData.message);
+  }
+
   return response;
 };
 
+// Handle JSON response from Supabase
 const handleResponse = async (response: Response) => {
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message);
+  const text = await response.text();
+  if (!text) {
+    return {};
   }
-  return await response.json();
+
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    console.error("Error parsing response:", error);
+    return {};
+  }
 };
 
+// GET: Fetch all challenge-tag relationships (M table)
+const getAllChallengeTags = async () => {
+  const response = await supabaseFetch(
+    `${supabaseUrl}/rest/v1/challenge_tags`,
+    { method: "GET" }
+  );
+  const data = await handleResponse(response);
+  return new Response(JSON.stringify(data), { headers: corsHeaders });
+};
+
+// GET: Fetch challenge-tag relationship by challenge_id
+const getChallengeTagsByChallengeId = async (challengeId: string) => {
+  // Ensure the challenge_id is a valid number
+  const challengeIdNumber = Number(challengeId);
+
+  if (isNaN(challengeIdNumber)) {
+    return new Response(
+      JSON.stringify({ error: "Invalid challenge ID format." }),
+      { status: 400, headers: corsHeaders }
+    );
+  }
+
+  const response = await supabaseFetch(
+    `${supabaseUrl}/rest/v1/challenge_tags?challenge_id=eq.${challengeIdNumber}`,
+    { method: "GET" }
+  );
+  const data = await handleResponse(response);
+  return new Response(JSON.stringify(data), { headers: corsHeaders });
+};
+
+// GET: Fetch challenge-tag relationship by tag_id
+const getChallengeTagsByTagId = async (tagId: string) => {
+  // Ensure the tag_id is a valid number
+  const tagIdNumber = Number(tagId);
+
+  if (isNaN(tagIdNumber)) {
+    return new Response(JSON.stringify({ error: "Invalid tag ID format." }), {
+      status: 400,
+      headers: corsHeaders,
+    });
+  }
+
+  const response = await supabaseFetch(
+    `${supabaseUrl}/rest/v1/challenge_tags?tag_id=eq.${tagIdNumber}`,
+    { method: "GET" }
+  );
+  const data = await handleResponse(response);
+  return new Response(JSON.stringify(data), { headers: corsHeaders });
+};
+
+// Handle OPTIONS preflight requests for CORS
+const handleOptions = () => {
+  return new Response(null, {
+    status: 204,
+    headers: corsHeaders,
+  });
+};
+
+// Main request handler
 const handleRequest = async (req: Request) => {
   const url = new URL(req.url);
-  const path = url.pathname.split("/").filter(Boolean);
-  const id = path.pop();
+  const challengeId = url.searchParams.get("challenge_id"); // Extract challenge_id from query parameters
+  const tagId = url.searchParams.get("tag_id"); // Extract tag_id from query parameters
+
+  // Log for debugging
+  console.log(`Request URL: ${req.url}`);
+  console.log(`Challenge ID: ${challengeId}`);
+  console.log(`Tag ID: ${tagId}`);
+
+  // Handle preflight OPTIONS requests for CORS
+  if (req.method === "OPTIONS") {
+    return handleOptions();
+  }
 
   try {
     switch (req.method) {
       case "GET":
-        return id && !isNaN(Number(id))
-          ? await getChallengeTag(id)
-          : await getChallengeTags();
+        // If no specific query params, return all challenge tags
+        if (!challengeId && !tagId) {
+          return await getAllChallengeTags();
+        }
 
-      case "POST":
-        return await createChallengeTag(await req.json());
+        // If challenge_id is provided, fetch challenge tags by challenge_id
+        if (challengeId) {
+          return await getChallengeTagsByChallengeId(challengeId);
+        }
 
-      case "DELETE":
-        return await deleteChallengeTag(id);
+        // If tag_id is provided, fetch challenge tags by tag_id
+        if (tagId) {
+          return await getChallengeTagsByTagId(tagId);
+        }
+
+        // If no valid parameters are passed, return an error
+        return new Response(
+          JSON.stringify({ error: "Missing valid query parameter." }),
+          { status: 400, headers: corsHeaders }
+        );
 
       default:
-        return new Response("Method Not Allowed", { status: 405 });
+        return new Response("Method Not Allowed", {
+          status: 405,
+          headers: corsHeaders,
+        });
     }
   } catch (error) {
     console.error("Internal Error:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: corsHeaders,
     });
   }
 };
 
-// Handlers for different HTTP methods
-// GET (all) challenge-tag relationships
-const getChallengeTags = async () => {
-  const response = await supabaseFetch(
-    `${supabaseUrl}/rest/v1/challenge_tags`,
-    {
-      method: "GET",
-    }
-  );
-  const data = await handleResponse(response);
-  return new Response(JSON.stringify(data), {
-    headers: { "Content-Type": "application/json" },
-  });
-};
-
-// GET (challenge-tag relationship) by ID
-const getChallengeTag = async (id: string) => {
-  const response = await supabaseFetch(
-    `${supabaseUrl}/rest/v1/challenge_tags?id=eq.${id}`,
-    { method: "GET" }
-  );
-  const data = await handleResponse(response);
-  return new Response(JSON.stringify(data), {
-    headers: { "Content-Type": "application/json" },
-  });
-};
-
-// POST: Create a new challenge-tag relationship
-const createChallengeTag = async (req: Request) => {
-  try {
-    const body = await req.json();
-    if (!body.challenge_id || !body.tag_id) {
-      return new Response(
-        JSON.stringify({ error: "Challenge ID and Tag ID are required." }),
-        { status: 400 }
-      );
-    }
-
-    // Check if the challenge exists
-    const challengeResponse = await supabaseFetch(
-      `${supabaseUrl}/rest/v1/challenges?id=eq.${body.challenge_id}`,
-      { method: "GET" }
-    );
-    const challengeData = await handleResponse(challengeResponse);
-    if (!challengeData.length) {
-      return new Response(JSON.stringify({ error: "Challenge not found." }), {
-        status: 404,
-      });
-    }
-
-    // Check if the tag exists
-    const tagResponse = await supabaseFetch(
-      `${supabaseUrl}/rest/v1/tags?id=eq.${body.tag_id}`,
-      { method: "GET" }
-    );
-    const tagData = await handleResponse(tagResponse);
-    if (!tagData.length) {
-      return new Response(JSON.stringify({ error: "Tag not found." }), {
-        status: 404,
-      });
-    }
-
-    // Create the challenge-tag relationship
-    const response = await supabaseFetch(
-      `${supabaseUrl}/rest/v1/challenge_tags`,
-      {
-        method: "POST",
-        body: JSON.stringify({
-          challenge_id: body.challenge_id,
-          tag_id: body.tag_id,
-        }),
-      }
-    );
-
-    const data = await handleResponse(response);
-    return new Response(JSON.stringify(data), {
-      status: 201,
-      headers: { "Content-Type": "application/json" },
-    });
-  } catch (error) {
-    console.error("Error creating challenge-tag relationship:", error);
-    return new Response(
-      JSON.stringify({ error: "Failed to create challenge-tag relationship." }),
-      { status: 500 }
-    );
-  }
-};
-
-// DELETE: Remove challenge-tag relationship by ID
-const deleteChallengeTag = async (id: string) => {
-  const response = await supabaseFetch(
-    `${supabaseUrl}/rest/v1/challenge_tags?id=eq.${id}`,
-    { method: "DELETE" }
-  );
-
-  if (!response.ok) {
-    const errorData = await response.text();
-    throw new Error(errorData);
-  }
-
-  return new Response(null, { status: 204 });
-};
-
-// Start the server
+// Start the Deno edge function server
 Deno.serve(handleRequest);
