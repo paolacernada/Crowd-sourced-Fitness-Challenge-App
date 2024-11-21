@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Alert, TouchableOpacity } from "react-native";
-import { supabase } from "../src/config/supabaseClient";
+import { supabase } from "../config/supabaseClient";
 import { useRouter } from "expo-router";
-import { useTheme } from "../src/context/ThemeContext";
-import ScreenContainer from "../src/components/ScreenContainer";
-import styles from "../src/components/ScreenStyles";
+import { useTheme } from "../context/ThemeContext";
+import ScreenContainer from "../components/ScreenContainer";
+import styles from "../components/ScreenStyles";
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
 
 const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`; // Edge function URL for challenges

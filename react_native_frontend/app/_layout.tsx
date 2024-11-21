@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { supabase } from "../src/config/supabaseClient";
 import { ThemeProvider } from "../src/context/ThemeContext";
+import { Provider } from "react-redux";
+import store from "../src/redux/store";
 
 export default function RootLayout() {
   const router = useRouter();
@@ -27,22 +29,24 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <ThemeProvider>
-      <Stack screenOptions={{ headerShown: false }}>
-        {!isAuthenticated ? (
-          <>
-            <Stack.Screen name="landing" />
-            <Stack.Screen name="login" />
-            <Stack.Screen name="register" />
-          </>
-        ) : (
-          <>
-            <Stack.Screen name="tabs" />
-            <Stack.Screen name="searchChallenges" />
-            <Stack.Screen name="challengeDetails" />
-          </>
-        )}
-      </Stack>
-    </ThemeProvider>
+    <Provider store={store}>
+      <ThemeProvider>
+        <Stack screenOptions={{ headerShown: false }}>
+          {!isAuthenticated ? (
+            <>
+              <Stack.Screen name="landing" />
+              <Stack.Screen name="login" />
+              <Stack.Screen name="register" />
+            </>
+          ) : (
+            <>
+              <Stack.Screen name="tabs" />
+              <Stack.Screen name="searchChallenges" />
+              <Stack.Screen name="challengeDetails" />
+            </>
+          )}
+        </Stack>
+      </ThemeProvider>
+    </Provider>
   );
 }
