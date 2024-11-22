@@ -10,7 +10,7 @@ console.log("All environment variables:", Deno.env.toObject());
 // Set up environment variables
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
-// Todo: add supabaseServiceKey equivalent to localbackend users route(s) too
+// Todo: add supabaseServiceKey equivalent to local backend users route(s) too
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
 // For testing

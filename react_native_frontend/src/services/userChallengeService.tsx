@@ -1,4 +1,4 @@
-import { UserChallenge } from "@/src/types/UserChallenge"; // Import UserChallenge type
+import { UserChallenge } from "@/src/types/UserChallenge";
 import { SUPABASE_URL } from "@env";
 
 // Define the Edge function URL for fetching user-specific challenges
