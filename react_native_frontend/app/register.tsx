@@ -14,7 +14,6 @@ export default function RegisterScreen() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState(""); // New username state
-  const [username, setUsername] = useState(""); // New username state
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -23,26 +22,12 @@ export default function RegisterScreen() {
   const handleRegister = async () => {
     setLoading(true);
 
-<<<<<<< HEAD
-    // Validate password
-
-    // Validate password
-=======
->>>>>>> samberven
     if (password !== confirmPassword) {
       Alert.alert("Error", "Passwords do not match!");
       setLoading(false);
       return;
     }
 
-<<<<<<< HEAD
-    // Attempt to sign up the user
-    // Attempt to sign up the user
-    const { data, data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-=======
     try {
       const response = await fetch(edgeFunctionUrl, {
         method: "POST",
@@ -57,68 +42,9 @@ export default function RegisterScreen() {
           username,
         }),
       });
->>>>>>> samberven
 
       const data = await response.json();
 
-<<<<<<< HEAD
-    // Debugging output
-    console.log("Sign-up response:", { user, error });
-    // // Note: delete this after figuring out whiy the uuid isn't being inserted in the users entry
-    // console.log("User object:", user, error);
-
-    const user = data?.user; // Accessing user from the data object
-
-    // Debugging output
-    console.log("Sign-up response:", { user, error });
-    // // Note: delete this after figuring out whiy the uuid isn't being inserted in the users entry
-    // console.log("User object:", user, error);
-
-    if (error) {
-      console.error("Sign-up error:", error);
-      Alert.alert("Registration Error", error.message);
-      setLoading(false);
-      return; // todo: doublecheck if returning here is the best approach
-    }
-
-    // Insert new user data (with uuid) into PostgreSQL database
-<<<<<<< HEAD
-    // todo: update local and deployed Supabase Edge Functions and use those instead of Supabase code
-=======
-    // todo: use deployed Supabase Edge Functions instead of embedded Supabase code
->>>>>>> 0e759db (Implement authentication + postgresql users entry (Use embedded supabase code in react native))
-    const { error: dbError } = await supabase.from("users").insert([
-      {
-        name: `${firstName} ${lastName}`,
-        username, // Include username
-        uuid: user?.id, // Using the Supabase Auth UUID
-      },
-    ]);
-
-    if (dbError) {
-      Alert.alert("Database Error", dbError.message);
-      setLoading(false);
-      return; // todo: doublecheck if returning here is the best approach
-    }
-
-    // Insert new user data (with uuid) into PostgreSQL database
-    // todo: use deployed Supabase Edge Functions instead of embedded Supabase code
-    const { error: dbError } = await supabase.from("users").insert([
-      {
-        name: `${firstName} ${lastName}`,
-        username, // Include username
-        uuid: user?.id, // Using the Supabase Auth UUID
-      },
-    ]);
-
-    if (dbError) {
-      Alert.alert("Database Error", dbError.message);
-      setLoading(false);
-    } else {
-      Alert.alert("Success", "Account created! Please log in.");
-      setLoading(false);
-      router.push("/login");
-=======
       if (!response.ok) {
         Alert.alert("Registration Error", data.error || "Failed to register");
       } else {
@@ -130,7 +56,6 @@ export default function RegisterScreen() {
       Alert.alert("Error", "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
->>>>>>> samberven
     }
   };
 
