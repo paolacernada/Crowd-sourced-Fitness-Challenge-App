@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, ActivityIndicator } from "react-native";
+import { Text, ActivityIndicator, View } from "react-native";
 import { supabase } from "../src/config/supabaseClient";
-import styles from "../components/ScreenStyles";
+import { useTheme } from "../src/context/ThemeContext";
+import ScreenContainer from "../src/components/ScreenContainer";
+import styles from "../src/components/ScreenStyles";
 
-export default function Index() {
+export default function IndexScreen() {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { theme } = useTheme();
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -23,34 +26,53 @@ export default function Index() {
 
   if (loading) {
     return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
+      <ScreenContainer>
+        <ActivityIndicator
+          size="large"
+          color={theme === "dark" ? "#fff" : "#f48c42"}
+        />
+      </ScreenContainer>
     );
   }
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text style={{ fontSize: 24, fontWeight: "bold" }}>
-        FitTogether Users:
+    <ScreenContainer>
+      <Text
+        style={[
+          styles.appName,
+          theme === "dark" ? styles.darkAppName : styles.lightAppName,
+        ]}
+      >
+        FitTogether Challenges
       </Text>
-      {users.map((user, index) => (
-        <Text key={index} style={{ fontSize: 18 }}>
-          {user.name}
+
+      <View
+        style={[
+          styles.formContainer,
+          theme === "dark" ? styles.darkForm : styles.lightForm,
+          { alignItems: "center", paddingVertical: 20 },
+        ]}
+      >
+        <Text
+          style={[
+            styles.title,
+            theme === "dark" ? styles.darkText : styles.lightText,
+          ]}
+        >
+          FitTogether Users
         </Text>
-      ))}
-    </View>
+        {users.map((user, index) => (
+          <Text
+            key={index}
+            style={[
+              styles.usernameText,
+              theme === "dark" ? styles.darkText : styles.lightText,
+            ]}
+          >
+            {user.name}
+          </Text>
+        ))}
+      </View>
+    </ScreenContainer>
   );
 }

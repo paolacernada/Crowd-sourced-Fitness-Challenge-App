@@ -1,19 +1,12 @@
 import React, { useState } from "react";
-import {
-  View,
-  TextInput,
-  TouchableOpacity,
-  Text,
-  Alert,
-  StyleSheet,
-} from "react-native";
+import { View, TextInput, TouchableOpacity, Text, Alert } from "react-native";
 import { useRouter } from "expo-router";
-import { supabase } from "../src/config/supabaseClient";
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
 import { useTheme } from "../src/context/ThemeContext";
-<<<<<<< HEAD
-import styles from "../components/ScreenStyles";
-=======
->>>>>>> 0e759db (Implement authentication + postgresql users entry (Use embedded supabase code in react native))
+import ScreenContainer from "../src/components/ScreenContainer";
+import styles from "../src/components/ScreenStyles";
+
+const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/users/`; // Edge function URL
 
 export default function RegisterScreen() {
   const [email, setEmail] = useState("");
@@ -30,24 +23,45 @@ export default function RegisterScreen() {
   const handleRegister = async () => {
     setLoading(true);
 
+<<<<<<< HEAD
     // Validate password
 
     // Validate password
+=======
+>>>>>>> samberven
     if (password !== confirmPassword) {
       Alert.alert("Error", "Passwords do not match!");
       setLoading(false);
       return;
     }
 
+<<<<<<< HEAD
     // Attempt to sign up the user
     // Attempt to sign up the user
     const { data, data, error } = await supabase.auth.signUp({
       email,
       password,
     });
+=======
+    try {
+      const response = await fetch(edgeFunctionUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_ANON_KEY,
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          name: `${firstName} ${lastName}`,
+          username,
+        }),
+      });
+>>>>>>> samberven
 
-    const user = data?.user; // Accessing user from the data object
+      const data = await response.json();
 
+<<<<<<< HEAD
     // Debugging output
     console.log("Sign-up response:", { user, error });
     // // Note: delete this after figuring out whiy the uuid isn't being inserted in the users entry
@@ -104,16 +118,24 @@ export default function RegisterScreen() {
       Alert.alert("Success", "Account created! Please log in.");
       setLoading(false);
       router.push("/login");
+=======
+      if (!response.ok) {
+        Alert.alert("Registration Error", data.error || "Failed to register");
+      } else {
+        Alert.alert("Success", "Account created! Please log in.");
+        router.push("/login");
+      }
+    } catch (error) {
+      console.error("Error during registration:", error);
+      Alert.alert("Error", "Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+>>>>>>> samberven
     }
   };
 
   return (
-    <View
-      style={[
-        styles.container,
-        theme === "dark" ? styles.darkContainer : styles.lightContainer,
-      ]}
-    >
+    <ScreenContainer>
       <Text
         style={[
           styles.appName,
@@ -137,6 +159,7 @@ export default function RegisterScreen() {
         >
           New Member Registration
         </Text>
+
         <TextInput
           placeholder="First Name"
           placeholderTextColor={theme === "dark" ? "#999" : "#999"}
@@ -211,6 +234,7 @@ export default function RegisterScreen() {
             theme === "dark" ? styles.darkInput : styles.lightInput,
           ]}
         />
+
         <TouchableOpacity
           style={[
             styles.button,
@@ -219,8 +243,11 @@ export default function RegisterScreen() {
           onPress={handleRegister}
           disabled={loading}
         >
-          <Text style={styles.buttonText}>Register</Text>
+          <Text style={styles.buttonText}>
+            {loading ? "Registering..." : "Register"}
+          </Text>
         </TouchableOpacity>
+
         <TouchableOpacity onPress={() => router.push("/login")}>
           <Text
             style={[
@@ -232,6 +259,6 @@ export default function RegisterScreen() {
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScreenContainer>
   );
 }

@@ -5,13 +5,16 @@ import { config } from "https://deno.land/x/dotenv/mod.ts";
 <<<<<<< HEAD
 const env = config({ path: "../../.env.supabase" });
 
+console.log("All environment variables:", Deno.env.toObject());
+
+// Set up environment variables
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
-// Todo: add supabaseServiceKey equivalent to localbackend users routes too
-// Service key for authenticated requests.
-const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_KEY");
+// Todo: add supabaseServiceKey equivalent to localbackend users route(s) too
+const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
 // For testing
+<<<<<<< HEAD:supabase/functions/users/indexEDGE.ts
 // console.log("SUPABASE_URL:", supabaseUrl);
 // console.log("SUPABASE_SERVICE_KEY:", supabaseAnonKey);
 // console.log("SUPABASE_ANON_KEY:", supabaseServiceKey);
@@ -28,6 +31,11 @@ console.log("SUPABASE_URL:", supabaseUrl);
 console.log("SUPABASE_SERVICE_ROLE_KEY:", supabaseServiceKey);
 console.log("SUPABASE_ANON_KEY:", supabaseAnonKey);
 >>>>>>> 3058f518ccdcb9eafad4307f5c13a72829d90a14
+=======
+console.log("SUPABASE_ANON_KEY:", supabaseAnonKey);
+console.log("SUPABASE_URL:", supabaseUrl);
+console.log("SUPABASE_SERVICE_KEY:", supabaseServiceKey);
+>>>>>>> samberven:supabase/functions/users/indexNONEDGE.ts
 
 // Validate env variables
 if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
@@ -98,7 +106,7 @@ const handleRequest = async (req: Request) => {
         return await updateUser(id, await req.json());
 
       case "DELETE":
-        return await deleteUser(id); // todo: the code works, but this probably still needs to be fixed
+        return await deleteUser(id);
 
       default:
         return new Response("Method Not Allowed", { status: 405 });
@@ -182,9 +190,8 @@ const createUser = async (
     );
   }
 
-  // After successful signup, insert user details into the database
+  // Insert user data into PostgreSQL users table
   const { user } = authData;
-  // Test if there is no user ID to be found
   if (!user || !user.id) {
     return new Response(
       JSON.stringify({ error: "User creation failed, no user ID" }),
@@ -202,12 +209,16 @@ const createUser = async (
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+<<<<<<< HEAD:supabase/functions/users/indexEDGE.ts
       // "Authorization": `Bearer ${supabaseServiceKey}`, // Use Supabase-granted access token
 <<<<<<< HEAD
       "Authorization": `Bearer ${authData.access_token}`, // Use Supabase-granted access token
 =======
       "Authorization": `Bearer ${token}`, // Use Supabase-granted access token
 >>>>>>> 3058f518ccdcb9eafad4307f5c13a72829d90a14
+=======
+      "Authorization": `Bearer ${supabaseServiceKey}`, // Service Role Key for database insert
+>>>>>>> samberven:supabase/functions/users/indexNONEDGE.ts
     },
     body: JSON.stringify({
       name: body.name,
@@ -219,7 +230,6 @@ const createUser = async (
 
   const data = await handleResponse(dbResponse);
 
-  // Check for errors from the postgreSQL database
   if (!dbResponse.ok) {
     return new Response(
       JSON.stringify({

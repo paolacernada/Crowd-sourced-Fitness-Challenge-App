@@ -1,21 +1,25 @@
 import { Stack } from "expo-router";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { supabase } from "../src/config/supabaseClient";
 import { ThemeProvider } from "../src/context/ThemeContext";
 
 export default function RootLayout() {
   const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const checkSession = async () => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
+
       if (session) {
-        router.replace("/home");
+        setIsAuthenticated(true);
+        router.replace("/tabs"); // Redirect to tabs if logged in
       } else {
-        router.replace("/landing");
+        setIsAuthenticated(false);
+        router.replace("/landing"); // Redirect to landing if not logged in
       }
     };
 
@@ -24,32 +28,20 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider>
-      <Stack>
-        <Stack.Screen
-          name="landing"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="login"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="register"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="profile_screen"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen name="home" options={{ title: "Home" }} />
+      <Stack screenOptions={{ headerShown: false }}>
+        {!isAuthenticated ? (
+          <>
+            <Stack.Screen name="landing" />
+            <Stack.Screen name="login" />
+            <Stack.Screen name="register" />
+          </>
+        ) : (
+          <>
+            <Stack.Screen name="tabs" />
+            <Stack.Screen name="searchChallenges" />
+            <Stack.Screen name="challengeDetails" />
+          </>
+        )}
       </Stack>
     </ThemeProvider>
   );

@@ -13,9 +13,12 @@ CREATE TABLE challenges (
   id bigint primary key generated always as identity,
   name VARCHAR(100) UNIQUE NOT NULL,
   description VARCHAR(500) NOT NULL,
+  long_description VARCHAR(1000) NOT NULL,
   difficulty VARCHAR(10) NOT NULL,
   FOREIGN KEY (difficulty) REFERENCES difficulty(name) ON DELETE CASCADE
 );
+
+
 
 CREATE TABLE goals (
   id bigint primary key generated always as identity,
@@ -70,3 +73,36 @@ CREATE TABLE users_badges (
     badge_id INT,
     FOREIGN KEY (badge_id) REFERENCES badges(id) ON DELETE CASCADE
 );
+
+-- Factor in this (uuid is now an item here):
+-- ALTER TABLE users_challenges
+-- ADD COLUMN user_uuid uuid;
+CREATE TABLE users_challenges (
+  id bigint primary key generated always as identity,
+  user_id INT,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  challenge_id INT,
+  FOREIGN KEY (challenge_id) REFERENCES challenges(id) ON DELETE CASCADE,
+  completed BOOLEAN DEFAULT FALSE,  -- Whether the user has completed the challenge
+  favorites BOOLEAN DEFAULT FALSE,  -- Whether the user has completed the challenge
+  UNIQUE (user_id, challenge_id)  -- Ensures a user can only have one status for each challenge
+);
+
+CREATE TABLE user_settings (
+  id bigint primary key generated always as identity,
+  user_id INT,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  notifications BOOLEAN DEFAULT FALSE, 
+  data_sharing BOOLEAN DEFAULT FALSE,
+  language VARCHAR(50) DEFAULT 'English'
+  );
+
+CREATE TABLE user_goals (
+  id SERIAL PRIMARY KEY, 
+  user_id INT REFERENCES users(id) ON DELETE CASCADE,
+  goal_id INT REFERENCES goals(id) ON DELETE CASCADE,
+  challenge_id INT REFERENCES challenges(id) ON DELETE CASCADE,
+  completed BOOLEAN DEFAULT FALSE,  -- This indicates whether the user has completed the goal or not
+  UNIQUE (user_id, goal_id, challenge_id)  -- Prevents duplicate goals being added to user
+);
+

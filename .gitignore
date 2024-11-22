@@ -8,3 +8,7 @@ dist/
 .env.edge
 .eslintcache
 .vscode/
+
+# Ignore REST Client files
+*.http
+*.rest

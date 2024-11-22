@@ -3,7 +3,7 @@ INSERT INTO users (name)
 VALUES
 ('Sam'),
 ('Paola'),
-('Liz');
+('Natalia');
 
 -- Insert starter badges data
 INSERT INTO badges (name, description)
@@ -26,12 +26,12 @@ VALUES
 ('Hard');
 
 -- Insert starter challenges data
-INSERT INTO challenges (name, description, difficulty)
+INSERT INTO challenges (name, description, long_description, difficulty)
 VALUES
-('Run a mile', 'Go from zero to able to run a mile', 'Easy'),
-('Run a 5k', 'Go from a mile to a 5k', 'Easy'),
-('Run a half-marathon', 'Go from a 5k to a half-marathon', 'Medium'),
-('Run a marathon', 'Go from a half-marathon to a full marathon', 'Hard')
+('Run a mile', 'Go from zero to able to run a mile', 'Go from zero to able to run a mile-- you can do this!', 'Easy'),
+('Run a 5k', 'Go from a mile to a 5k', 'Up your game a bit-- go from a mile to a 5k', 'Easy'),
+('Run a half-marathon', 'Go from a 5k to a half-marathon', 'Work up from 5k to a half-marathon', 'Medium'),
+('Run a marathon', 'Go from a half-marathon to a full marathon', 'Right! From a half-marathon all the way up to a full marathon', 'Hard')
 
 -- Insert starter goals data
 INSERT INTO goals (name, description)
@@ -69,3 +69,49 @@ VALUES
 (1, 3),
 (2, 2),
 (3, 1)
+
+-- Insert starter chaellnge-goals data
+INSERT INTO challenge_goals (challenge_id, goal_id) 
+VALUES
+(1, 3),
+(1, 4),
+(2, 2),
+(2, 3)
+(3, 1),
+(3, 3)
+;
+
+-- Insert starter users_challenges data
+INSERT INTO users_challenges (user_id, challenge_id) 
+VALUES
+(1, 3),
+(1, 5),
+(1, 8),
+(2, 3),
+(2, 4),
+(2, 8),
+(3, 4),
+(3, 6),
+(3, 8),
+(61, 3),
+(61, 4),
+(61, 5),
+(64, 5),
+(64, 6),
+(64, 8)
+;
+
+-- Insert starter user_settings data
+INSERT INTO user_settings (user_id, notifications, data_sharing) 
+VALUES
+(1, False, False),
+(2, False, False),
+(3, False, False)
+;
+
+INSERT INTO user_goals (user_id, goal_id, challenge_id) 
+VALUES
+(1, 1, 2),
+(2, 2, 3),
+(3, 3, 4)
+;
