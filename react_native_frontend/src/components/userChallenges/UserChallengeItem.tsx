@@ -1,23 +1,71 @@
-// src/components/UserChallengeItem.tsx
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { Challenge } from "@/src/types/Challenge"; // Ensure you have imported the Challenge type
-import styles from "@/src/components/ScreenStyles"; // Import your existing styles
+import { View, Text } from "react-native";
+import { Challenge } from "@/src/types/Challenge";
+import styles from "@/src/components/ScreenStyles";
+import FavoriteButton from "../FavoriteButton";
+import { useTheme } from "@/src/context/ThemeContext";
 
 interface UserChallengeItemProps {
   challenge: Challenge; // Expecting a Challenge type here
 }
 
 const UserChallengeItem: React.FC<UserChallengeItemProps> = ({ challenge }) => {
+  const { theme } = useTheme();
+
+  // Border color based on difficulty
+  const getBorderColor = (difficulty: string) => {
+    switch (difficulty) {
+      case "Easy":
+        return theme === "dark" ? "#306b33" : "#4caf50";
+      case "Medium":
+        return theme === "dark" ? "#b05600" : "#f48c42";
+      case "Hard":
+        return theme === "dark" ? "#a1423b" : "#f44336";
+      default:
+        return theme === "dark" ? "#b05600" : "#f48c42";
+    }
+  };
+
   return (
-    <View style={styles.challengeItem}>
-      <Text style={[styles.challengeText, styles.usernameText]}>
-        {challenge.name}
-      </Text>
-      <Text style={styles.challengeText}>{challenge.description}</Text>
-      <Text style={styles.challengeText}>
-        Difficulty: {challenge.difficulty}
-      </Text>
+    <View
+      style={[
+        styles.challengeItem,
+        theme === "dark" ? styles.darkForm : styles.lightForm,
+        {
+          borderColor: getBorderColor(challenge.difficulty),
+        },
+      ]}
+    >
+      <View style={styles.infoContainer}>
+        <Text
+          style={[
+            styles.challengeText,
+            theme === "dark" ? styles.darkText : styles.lightText,
+            { fontWeight: "bold", fontSize: 18, marginBottom: 8 },
+          ]}
+        >
+          {challenge.name}
+        </Text>
+        <Text
+          style={[
+            styles.challengeText,
+            theme === "dark" ? styles.darkText : styles.lightText,
+            { fontSize: 14, marginBottom: 6 },
+          ]}
+        >
+          Difficulty: {challenge.difficulty}
+        </Text>
+        <Text
+          style={[
+            styles.challengeText,
+            theme === "dark" ? styles.darkText : styles.lightText,
+            { fontSize: 14, marginBottom: 16 },
+          ]}
+        >
+          {challenge.description}
+        </Text>
+      </View>
+      <FavoriteButton challengeId={challenge.id} />
     </View>
   );
 };

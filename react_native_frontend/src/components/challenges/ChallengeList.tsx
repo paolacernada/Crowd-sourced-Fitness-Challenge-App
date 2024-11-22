@@ -2,7 +2,7 @@ import React from "react";
 import { FlatList, Text, TouchableOpacity } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
 import styles from "../ScreenStyles";
-import { Challenge } from "../../types/Challenge"; // Adjust the import path based on your folder structure
+import { Challenge } from "../../types/Challenge";
 
 interface ChallengeListProps {
   challenges: Challenge[];

@@ -148,6 +148,20 @@ const styles = StyleSheet.create({
   dropdownText: {
     fontSize: 16,
   },
+  infoContainer: {
+    flex: 1,
+    marginRight: 10,
+  },
+  loader: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  empty: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   challengeListContainer: {
     flex: 2,
     width: "100%",
@@ -204,6 +218,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginVertical: 10,
     paddingHorizontal: 10,
+  },
+  darkEasyBorder: {
+    borderColor: "#388e3c", // Darker Green
+  },
+  darkMediumBorder: {
+    borderColor: "#b05600", // Darker Orange
+  },
+  darkHardBorder: {
+    borderColor: "#d32f2f", // Darker Red
   },
 });
 
