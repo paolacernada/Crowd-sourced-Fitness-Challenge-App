@@ -1,0 +1,28 @@
+[33m4e7ef67[m[33m ([m[1;36mHEAD -> [m[1;32msamberven[m[33m)[m Merge remote-tracking branch 'upstream/main' into samberven
+[33m4d28605[m[33m ([m[1;31mupstream/main[m[33m)[m Merge pull request #52 from paolacernada/paolacernada
+[33md426185[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m Merge samberven branch into main
+[33mb7abd1c[m[33m ([m[1;31mupstream/samberven[m[33m)[m Update userChallenges table to include 'favorites' boolean (default: FALSE)
+[33m5a1ffa1[m feat: Separate UserChallenges functionality from HomeScreen
+[33mf5656a6[m Update userGoals edge function to be CORS compliant and to allow search by user_id and goals_id (still need a search-by-id route)
+[33m5053492[m Update challengeTags edge function to be CORS compliant and to allow search by challenge_id and tag_id
+[33m33970e2[m Update tags edge function to be CORS compliant
+[33m209b826[m Update goals edge function to be CORS compliant
+[33ma09e2b5[m Update badges edge function to be CORS compliant
+[33mc7048bb[m Implement usersBadges edge function (CORS compliant, all routes)
+[33m1485fa1[m - Restored src/screens/HomeScreen.tsx to original functionality - Created src/screens/UserChallengesScreen.tsx for managing user-specific challenges - Integrated UserChallengesScreen into bottom tab navigator (app/tabs.tsx)
+[33m8df854d[m feat: Add UserChallengesScreen and integrate with navigation
+[33mf7fc079[m linting
+[33m4e6ae46[m Update UserChallengeItem with dynamic border colors and additional styles
+[33m5c0a303[m feat: Implement user favorites functionality
+[33m00ee76d[m remove unused color scheme hooks and related theme color logic
+[33m8a79ec5[m remove Colors.ts file as it is no longer needed
+[33m2d289d4[m remove unused components: Collapsible, ExternalLink, HelloWave, ParallaxScrollView, ThemedText, ThemedView, and TabBarIcon
+[33m26681b1[m delete unused file
+[33mbf9be0a[m Merge branch 'main' into paolacernada
+[33m9a6d72f[m Update .gitignore to exclude 'app copy/' directory
+[33m90bb9fb[m Merge pull request #51 from paolacernada/samberven
+[33m5695113[m Update .gitignore to include REST Client files (*.http and *.rest)
+[33m6677b91[m Remove unecessary comment on HomeScreen.tsx; update SQL to include goal and challenge booleans
+[33m72043eb[m Lint
+[33m79f9c68[m Change HomeScreen file to be more like SearchChallengeScreen
+[33m80d332f[m Refactor challengeGoals edge function to allow searching by goal and challenge id
