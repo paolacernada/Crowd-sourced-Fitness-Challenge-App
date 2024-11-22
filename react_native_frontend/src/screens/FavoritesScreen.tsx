@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  ActivityIndicator,
-} from "react-native";
+import { FlatList, Text, ActivityIndicator } from "react-native";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
-import ChallengeItem from "../components/ChallengeItem";
+import UserChallengeItem from "../components/userChallenges/UserChallengeItem";
 import { supabase } from "../config/supabaseClient";
+import ScreenContainer from "../components/ScreenContainer";
+import styles from "../components/ScreenStyles";
+import { useTheme } from "../context/ThemeContext";
 
 interface Challenge {
   id: number;
   name: string;
   description: string;
+  difficulty: string;
 }
 
 const FavoritesScreen: React.FC = () => {
@@ -23,6 +21,7 @@ const FavoritesScreen: React.FC = () => {
   );
   const [favoriteChallenges, setFavoriteChallenges] = useState<Challenge[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const { theme } = useTheme();
 
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -50,46 +49,63 @@ const FavoritesScreen: React.FC = () => {
 
   if (loading) {
     return (
-      <View style={styles.loader}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
+      <ScreenContainer>
+        <ActivityIndicator
+          size="large"
+          color={theme === "dark" ? "#fff" : "#000"}
+        />
+      </ScreenContainer>
     );
   }
 
   if (favorites.length === 0) {
     return (
-      <View style={styles.empty}>
-        <Text>No favorite challenges yet.</Text>
-      </View>
+      <ScreenContainer>
+        <Text
+          style={[
+            theme === "dark" ? styles.darkText : styles.lightText,
+            { textAlign: "center", fontSize: 16 },
+          ]}
+        >
+          You don't have any favorite challenges yet.
+        </Text>
+      </ScreenContainer>
     );
   }
 
   return (
-    <FlatList
-      data={favoriteChallenges}
-      keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => (
-        <ChallengeItem
-          id={item.id}
-          name={item.name}
-          description={item.description}
-        />
-      )}
-    />
+    <ScreenContainer>
+      <Text
+        style={[
+          styles.appName,
+          theme === "dark" ? styles.darkAppName : styles.lightAppName,
+        ]}
+      >
+        FitTogether Challenges
+      </Text>
+
+      <Text
+        style={[
+          styles.title,
+          theme === "dark" ? styles.darkText : styles.lightText,
+          { marginBottom: 20 },
+        ]}
+      >
+        My Favorite Challenges
+      </Text>
+
+      <FlatList
+        data={favoriteChallenges}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => <UserChallengeItem challenge={item} />}
+        contentContainerStyle={{
+          paddingBottom: 20,
+          paddingHorizontal: 16,
+        }}
+        showsVerticalScrollIndicator={true}
+      />
+    </ScreenContainer>
   );
 };
-
-const styles = StyleSheet.create({
-  loader: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  empty: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
 
 export default FavoritesScreen;

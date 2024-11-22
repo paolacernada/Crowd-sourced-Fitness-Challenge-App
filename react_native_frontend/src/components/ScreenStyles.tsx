@@ -163,9 +163,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   challengeListContainer: {
-    flex: 2,
+    flex: 1,
     width: "100%",
-    paddingVertical: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 20,
   },
   searchInput: {
     borderWidth: 1,
