@@ -1,7 +1,7 @@
 import { config } from "https://deno.land/x/dotenv/mod.ts";
 
 // Load environment variables
-const env = config({ path: "../../.env.supabase" });
+// const env = config({ path: "../../.env.supabase" });
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");

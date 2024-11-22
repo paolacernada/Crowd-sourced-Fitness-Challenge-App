@@ -73,34 +73,14 @@ const getUserChallenges = async (userUuid: string | null) => {
     headers: corsHeaders,
   });
 };
-// const getUserChallenges = async (userId: string | null) => {
-//   const query = userId
-//     ? `${supabaseUrl}/rest/v1/users_challenges?user_id=eq.${userId}&select=id,challenge_id,users(id,name,uuid),challenges(id,name,description,difficulty)`
-//     : `${supabaseUrl}/rest/v1/users_challenges?select=id,challenge_id,users(id,name,uuid),challenges(id,name,description,difficulty)`;
-
-//   const response = await supabaseFetch(query, {
-//     method: "GET",
-//   });
-
-//   const data = await handleResponse(response);
-
-//   if (data.length === 0) {
-//     return new Response(
-//       JSON.stringify({ error: `No challenges found.` }),
-//       { status: 404, headers: corsHeaders }
-//     );
-//   }
-
-//   return new Response(JSON.stringify(data), {
-//     headers: corsHeaders,
-//   });
-// };
 
 // POST: Create a user-challenge relationship
 const createUserChallenge = async (req: Request) => {
   try {
-    const body = JSON.parse(await req.text());
+    // Since the request body is already parsed, use it directly
+    const body = req; // The body is already parsed as an object, no need for req.text()
 
+    // Check if user_uuid and challenge_id are provided in the body
     if (!body.user_uuid || !body.challenge_id) {
       return new Response(
         JSON.stringify({ error: "User UUID and Challenge ID are required." }),
@@ -161,28 +141,29 @@ const createUserChallenge = async (req: Request) => {
     );
   }
 };
+
 // const createUserChallenge = async (req: Request) => {
 //   try {
 //     const body = JSON.parse(await req.text());
 
-//     if (!body.user_id || !body.challenge_id) {
+//     if (!body.user_uuid || !body.challenge_id) {
 //       return new Response(
-//         JSON.stringify({ error: "User ID and Challenge ID are required." }),
+//         JSON.stringify({ error: "User UUID and Challenge ID are required." }),
 //         { status: 400, headers: corsHeaders }
 //       );
 //     }
 
-//     // Check if the user exists
+//     // Check if the user exists based on user_uuid
 //     const userResponse = await supabaseFetch(
-//       `${supabaseUrl}/rest/v1/users?id=eq.${body.user_id}`,
+//       `${supabaseUrl}/rest/v1/users?uuid=eq.${body.user_uuid}`,
 //       { method: "GET" }
 //     );
 //     const userData = await handleResponse(userResponse);
 //     if (!userData.length) {
-//       return new Response(
-//         JSON.stringify({ error: "User not found." }),
-//         { status: 404, headers: corsHeaders }
-//       );
+//       return new Response(JSON.stringify({ error: "User not found." }), {
+//         status: 404,
+//         headers: corsHeaders,
+//       });
 //     }
 
 //     // Check if the challenge exists
@@ -192,10 +173,10 @@ const createUserChallenge = async (req: Request) => {
 //     );
 //     const challengeData = await handleResponse(challengeResponse);
 //     if (!challengeData.length) {
-//       return new Response(
-//         JSON.stringify({ error: "Challenge not found." }),
-//         { status: 404, headers: corsHeaders }
-//       );
+//       return new Response(JSON.stringify({ error: "Challenge not found." }), {
+//         status: 404,
+//         headers: corsHeaders,
+//       });
 //     }
 
 //     // Create the user-challenge relationship
@@ -204,7 +185,7 @@ const createUserChallenge = async (req: Request) => {
 //       {
 //         method: "POST",
 //         body: JSON.stringify({
-//           user_id: body.user_id,
+//           user_uuid: body.user_uuid, // Save the user_uuid instead of user_id
 //           challenge_id: body.challenge_id,
 //         }),
 //       }
@@ -218,7 +199,9 @@ const createUserChallenge = async (req: Request) => {
 //   } catch (error) {
 //     console.error("Error creating user challenge:", error);
 //     return new Response(
-//       JSON.stringify({ error: `Failed to create user challenge: ${error.message}` }),
+//       JSON.stringify({
+//         error: `Failed to create user challenge: ${error.message}`,
+//       }),
 //       { status: 500, headers: corsHeaders }
 //     );
 //   }
