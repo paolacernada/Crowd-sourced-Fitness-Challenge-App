@@ -1,29 +1,36 @@
 import React, { useState, useEffect } from "react";
-import { FlatList, Text, ActivityIndicator } from "react-native";
-import { getUserChallenges } from "@/src/services/userChallengeService"; // Import your service
-import UserChallengeItem from "./UserChallengeItem"; // Import your item component
-import styles from "../ScreenStyles"; // Import your styles
-import { UserChallenge } from "@/src/types/UserChallenge"; // Import UserChallenge type
+import { FlatList, Text, ActivityIndicator, Alert } from "react-native";
+import { getUserChallenges } from "@/src/services/userChallengeService";
+import UserChallengeItem from "./UserChallengeItem";
+import styles from "../ScreenStyles";
+import { UserChallenge } from "@/src/types/UserChallenge";
 
 interface UserChallengesListProps {
-  userUuid: string; // Update prop name to userUuid
+  userUuid: string;
 }
 
 const UserChallengesList: React.FC<UserChallengesListProps> = ({
   userUuid,
 }) => {
-  // Use userUuid here
   const [loading, setLoading] = useState<boolean>(false);
-  const [challenges, setChallenges] = useState<UserChallenge[]>([]); // Use UserChallenge[] type
+  const [challenges, setChallenges] = useState<UserChallenge[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchChallenges = async () => {
       setLoading(true);
+      setError(null);
+
       try {
-        const userChallenges = await getUserChallenges(userUuid); // Pass userUuid instead of userId
-        setChallenges(userChallenges); // Store UserChallenge[] in state
+        const userChallenges = await getUserChallenges(userUuid);
+        setChallenges(userChallenges);
       } catch (error) {
         console.error("Error fetching challenges:", error);
+        setError("Failed to load challenges.");
+        Alert.alert(
+          "Error",
+          "Could not fetch your challenges. Please try again later."
+        );
       } finally {
         setLoading(false);
       }
@@ -35,12 +42,24 @@ const UserChallengesList: React.FC<UserChallengesListProps> = ({
   }, [userUuid]);
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#f48c42" />;
+    return (
+      <ActivityIndicator
+        size="large"
+        color="#f48c42"
+        style={{ marginTop: 20 }}
+      />
+    );
+  }
+
+  if (error) {
+    return (
+      <Text style={[styles.errorText, { textAlign: "center" }]}>{error}</Text>
+    );
   }
 
   if (challenges.length === 0) {
     return (
-      <Text style={styles.errorText}>
+      <Text style={[styles.errorText, { textAlign: "center" }]}>
         You are not part of any challenges yet.
       </Text>
     );
@@ -49,12 +68,14 @@ const UserChallengesList: React.FC<UserChallengesListProps> = ({
   return (
     <FlatList
       data={challenges}
-      keyExtractor={(item) => item.id.toString()} // Extract key from UserChallenge id
+      keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (
-        // Pass the 'challenges' object to the UserChallengeItem component
         <UserChallengeItem challenge={item.challenges} />
       )}
-      contentContainerStyle={styles.challengeListContainer}
+      contentContainerStyle={{
+        paddingBottom: 20,
+        paddingHorizontal: 16,
+      }}
     />
   );
 };

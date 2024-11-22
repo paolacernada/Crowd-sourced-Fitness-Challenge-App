@@ -6,7 +6,7 @@ import { config } from "https://deno.land/x/dotenv/mod.ts";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
-// Todo: add supabaseServiceKey equivalent to localbackend users routes too
+// Todo: add supabaseServiceKey equivalent to local backend users routes too
 // Service key for authenticated requests.
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
@@ -26,7 +26,7 @@ const validateSupabaseEnvVariables = () => {
 validateSupabaseEnvVariables();
 
 // note: maybe
-// Standardized error resonse creation helper function
+// Standardized error response creation helper function
 // const createErrorResponse = (message: string, status: number) => {
 //   return new Response(
 //     JSON.stringify( {error: message} ),

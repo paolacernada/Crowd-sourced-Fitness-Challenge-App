@@ -13,4 +13,4 @@ web-build/
 _layout copy.tsx
 # macOS
 .DS_Store
-
+app copy/

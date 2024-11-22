@@ -6,7 +6,7 @@ import styles from "../ScreenStyles";
 
 interface ChallengeDeleteButtonProps {
   challengeId: number;
-  onDeleted: () => void; // Empty callback-- notifes parent component to refresh list
+  onDeleted: () => void; // Empty callback-- notifies parent component to refresh list
 }
 
 const ChallengeDeleteButton: React.FC<ChallengeDeleteButtonProps> = ({
