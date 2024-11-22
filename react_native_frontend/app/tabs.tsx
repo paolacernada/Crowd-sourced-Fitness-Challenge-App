@@ -8,6 +8,7 @@ import SearchChallenges from "./searchChallenges";
 import SettingsScreen from "./settings";
 import CreateChallengeScreen from "./challenges/CreateChallengeScreen";
 import FavoritesScreen from "../src/screens/FavoritesScreen";
+import UserChallengesScreen from "../src/screens/UserChallengesScreen";
 import { supabase } from "../src/config/supabaseClient";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -42,8 +43,8 @@ export default function BottomTabs() {
             case "Home":
               iconName = focused ? "home" : "home-outline";
               break;
-            case "Users":
-              iconName = focused ? "people" : "people-outline";
+            case "UserChallenges":
+              iconName = focused ? "star" : "star-outline";
               break;
             case "Challenges":
               iconName = focused ? "list" : "list-outline";
@@ -56,6 +57,9 @@ export default function BottomTabs() {
               break;
             case "Favorites":
               iconName = focused ? "heart" : "heart-outline";
+              break;
+            case "Users":
+              iconName = focused ? "people" : "people-outline";
               break;
             case "Settings":
               iconName = focused ? "settings" : "settings-outline";
@@ -77,9 +81,9 @@ export default function BottomTabs() {
         options={{ title: "Home" }}
       />
       <Tab.Screen
-        name="Users"
-        component={IndexScreen}
-        options={{ title: "Users" }}
+        name="UserChallenges"
+        component={UserChallengesScreen}
+        options={{ title: "My Challenges" }}
       />
       <Tab.Screen
         name="Challenges"
@@ -100,6 +104,11 @@ export default function BottomTabs() {
         name="Favorites"
         component={FavoritesScreen}
         options={{ title: "Favorites" }}
+      />
+      <Tab.Screen
+        name="Users"
+        component={IndexScreen}
+        options={{ title: "Community" }}
       />
       <Tab.Screen
         name="Settings"

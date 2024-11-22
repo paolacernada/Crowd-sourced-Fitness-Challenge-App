@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { FlatList, Text, ActivityIndicator } from "react-native";
-import { getUserChallenges } from "@/src/services/userChallengeService"; // Import your service
-import UserChallengeItem from "./UserChallengeItem"; // Import your item component
-import styles from "../ScreenStyles"; // Import your styles
-import { UserChallenge } from "@/src/types/UserChallenge"; // Import UserChallenge type
+import { getUserChallenges } from "@/src/services/userChallengeService";
+import UserChallengeItem from "./UserChallengeItem";
+import styles from "../ScreenStyles";
+import { UserChallenge } from "@/src/types/UserChallenge";
 
 interface UserChallengesListProps {
   userUuid: string; // Update prop name to userUuid
