@@ -70,7 +70,7 @@ VALUES
 (2, 2),
 (3, 1)
 
--- Insert starter chaellnge-goals data
+-- Insert starter challenge-goals data
 INSERT INTO challenge_goals (challenge_id, goal_id) 
 VALUES
 (1, 3),
