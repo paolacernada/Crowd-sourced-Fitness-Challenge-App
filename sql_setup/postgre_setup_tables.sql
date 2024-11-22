@@ -84,6 +84,7 @@ CREATE TABLE users_challenges (
   challenge_id INT,
   FOREIGN KEY (challenge_id) REFERENCES challenges(id) ON DELETE CASCADE,
   completed BOOLEAN DEFAULT FALSE,  -- Whether the user has completed the challenge
+  favorites BOOLEAN DEFAULT FALSE,  -- Whether the user has completed the challenge
   UNIQUE (user_id, challenge_id)  -- Ensures a user can only have one status for each challenge
 );
 
