@@ -1,4 +1,4 @@
-// src/screens/UserChallengesScreen.tsx
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import { Text, ActivityIndicator } from "react-native";
 import { supabase } from "../config/supabaseClient";
@@ -13,28 +13,22 @@ const UserChallengesScreen: React.FC = () => {
   const [userUuid, setUserUuid] = useState<string | null>(null);
   const { theme } = useTheme();
 
-  // Fetch user's UUID when component mounts
   useEffect(() => {
     const fetchUserData = async () => {
       setLoading(true);
-      setError(null); // Reset error state before fetching
+      setError(null);
 
       try {
-        // Get user data (to get user UUID) through Supabase Auth call
         const { data, error: authError } = await supabase.auth.getUser();
-        // console.log("Fetched user data:", data); // Log user data for debugging
 
         if (authError || !data?.user?.id) {
           setError("User not authenticated or unable to fetch user data.");
-          // console.log("Auth Error: ", authError); // Log authError if it exists
           return;
         }
 
-        const fetchedUserUuid = data.user.id; // Get user UUID from within authenticated user data
-        setUserUuid(fetchedUserUuid); // Set userUuid in state
-        // console.log("User UUID from Supabase Auth:", fetchedUserUuid); // Log the UUID being used
+        const fetchedUserUuid = data.user.id;
+        setUserUuid(fetchedUserUuid);
       } catch (err) {
-        // console.error("Error fetching user data:", err); // Log error details
         setError("Failed to load user data.");
       } finally {
         setLoading(false);
@@ -42,7 +36,7 @@ const UserChallengesScreen: React.FC = () => {
     };
 
     fetchUserData();
-  }, []); // Runs once component mounts
+  }, []);
 
   return (
     <ScreenContainer>
