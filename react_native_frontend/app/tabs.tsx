@@ -12,6 +12,7 @@ import UserChallengesScreen from "../src/screens/UserChallengesScreen";
 import { supabase } from "../src/config/supabaseClient";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import WallOfFameScreen from "@/src/screens/WallOfFameScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -109,6 +110,11 @@ export default function BottomTabs() {
         name="Users"
         component={IndexScreen}
         options={{ title: "Community" }}
+      />
+      <Tab.Screen
+        name="WallOfFame"
+        component={WallOfFameScreen}
+        options={{ title: "WallOfFame" }}
       />
       <Tab.Screen
         name="Settings"
