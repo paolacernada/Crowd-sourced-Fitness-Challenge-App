@@ -1,7 +1,7 @@
 import { config } from "https://deno.land/x/dotenv/mod.ts";
 
 // Load environment variables
-// eslint-disable-next-line no-unused-vars
+
 // const env = config({ path: "../../.env.supabase" });
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -80,7 +80,10 @@ const handleRequest = async (req: Request) => {
         return await deleteBadge(id);
 
       default:
-        return new Response("Method Not Allowed", { status: 405, headers: corsHeaders });
+        return new Response("Method Not Allowed", {
+          status: 405,
+          headers: corsHeaders,
+        });
     }
   } catch (error) {
     console.error("Internal Error:", error);

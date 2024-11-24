@@ -79,7 +79,10 @@ const handleRequest = async (req: Request) => {
         return await deleteTag(id);
 
       default:
-        return new Response("Method Not Allowed", { status: 405, headers: corsHeaders });
+        return new Response("Method Not Allowed", {
+          status: 405,
+          headers: corsHeaders,
+        });
     }
   } catch (error) {
     console.error("Internal Error:", error);
