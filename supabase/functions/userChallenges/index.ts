@@ -3,7 +3,7 @@ import { config } from "https://deno.land/x/dotenv/mod.ts";
 // Local testing: Load env variables
 // const env = config({ path: "../../.env.supabase" });
 
-// Production :Load env variables
+// Production deployment :Load env variables
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
 
@@ -53,7 +53,7 @@ const handleResponse = async (response: Response) => {
   }
 };
 
-// GET (all) user-challenge relationships or by user_uuid
+// GET (all) user-challenge relationships or by user_uuid (the latter is readily availabe in React Native)
 const getUserChallenges = async (userUuid: string | null) => {
   const query = userUuid
     ? `${supabaseUrl}/rest/v1/users_challenges?user_uuid=eq.${userUuid}&select=id,challenge_id,completed,favorites,users(id,name,uuid),challenges(id,name,description,difficulty)`
@@ -122,13 +122,13 @@ const createUserChallenge = async (req: Request) => {
       });
     }
 
-    // Create the user-challenge relationship with both user_id and user_uuid
+    // Create the user-challenge relationship with both user_id and user_uuid, as well as the rest of the data
     const response = await supabaseFetch(
       `${supabaseUrl}/rest/v1/users_challenges`,
       {
         method: "POST",
         body: JSON.stringify({
-          user_id: user_id,        // Insert user_id
+          user_id: user_id, // Insert user_id
           user_uuid: body.user_uuid, // Insert user_uuid
           challenge_id: body.challenge_id,
           completed: body.completed || false, // Default to false if not provided

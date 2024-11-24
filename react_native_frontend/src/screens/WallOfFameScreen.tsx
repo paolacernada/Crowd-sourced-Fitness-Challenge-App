@@ -1,39 +1,86 @@
 import React, { useState, useEffect } from "react";
-import { Text, ActivityIndicator } from "react-native";
-import { supabase } from "../config/supabaseClient";
+import { Text, ActivityIndicator, Alert } from "react-native";
 import { useTheme } from "../context/ThemeContext";
 import styles from "../components/ScreenStyles";
 import ScreenContainer from "../components/ScreenContainer";
-import UserChallengesList from "../components/userChallenges/UserChallengesList";
-import { getCompletedChallenges } from "../services/userChallengeService"; // Assuming you have a service to fetch completed challenges
+import CompletedChallengesList from "../components/WallOfFame/WallOfFameList";
+import { getCompletedChallenges } from "../services/userChallengeService";
+import { CompletedChallenge } from "@/src/types/CompletedChallenge";
 
-const WallOfFameScreen: React.FC = () => {
+const CompletedChallengesScreen: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [completedChallenges, setCompletedChallenges] = useState<any[]>([]); // Store completed challenges
+  const [completedChallenges, setCompletedChallenges] = useState<
+    CompletedChallenge[]
+  >([]); // Store completed challenges as CompletedChallenge[] type
   const { theme } = useTheme();
 
-  // Fetch completed challenges for all users
+  // Fetch completed Callenges upon mounting
   useEffect(() => {
-    const fetchCompletedChallenges = async () => {
+    const fetchCompletedChallengesData = async () => {
       setLoading(true);
-      setError(null); // Reset error state before fetching
+      setError(null); // Reset error state (before fetching)
 
       try {
-        // Fetch completed challenges where `completed = true` from the backend
-        const challenges = await getCompletedChallenges(); // Assuming this function returns challenges with completed = true
-        setCompletedChallenges(challenges); // Set the fetched challenges to state
+        // console.log("Fetching completed challenges..."); // Debugging: log before fetching
+        const challenges = await getCompletedChallenges(); // Call 'get completed challenges' service
+        // console.log("Fetched completed challenges:", challenges); // Debugging: log fetched data
+
+        setCompletedChallenges(challenges); // Set fetched completed challenges to state
       } catch (err) {
         console.error("Error fetching completed challenges:", err); // Log error details
         setError("Failed to load completed challenges.");
+        Alert.alert(
+          "Error",
+          "Could not fetch completed challenges. Please try again later."
+        );
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCompletedChallenges();
-  }, []); // Runs once component mounts
+    fetchCompletedChallengesData(); // Fetch completed challenges upon mount
+  }, []);
 
+  // If loading, show loading indicator
+  if (loading) {
+    return (
+      <ScreenContainer>
+        <ActivityIndicator
+          size="large"
+          color={theme === "dark" ? "#fff" : "#000"}
+          style={{ marginTop: 20 }}
+        />
+      </ScreenContainer>
+    );
+  }
+
+  // If error, show error message
+  if (error) {
+    return (
+      <ScreenContainer>
+        <Text style={styles.errorText}>{error}</Text>
+      </ScreenContainer>
+    );
+  }
+
+  // If no completed challenges, display appropriate message
+  if (completedChallenges.length === 0) {
+    return (
+      <ScreenContainer>
+        <Text
+          style={[
+            styles.errorText,
+            theme === "dark" ? styles.darkText : styles.lightText,
+          ]}
+        >
+          There are no completed challenges yet.
+        </Text>
+      </ScreenContainer>
+    );
+  }
+
+  // Show list of completed challenges
   return (
     <ScreenContainer>
       {/* App Name */}
@@ -46,6 +93,7 @@ const WallOfFameScreen: React.FC = () => {
         FitTogether Challenges
       </Text>
 
+      {/* Title */}
       <Text
         style={[
           styles.title,
@@ -53,24 +101,13 @@ const WallOfFameScreen: React.FC = () => {
           { marginBottom: 20 },
         ]}
       >
-        Wall of Fame
+        FitTogether Wall of Fame
       </Text>
 
-      {/* Show Error Message */}
-      {error && <Text style={styles.errorText}>{error}</Text>}
-
-      {/* Show Loading Indicator */}
-      {loading ? (
-        <ActivityIndicator
-          size="large"
-          color={theme === "dark" ? "#fff" : "#000"}
-        />
-      ) : (
-        // Display Completed Challenges List
-        <UserChallengesList challenges={completedChallenges} />
-      )}
+      {/* Show Completed Challenges List */}
+      <CompletedChallengesList challenges={completedChallenges} />
     </ScreenContainer>
   );
 };
 
-export default WallOfFameScreen;
+export default CompletedChallengesScreen;
