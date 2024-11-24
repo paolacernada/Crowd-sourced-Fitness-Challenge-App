@@ -1,8 +1,9 @@
 import { config } from "https://deno.land/x/dotenv/mod.ts";
 
-// Load env variables
+// Load local env variables for local testing
 // const env = config({ path: "../../.env.supabase" });
 
+// Load Supabase env variables for production deployment
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
 
@@ -14,8 +15,8 @@ if (!supabaseUrl || !supabaseAnonKey) {
 // CORS headers to allow frontend access
 const corsHeaders = {
   "Content-Type": "application/json",
-  "Access-Control-Allow-Origin": "*", // You can replace "*" with your frontend's URL later
-  "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS", // Allow methods for CORS
+  "Access-Control-Allow-Origin": "*", // Replace "*" with frontend URL if frontend is deployed
+  "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS", // Allow these methods for CORS
   "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey", // Allow headers for requests
 };
 
@@ -62,18 +63,18 @@ const handleRequest = async (req: Request) => {
   try {
     switch (req.method) {
       case "GET":
-        // If an ID is passed, get the specific challenge-goal
+        // If an ID is passed, get that specific challenge-goal in the table
         if (id && !isNaN(Number(id))) {
           return await getChallengeGoal(id);
         }
-        // If challenge_id or goal_id is provided, filter by that
+        // If challenge_id or goal_id is provided, then use that to filter the response
         if (challengeId) {
           return await getChallengeGoalsByChallengeId(challengeId);
         }
         if (goalId) {
           return await getChallengeGoalsByGoalId(goalId);
         }
-        // Otherwise, return all challenge-goal relationships
+        // Else: return all challenge-goal relationships
         return await getChallengeGoals();
 
       case "POST":

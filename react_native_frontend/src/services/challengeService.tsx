@@ -1,7 +1,7 @@
 import { Challenge } from "@/src/types/Challenge";
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@env";
 
-const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`; // Edge function URL for challenges
+const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`; // Edge function URL for 'challenges' table in DB
 
 // Fetch all challenges
 // Todo: refactor for DRY for the routes

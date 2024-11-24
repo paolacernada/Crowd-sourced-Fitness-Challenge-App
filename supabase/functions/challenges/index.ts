@@ -2,7 +2,7 @@
 import { config } from "https://deno.land/x/dotenv/mod.ts";
 
 // Load environment variables (If you are using dotenv for local development)
-const env = config({ path: "../../.env.edge" });
+// const env = config({ path: "../../.env.edge" });
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");

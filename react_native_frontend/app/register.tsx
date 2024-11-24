@@ -116,6 +116,16 @@ export default function RegisterScreen() {
           ]}
         />
         <TextInput
+          placeholder="Username"
+          placeholderTextColor={theme === "dark" ? "#999" : "#999"}
+          value={username} // New username input
+          onChangeText={setUsername}
+          style={[
+            styles.input,
+            theme === "dark" ? styles.darkInput : styles.lightInput,
+          ]}
+        />
+        <TextInput
           placeholder="Email"
           placeholderTextColor={theme === "dark" ? "#999" : "#999"}
           value={email}
