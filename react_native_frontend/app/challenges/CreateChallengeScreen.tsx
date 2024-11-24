@@ -87,7 +87,7 @@ export default function CreateChallengeScreen() {
             { marginBottom: 20 },
           ]}
         >
-          Start a New Challenge
+          Create a New Challenge
         </Text>
         <ChallengeForm
           challengeData={challengeData}
