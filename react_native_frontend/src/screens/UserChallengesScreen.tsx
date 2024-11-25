@@ -1,4 +1,3 @@
-// src/screens/UserChallengesScreen.tsx
 import React, { useState, useEffect } from "react";
 import { Text, ActivityIndicator } from "react-native";
 import { supabase } from "../config/supabaseClient";

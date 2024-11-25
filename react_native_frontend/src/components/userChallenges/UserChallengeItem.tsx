@@ -1,15 +1,17 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
 import { Challenge } from "@/src/types/Challenge";
 import styles from "@/src/components/ScreenStyles";
 import FavoriteButton from "../FavoriteButton";
 import { useTheme } from "@/src/context/ThemeContext";
+import { Ionicons } from "@expo/vector-icons";
 
 interface UserChallengeItemProps {
-  challenge: Challenge; // Expecting a Challenge type here
+  challenge: Challenge;
+  onRemove: (id: number) => void;
 }
 
-const UserChallengeItem: React.FC<UserChallengeItemProps> = ({ challenge }) => {
+const UserChallengeItem: React.FC<UserChallengeItemProps> = ({ challenge, onRemove }) => {
   const { theme } = useTheme();
 
   // Border color based on difficulty

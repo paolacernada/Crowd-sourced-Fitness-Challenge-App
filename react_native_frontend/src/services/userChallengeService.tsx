@@ -103,3 +103,41 @@ export const getCompletedChallenges = async (): Promise<
     throw new Error("Failed to fetch completed challenges.");
   }
 };
+
+// Helper function to add a challenge to the user
+export const addChallengeToUser = async (
+  userUuid: string,
+  challengeId: number
+): Promise<any> => {
+  const url = `${SUPABASE_URL}/functions/v1/userChallenges`; // Edge function URL
+
+  // Prepare the request body
+  const body = JSON.stringify({
+    user_uuid: userUuid, // User's UUID
+    challenge_id: challengeId, // The challenge ID
+    // Defaults for completed and favorites (if not provided)
+    completed: false,
+    favorites: false,
+  });
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: body, // Send the body with the required data
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to add challenge to user.");
+    }
+
+    const data = await response.json(); // Assuming the response returns the created relationship
+    return data; // You can return the data or whatever the Edge function sends back
+  } catch (error) {
+    console.error("Error adding challenge to user:", error);
+    throw new Error("Failed to add challenge to user");
+  }
+};
