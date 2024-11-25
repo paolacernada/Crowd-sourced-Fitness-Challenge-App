@@ -1,4 +1,3 @@
-// src/screens/UserChallengesScreen.tsx
 import React, { useState, useEffect } from "react";
 import { Text, ActivityIndicator } from "react-native";
 import { supabase } from "../config/supabaseClient";
@@ -6,6 +5,7 @@ import { useTheme } from "../context/ThemeContext";
 import styles from "../components/ScreenStyles";
 import ScreenContainer from "../components/ScreenContainer";
 import UserChallengesList from "../components/userChallenges/UserChallengesList";
+import { deleteChallengeFromUser } from "../services/userChallengeService";
 
 const UserChallengesScreen: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -20,7 +20,6 @@ const UserChallengesScreen: React.FC = () => {
       setError(null); // Reset error state before fetching
 
       try {
-        // Get user data (to get user UUID) through Supabase Auth call
         const { data, error: authError } = await supabase.auth.getUser();
         // console.log("Fetched user data:", data); // Log user data for debugging
 
@@ -30,11 +29,12 @@ const UserChallengesScreen: React.FC = () => {
           return;
         }
 
-        const fetchedUserUuid = data.user.id; // Get user UUID from within authenticated user data
-        setUserUuid(fetchedUserUuid); // Set userUuid in state
-        // console.log("User UUID from Supabase Auth:", fetchedUserUuid); // Log the UUID being used
+        // Grab user UUID from the authenticated user data...
+        const fetchedUserUuid = data.user.id;
+        setUserUuid(fetchedUserUuid); // ...then Use to set userUuid in state
+        // console.log("User UUID from Supabase Auth:", fetchedUserUuid);
       } catch (err) {
-        // console.error("Error fetching user data:", err); // Log error details
+        console.error("Error fetching user data:", err); // Log error details
         setError("Failed to load user data.");
       } finally {
         setLoading(false);
@@ -43,6 +43,17 @@ const UserChallengesScreen: React.FC = () => {
 
     fetchUserData();
   }, []); // Runs once component mounts
+
+  const handleRemove = async (userChallengeId: number) => {
+    try {
+      // console.log("handleRemove called with ID:", userChallengeId);
+      // console.log("Calling deleteChallengeFromUser with ID:", userChallengeId);
+      await deleteChallengeFromUser(userChallengeId);
+      // console.log(`Successfully removed challenge with ID: ${userChallengeId}`);
+    } catch (error) {
+      // console.error("Error removing challenge:", error);
+    }
+  };
 
   return (
     <ScreenContainer>
@@ -77,7 +88,9 @@ const UserChallengesScreen: React.FC = () => {
         />
       ) : (
         // Display User Challenges List if User is Authenticated
-        userUuid && <UserChallengesList userUuid={userUuid} />
+        userUuid && (
+          <UserChallengesList userUuid={userUuid} onRemove={handleRemove} />
+        )
       )}
     </ScreenContainer>
   );

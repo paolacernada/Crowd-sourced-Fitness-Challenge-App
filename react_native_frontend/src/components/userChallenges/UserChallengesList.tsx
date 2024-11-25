@@ -7,10 +7,12 @@ import { UserChallenge } from "@/src/types/UserChallenge";
 
 interface UserChallengesListProps {
   userUuid: string;
+  onRemove: (userChallengeId: number) => void; // Pass the remove handler as a prop
 }
 
 const UserChallengesList: React.FC<UserChallengesListProps> = ({
   userUuid,
+  onRemove,
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [challenges, setChallenges] = useState<UserChallenge[]>([]);
@@ -22,7 +24,9 @@ const UserChallengesList: React.FC<UserChallengesListProps> = ({
       setError(null);
 
       try {
+        console.log("Fetching challenges for user:", userUuid);
         const userChallenges = await getUserChallenges(userUuid);
+        console.log("Fetched challenges:", userChallenges);
         setChallenges(userChallenges);
       } catch (error) {
         console.error("Error fetching challenges:", error);
@@ -70,7 +74,11 @@ const UserChallengesList: React.FC<UserChallengesListProps> = ({
       data={challenges}
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (
-        <UserChallengeItem challenge={item.challenges} />
+        <UserChallengeItem
+          userChallenge={item} // This gets flagged, but is working. The underlying error is a non-fatal one we should fix eventually (but not prioritize for now)
+          challenge={item.challenges}
+          onRemove={onRemove} // To pass the remove handler function // note: this is where I'm having trouble
+        />
       )}
       contentContainerStyle={{
         paddingBottom: 20,
