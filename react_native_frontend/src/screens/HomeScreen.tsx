@@ -1,4 +1,3 @@
-// src/screens/HomeScreen.tsx
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { supabase } from "../config/supabaseClient";
