@@ -38,10 +38,6 @@ export default function SearchChallengeScreen() {
   const { theme } = useTheme();
 
   const fetchChallenges = async () => {
-    // todo: figure out if I want to incorporate this or not
-    // setLoading(true);
-    // setError(''); // This clears the previous error (if one exists)
-
     setLoading(true);
     setError(""); // Clear previous errors
     try {
@@ -65,7 +61,7 @@ export default function SearchChallengeScreen() {
   const fetchUserChallenges = async (userUuid: string) => {
     try {
       const data = await getUserChallenges(userUuid); // Get user challenges
-      setUserChallenges(data); // Set user challenges in state
+      setUserChallenges(data); // Set them in state
     } catch (err) {
       console.error("Error fetching user challenges:", err);
       Alert.alert("Error", "Could not load user challenges.");
@@ -105,7 +101,7 @@ export default function SearchChallengeScreen() {
 
   // helper for deleting a challenge
   const handleDelete = (id: number) => {
-    // Delete challenge from backend database
+    // Delete challenge from backend edge database
     fetch(`${edgeFunctionUrl}/${id}`, {
       method: "DELETE",
       headers: {
@@ -129,7 +125,7 @@ export default function SearchChallengeScreen() {
   const handleAddChallenge = async (userUuid: string, challengeId: number) => {
     try {
       if (userUuid) {
-        await addChallengeToUser(userUuid, challengeId); // Call the function to add challenge to user
+        await addChallengeToUser(userUuid, challengeId);
         Alert.alert("Success", "Challenge added to your challenges!");
         // Re-fetch user challenges to update the state
         fetchUserChallenges(userUuid);
