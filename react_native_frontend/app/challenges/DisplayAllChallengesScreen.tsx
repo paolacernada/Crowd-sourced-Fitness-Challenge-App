@@ -231,49 +231,51 @@ export default function SearchChallengeScreen() {
         </Text>
 
         {/* Delete Button */}
-        <TouchableOpacity
-          style={[
-            styles.button,
-            {
-              backgroundColor: theme === "dark" ? "#a1423b" : "#f44336",
-              paddingHorizontal: 20,
-              marginBottom: 8,
-              width: "50%",
-            },
-          ]}
-          onPress={() => handleDelete(item.id)}
-        >
-          <Text style={[styles.buttonText, { color: "#fff" }]}>Delete</Text>
-        </TouchableOpacity>
+        <View style={{ alignItems: "center" }}>
+          <TouchableOpacity
+            style={[
+              styles.button,
+              {
+                backgroundColor: theme === "dark" ? "#a1423b" : "#f44336",
+                paddingHorizontal: 20,
+                marginBottom: 8,
+                width: "50%",
+              },
+            ]}
+            onPress={() => handleDelete(item.id)}
+          >
+            <Text style={[styles.buttonText, { color: "#fff" }]}>Delete</Text>
+          </TouchableOpacity>
 
-        {/* Conditional Join/Joined Button */}
-        <TouchableOpacity
-          style={[
-            styles.button,
-            {
-              backgroundColor: isUserChallenge
-                ? theme === "dark"
-                  ? "#306b33"
-                  : "#4caf50"
-                : theme === "dark"
-                  ? "#b05600"
-                  : "#f48c42",
-              paddingHorizontal: 20,
-              marginTop: 8,
-              width: "70%",
-              marginBottom: -2,
-            },
-          ]}
-          onPress={() => {
-            if (!isUserChallenge && userUuid) {
-              handleAddChallenge(userUuid, item.id);
-            }
-          }}
-        >
-          <Text style={[styles.buttonText, { color: "#fff" }]}>
-            {isUserChallenge ? "Joined" : "Join This Challenge"}
-          </Text>
-        </TouchableOpacity>
+          {/* Conditional Join/Joined Button */}
+          <TouchableOpacity
+            style={[
+              styles.button,
+              {
+                backgroundColor: isUserChallenge
+                  ? theme === "dark"
+                    ? "#306b33"
+                    : "#4caf50"
+                  : theme === "dark"
+                    ? "#b05600"
+                    : "#f48c42",
+                paddingHorizontal: 20,
+                marginTop: 8,
+                width: "70%",
+                marginBottom: -2,
+              },
+            ]}
+            onPress={() => {
+              if (!isUserChallenge && userUuid) {
+                handleAddChallenge(userUuid, item.id);
+              }
+            }}
+          >
+            <Text style={[styles.buttonText, { color: "#fff" }]}>
+              {isUserChallenge ? "Challenge Joined" : "Join This Challenge"}
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   };
