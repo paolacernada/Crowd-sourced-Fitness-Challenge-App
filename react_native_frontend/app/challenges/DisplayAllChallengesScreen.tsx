@@ -130,8 +130,13 @@ export default function SearchChallengeScreen() {
         if (!response.ok) {
           throw new Error("Failed to delete challenge");
         }
+
         // If delete successful, remove it from the state
         setChallenges(challenges.filter((challenge) => challenge.id !== id));
+
+        // Trigger refresh
+        toggleRefresh();
+
         Alert.alert("Success", "Challenge deleted!");
       })
       .catch((error) => {
