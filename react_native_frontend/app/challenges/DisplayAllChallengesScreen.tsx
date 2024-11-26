@@ -19,13 +19,12 @@ import {
 import { useFocusEffect } from "@react-navigation/native";
 import { SUPABASE_URL } from "@env";
 import { supabase } from "../../src/config/supabaseClient";
-import { Ionicons } from "@expo/vector-icons";
 import { RefreshContext } from "../../src/context/RefreshContext";
 
 // Supabase Edge Function URL for challenges
 const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`;
 
-export default function SearchChallengeScreen() {
+export default function DisplayAllChallengesScreen() {
   // Challenges data state
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -107,15 +106,23 @@ export default function SearchChallengeScreen() {
     useCallback(() => {
       fetchChallenges();
       fetchUserUuid(); // Fetch user UUID when screen is focused
-    }, [])
+    }, [refresh])
   );
 
-  // Fetch user challenges once the user UUID is available or when refresh is triggered
   useEffect(() => {
-    if (userUuid) {
-      fetchUserChallengesData(userUuid); // Fetch challenges only if the UUID is available
-    }
-  }, [userUuid, refresh]); // Added 'refresh' as a dependency
+    const fetchData = async () => {
+      setLoading(true);
+      await fetchChallenges();
+
+      if (userUuid) {
+        await fetchUserChallengesData(userUuid);
+      }
+
+      setLoading(false);
+    };
+
+    fetchData();
+  }, [refresh, userUuid]);
 
   // helper for deleting a challenge
   const handleDelete = (id: number) => {

@@ -9,6 +9,41 @@ const userChallengesUrl = `${SUPABASE_URL}/functions/v1/userChallenges`;
 const completedChallengesUrl = `${SUPABASE_URL}/functions/v1/completedChallenges`;
 
 /**
+ * Update the favorite status of a user challenge.
+ * @param userChallengeId The ID of the user_challenge relationship.
+ * @param isFavorite The new favorite status.
+ */
+export const updateUserChallengeFavoriteStatus = async (
+  userChallengeId: number,
+  isFavorite: boolean
+): Promise<void> => {
+  const url = `${SUPABASE_URL}/functions/v1/userChallenges/${userChallengeId}`;
+
+  try {
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        favorites: isFavorite,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error("Error updating favorite status:", errorData);
+      throw new Error(errorData || "Failed to update favorite status.");
+    }
+
+    console.log("Successfully updated favorite status.");
+  } catch (error) {
+    console.error("Error updating favorite status:", error);
+    throw new Error("Failed to update favorite status.");
+  }
+};
+
+/**
  * Fetch challenges for a specific user by their user ID
  * @param userUuid The UUID of the user to fetch challenges for. This is easily available in React Native's Supabase module
  * @returns A promise that resolves to an array of challenges the user is currently participating in

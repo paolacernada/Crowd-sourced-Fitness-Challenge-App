@@ -16,7 +16,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 const corsHeaders = {
   "Content-Type": "application/json",
   "Access-Control-Allow-Origin": "*", // Replace "*" with frontend URL if frontend is deployed
-  "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS", // Allow these methods for CORS
+  "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS", // Allow these methods for CORS
   "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey", // Allow headers for requests
 };
 
@@ -53,11 +53,11 @@ const handleResponse = async (response: Response) => {
   }
 };
 
-// GET (all) user-challenge relationships or by user_uuid (the latter is readily availabe in React Native)
+// GET (all) user-challenge relationships or by user_uuid (the latter is readily available in React Native)
 const getUserChallenges = async (userUuid: string | null) => {
   const query = userUuid
-    ? `${supabaseUrl}/rest/v1/users_challenges?user_uuid=eq.${userUuid}&select=id,challenge_id,completed,favorites,users(id,name,uuid),challenges(id,name,description,difficulty)`
-    : `${supabaseUrl}/rest/v1/users_challenges?select=id,challenge_id,completed,favorites,users(id,name,uuid),challenges(id,name,description,difficulty)`;
+    ? `${supabaseUrl}/rest/v1/users_challenges?user_uuid=eq.${userUuid}&select=id,challenge_id,completed,favorites,users(id,name,uuid),challenges(id,name,description,difficulty)&order=id.asc`
+    : `${supabaseUrl}/rest/v1/users_challenges?select=id,challenge_id,completed,favorites,users(id,name,uuid),challenges(id,name,description,difficulty)&order=id.asc`;
 
   const response = await supabaseFetch(query, {
     method: "GET",
@@ -334,7 +334,7 @@ Deno.serve(handleRequest);
 //   }
 // };
 
-// // GET (all) user-challenge relationships or by user_uuid (the latter is readily availabe in React Native)
+// // GET (all) user-challenge relationships or by user_uuid (the latter is readily available in React Native)
 // const getUserChallenges = async (userUuid: string | null) => {
 //   const query = userUuid
 //     ? `${supabaseUrl}/rest/v1/users_challenges?user_uuid=eq.${userUuid}&select=id,challenge_id,completed,favorites,users(id,name,uuid),challenges(id,name,description,difficulty)`
