@@ -18,7 +18,8 @@ export const getUserChallenges = async (
 ): Promise<UserChallenge[]> => {
   // console.log("Fetching challenges for userUuid:", userUuid);
   try {
-    const url = `${userChallengesUrl}?user_uuid=${userUuid}`;
+    const encodedUserUuid = encodeURIComponent(userUuid);
+    const url = `${userChallengesUrl}?user_uuid=${encodedUserUuid}`;
     // console.log("Fetching from URL:", url);
 
     const response = await fetch(url, {
@@ -54,6 +55,26 @@ export const getUserChallenges = async (
   } catch (error) {
     console.error("Failed to load user challenges:", error);
     throw new Error("Failed to load user challenges.");
+  }
+};
+
+/**
+ * Fetch all user challenges using a shared function.
+ * This function ensures that all screens fetch user challenges in a consistent way.
+ * @param userUuid The UUID of the user whose challenges should be fetched
+ * @returns A promise that resolves to an array of challenges
+ */
+export const fetchUserChallengesData = async (
+  userUuid: string
+): Promise<UserChallenge[]> => {
+  try {
+    console.log(`Fetching user challenges for userUuid: ${userUuid}`);
+    const userChallenges = await getUserChallenges(userUuid);
+    console.log("Fetched user challenges:", userChallenges);
+    return userChallenges;
+  } catch (error) {
+    console.error("Error in fetchUserChallengesData:", error);
+    throw new Error("Failed to fetch user challenges.");
   }
 };
 
@@ -104,7 +125,8 @@ export const getCompletedChallenges = async (): Promise<
 export const addChallengeToUser = async (
   userUuid: string,
   challengeId: number
-): Promise<any> => {
+): Promise<UserChallenge> => {
+  // Changed return type to Promise<UserChallenge>
   const url = `${SUPABASE_URL}/functions/v1/userChallenges`;
 
   const body = JSON.stringify({

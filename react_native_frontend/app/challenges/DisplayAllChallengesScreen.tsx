@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -12,12 +12,15 @@ import styles from "../../src/components/ScreenStyles";
 import ScreenContainer from "../../src/components/ScreenContainer";
 import { Challenge } from "@/src/types/Challenge";
 import { getAllChallenges } from "@/src/services/challengeService";
-import { getUserChallenges } from "@/src/services/userChallengeService";
+import {
+  getUserChallenges,
+  addChallengeToUser,
+} from "@/src/services/userChallengeService";
 import { useFocusEffect } from "@react-navigation/native";
 import { SUPABASE_URL } from "@env";
-import { addChallengeToUser } from "@/src/services/userChallengeService"; // Note: need to write this
 import { supabase } from "../../src/config/supabaseClient";
 import { Ionicons } from "@expo/vector-icons";
+import { RefreshContext } from "../../src/context/RefreshContext";
 
 // Supabase Edge Function URL for challenges
 const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`;
@@ -37,14 +40,29 @@ export default function SearchChallengeScreen() {
 
   const { theme } = useTheme();
 
+  // Accessing the RefreshContext
+  const { refresh, toggleRefresh } = useContext(RefreshContext);
+
+  // Function to get border color based on difficulty
+  const getBorderColor = (difficulty: string) => {
+    switch (difficulty) {
+      case "Easy":
+        return theme === "dark" ? "#306b33" : "#4caf50";
+      case "Medium":
+        return theme === "dark" ? "#b05600" : "#f48c42";
+      case "Hard":
+        return theme === "dark" ? "#a1423b" : "#f44336";
+      default:
+        return theme === "dark" ? "#b05600" : "#f48c42";
+    }
+  };
+
   const fetchChallenges = async () => {
     setLoading(true);
     setError(""); // Clear previous errors
     try {
       const data = await getAllChallenges();
-      // TODO: this sort isn't working
       const sortedChallenges = data.sort((a, b) => a.id - b.id); // Ascending order
-
       setChallenges(sortedChallenges); // Update state with fetched challenges
     } catch (err) {
       setError("Failed to load challenges");
@@ -58,7 +76,7 @@ export default function SearchChallengeScreen() {
   };
 
   // Fetch user challenges from backend
-  const fetchUserChallenges = async (userUuid: string) => {
+  const fetchUserChallengesData = async (userUuid: string) => {
     try {
       const data = await getUserChallenges(userUuid); // Get user challenges
       setUserChallenges(data); // Set them in state
@@ -92,12 +110,12 @@ export default function SearchChallengeScreen() {
     }, [])
   );
 
-  // Fetch user challenges once the user UUID is available
+  // Fetch user challenges once the user UUID is available or when refresh is triggered
   useEffect(() => {
     if (userUuid) {
-      fetchUserChallenges(userUuid); // Fetch challenges only if the UUID is available
+      fetchUserChallengesData(userUuid); // Fetch challenges only if the UUID is available
     }
-  }, [userUuid]);
+  }, [userUuid, refresh]); // Added 'refresh' as a dependency
 
   // helper for deleting a challenge
   const handleDelete = (id: number) => {
@@ -112,8 +130,13 @@ export default function SearchChallengeScreen() {
         if (!response.ok) {
           throw new Error("Failed to delete challenge");
         }
+
         // If delete successful, remove it from the state
         setChallenges(challenges.filter((challenge) => challenge.id !== id));
+
+        // Trigger refresh
+        toggleRefresh();
+
         Alert.alert("Success", "Challenge deleted!");
       })
       .catch((error) => {
@@ -128,10 +151,15 @@ export default function SearchChallengeScreen() {
         await addChallengeToUser(userUuid, challengeId);
         Alert.alert("Success", "Challenge added to your challenges!");
         // Re-fetch user challenges to update the state
-        fetchUserChallenges(userUuid);
+        fetchUserChallengesData(userUuid);
+        // Trigger refresh for other screens
+        toggleRefresh();
       }
-    } catch (error) {
-      Alert.alert("Error", "Failed to add challenge to your challenges.");
+    } catch (error: any) {
+      Alert.alert(
+        "Error",
+        error.message || "Failed to add challenge to your challenges."
+      );
     }
   };
 
@@ -152,7 +180,7 @@ export default function SearchChallengeScreen() {
             marginBottom: 20,
             borderRadius: 12,
             borderWidth: 2,
-            borderColor: theme === "dark" ? "#b05600" : "#f48c42",
+            borderColor: getBorderColor(item.difficulty),
           },
         ]}
       >
@@ -185,37 +213,51 @@ export default function SearchChallengeScreen() {
         </Text>
 
         {/* Delete Button */}
-        <TouchableOpacity
-          style={[
-            styles.button,
-            theme === "dark" ? styles.darkButton : styles.lightButton,
-            { alignSelf: "center", paddingHorizontal: 20, marginBottom: -4 },
-          ]}
-          onPress={() => handleDelete(item.id)}
-        >
-          <Text style={styles.buttonText}>Delete</Text>
-        </TouchableOpacity>
+        <View style={{ alignItems: "center" }}>
+          <TouchableOpacity
+            style={[
+              styles.button,
+              {
+                backgroundColor: theme === "dark" ? "#a1423b" : "#f44336",
+                paddingHorizontal: 20,
+                marginBottom: 8,
+                width: "50%",
+              },
+            ]}
+            onPress={() => handleDelete(item.id)}
+          >
+            <Text style={[styles.buttonText, { color: "#fff" }]}>Delete</Text>
+          </TouchableOpacity>
 
-        {/* Conditional Add/Check Button */}
-        <TouchableOpacity
-          style={[
-            styles.button,
-            theme === "dark" ? styles.darkButton : styles.lightButton,
-            { alignSelf: "center", paddingHorizontal: 20, marginTop: 8 },
-          ]}
-          onPress={() => {
-            if (!isUserChallenge && userUuid) {
-              // Check if userUuid is not null
-              handleAddChallenge(userUuid, item.id);
-            }
-          }}
-        >
-          <Ionicons
-            name={isUserChallenge ? "checkmark-done" : "add"}
-            size={24}
-            color={theme === "dark" ? "#fff" : "#000"}
-          />
-        </TouchableOpacity>
+          {/* Conditional Join/Joined Button */}
+          <TouchableOpacity
+            style={[
+              styles.button,
+              {
+                backgroundColor: isUserChallenge
+                  ? theme === "dark"
+                    ? "#306b33"
+                    : "#4caf50"
+                  : theme === "dark"
+                    ? "#b05600"
+                    : "#f48c42",
+                paddingHorizontal: 20,
+                marginTop: 8,
+                width: "70%",
+                marginBottom: -2,
+              },
+            ]}
+            onPress={() => {
+              if (!isUserChallenge && userUuid) {
+                handleAddChallenge(userUuid, item.id);
+              }
+            }}
+          >
+            <Text style={[styles.buttonText, { color: "#fff" }]}>
+              {isUserChallenge ? "Challenge Joined" : "Join This Challenge"}
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   };

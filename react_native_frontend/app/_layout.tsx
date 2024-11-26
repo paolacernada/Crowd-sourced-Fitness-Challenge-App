@@ -5,6 +5,7 @@ import { supabase } from "../src/config/supabaseClient";
 import { ThemeProvider } from "../src/context/ThemeContext";
 import { Provider } from "react-redux";
 import store from "../src/redux/store";
+import { RefreshProvider } from "../src/context/RefreshContext";
 
 export default function RootLayout() {
   const router = useRouter();
@@ -31,21 +32,23 @@ export default function RootLayout() {
   return (
     <Provider store={store}>
       <ThemeProvider>
-        <Stack screenOptions={{ headerShown: false }}>
-          {!isAuthenticated ? (
-            <>
-              <Stack.Screen name="landing" />
-              <Stack.Screen name="login" />
-              <Stack.Screen name="register" />
-            </>
-          ) : (
-            <>
-              <Stack.Screen name="tabs" />
-              <Stack.Screen name="searchChallenges" />
-              <Stack.Screen name="challengeDetails" />
-            </>
-          )}
-        </Stack>
+        <RefreshProvider>
+          <Stack screenOptions={{ headerShown: false }}>
+            {!isAuthenticated ? (
+              <>
+                <Stack.Screen name="landing" />
+                <Stack.Screen name="login" />
+                <Stack.Screen name="register" />
+              </>
+            ) : (
+              <>
+                <Stack.Screen name="tabs" />
+                <Stack.Screen name="searchChallenges" />
+                <Stack.Screen name="challengeDetails" />
+              </>
+            )}
+          </Stack>
+        </RefreshProvider>
       </ThemeProvider>
     </Provider>
   );
