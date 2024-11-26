@@ -18,7 +18,8 @@ export const getUserChallenges = async (
 ): Promise<UserChallenge[]> => {
   // console.log("Fetching challenges for userUuid:", userUuid);
   try {
-    const url = `${userChallengesUrl}?user_uuid=${userUuid}`;
+    const encodedUserUuid = encodeURIComponent(userUuid);
+    const url = `${userChallengesUrl}?user_uuid=${encodedUserUuid}`;
     // console.log("Fetching from URL:", url);
 
     const response = await fetch(url, {
@@ -104,7 +105,8 @@ export const getCompletedChallenges = async (): Promise<
 export const addChallengeToUser = async (
   userUuid: string,
   challengeId: number
-): Promise<any> => {
+): Promise<UserChallenge> => {
+  // Changed return type to Promise<UserChallenge>
   const url = `${SUPABASE_URL}/functions/v1/userChallenges`;
 
   const body = JSON.stringify({

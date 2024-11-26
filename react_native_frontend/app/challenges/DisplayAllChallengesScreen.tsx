@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -12,12 +12,15 @@ import styles from "../../src/components/ScreenStyles";
 import ScreenContainer from "../../src/components/ScreenContainer";
 import { Challenge } from "@/src/types/Challenge";
 import { getAllChallenges } from "@/src/services/challengeService";
-import { getUserChallenges } from "@/src/services/userChallengeService";
+import {
+  getUserChallenges,
+  addChallengeToUser,
+} from "@/src/services/userChallengeService";
 import { useFocusEffect } from "@react-navigation/native";
 import { SUPABASE_URL } from "@env";
-import { addChallengeToUser } from "@/src/services/userChallengeService"; // Note: need to write this
 import { supabase } from "../../src/config/supabaseClient";
 import { Ionicons } from "@expo/vector-icons";
+import { RefreshContext } from "../../src/context/RefreshContext";
 
 // Supabase Edge Function URL for challenges
 const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/challenges`;
@@ -37,14 +40,29 @@ export default function SearchChallengeScreen() {
 
   const { theme } = useTheme();
 
+  // Accessing the RefreshContext
+  const { refresh, toggleRefresh } = useContext(RefreshContext);
+
+  // Function to get border color based on difficulty
+  const getBorderColor = (difficulty: string) => {
+    switch (difficulty) {
+      case "Easy":
+        return theme === "dark" ? "#306b33" : "#4caf50";
+      case "Medium":
+        return theme === "dark" ? "#b05600" : "#f48c42";
+      case "Hard":
+        return theme === "dark" ? "#a1423b" : "#f44336";
+      default:
+        return theme === "dark" ? "#b05600" : "#f48c42";
+    }
+  };
+
   const fetchChallenges = async () => {
     setLoading(true);
     setError(""); // Clear previous errors
     try {
       const data = await getAllChallenges();
-      // TODO: this sort isn't working
       const sortedChallenges = data.sort((a, b) => a.id - b.id); // Ascending order
-
       setChallenges(sortedChallenges); // Update state with fetched challenges
     } catch (err) {
       setError("Failed to load challenges");
@@ -58,7 +76,7 @@ export default function SearchChallengeScreen() {
   };
 
   // Fetch user challenges from backend
-  const fetchUserChallenges = async (userUuid: string) => {
+  const fetchUserChallengesData = async (userUuid: string) => {
     try {
       const data = await getUserChallenges(userUuid); // Get user challenges
       setUserChallenges(data); // Set them in state
@@ -92,33 +110,56 @@ export default function SearchChallengeScreen() {
     }, [])
   );
 
-  // Fetch user challenges once the user UUID is available
+  // Fetch user challenges once the user UUID is available or when refresh is triggered
   useEffect(() => {
     if (userUuid) {
-      fetchUserChallenges(userUuid); // Fetch challenges only if the UUID is available
+      fetchUserChallengesData(userUuid); // Fetch challenges only if the UUID is available
     }
-  }, [userUuid]);
+  }, [userUuid, refresh]); // Added 'refresh' as a dependency
 
-  // helper for deleting a challenge
+  // Helper for deleting a challenge with confirmation prompt
   const handleDelete = (id: number) => {
-    // Delete challenge from backend edge database
-    fetch(`${edgeFunctionUrl}/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to delete challenge");
-        }
-        // If delete successful, remove it from the state
-        setChallenges(challenges.filter((challenge) => challenge.id !== id));
-        Alert.alert("Success", "Challenge deleted!");
-      })
-      .catch((error) => {
-        Alert.alert("Error", error.message || "Something went wrong.");
-      });
+    Alert.alert(
+      "Confirm Deletion",
+      "Are you sure you want to delete this challenge? This action cannot be undone.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const response = await fetch(`${edgeFunctionUrl}/${id}`, {
+                method: "DELETE",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              });
+
+              if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || "Failed to delete challenge");
+              }
+
+              // If delete successful, remove it from the state
+              setChallenges((prevChallenges) =>
+                prevChallenges.filter((challenge) => challenge.id !== id)
+              );
+              Alert.alert("Success", "Challenge deleted!");
+
+              // Trigger refresh for other screens
+              toggleRefresh();
+            } catch (error: any) {
+              Alert.alert("Error", error.message || "Something went wrong.");
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   // Function to handle adding a challenge to the user
@@ -128,10 +169,15 @@ export default function SearchChallengeScreen() {
         await addChallengeToUser(userUuid, challengeId);
         Alert.alert("Success", "Challenge added to your challenges!");
         // Re-fetch user challenges to update the state
-        fetchUserChallenges(userUuid);
+        fetchUserChallengesData(userUuid);
+        // Trigger refresh for other screens
+        toggleRefresh();
       }
-    } catch (error) {
-      Alert.alert("Error", "Failed to add challenge to your challenges.");
+    } catch (error: any) {
+      Alert.alert(
+        "Error",
+        error.message || "Failed to add challenge to your challenges."
+      );
     }
   };
 
@@ -152,7 +198,7 @@ export default function SearchChallengeScreen() {
             marginBottom: 20,
             borderRadius: 12,
             borderWidth: 2,
-            borderColor: theme === "dark" ? "#b05600" : "#f48c42",
+            borderColor: getBorderColor(item.difficulty),
           },
         ]}
       >
@@ -188,33 +234,45 @@ export default function SearchChallengeScreen() {
         <TouchableOpacity
           style={[
             styles.button,
-            theme === "dark" ? styles.darkButton : styles.lightButton,
-            { alignSelf: "center", paddingHorizontal: 20, marginBottom: -4 },
+            {
+              backgroundColor: theme === "dark" ? "#a1423b" : "#f44336",
+              paddingHorizontal: 20,
+              marginBottom: 8,
+              width: "50%",
+            },
           ]}
           onPress={() => handleDelete(item.id)}
         >
-          <Text style={styles.buttonText}>Delete</Text>
+          <Text style={[styles.buttonText, { color: "#fff" }]}>Delete</Text>
         </TouchableOpacity>
 
-        {/* Conditional Add/Check Button */}
+        {/* Conditional Join/Joined Button */}
         <TouchableOpacity
           style={[
             styles.button,
-            theme === "dark" ? styles.darkButton : styles.lightButton,
-            { alignSelf: "center", paddingHorizontal: 20, marginTop: 8 },
+            {
+              backgroundColor: isUserChallenge
+                ? theme === "dark"
+                  ? "#306b33"
+                  : "#4caf50"
+                : theme === "dark"
+                  ? "#b05600"
+                  : "#f48c42",
+              paddingHorizontal: 20,
+              marginTop: 8,
+              width: "70%",
+              marginBottom: -2,
+            },
           ]}
           onPress={() => {
             if (!isUserChallenge && userUuid) {
-              // Check if userUuid is not null
               handleAddChallenge(userUuid, item.id);
             }
           }}
         >
-          <Ionicons
-            name={isUserChallenge ? "checkmark-done" : "add"}
-            size={24}
-            color={theme === "dark" ? "#fff" : "#000"}
-          />
+          <Text style={[styles.buttonText, { color: "#fff" }]}>
+            {isUserChallenge ? "Joined" : "Join This Challenge"}
+          </Text>
         </TouchableOpacity>
       </View>
     );
