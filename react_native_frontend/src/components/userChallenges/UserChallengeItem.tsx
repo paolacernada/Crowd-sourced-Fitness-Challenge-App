@@ -1,10 +1,9 @@
 import React from "react";
-import { View, Text, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { Challenge } from "@/src/types/Challenge";
 import styles from "@/src/components/ScreenStyles";
 import FavoriteButton from "../FavoriteButton";
 import { useTheme } from "@/src/context/ThemeContext";
-import { Ionicons } from "@expo/vector-icons";
 
 // The user UUID is later used to return that user's challenges (db user_id is needed)
 interface UserChallengeItemProps {
@@ -41,44 +40,16 @@ const UserChallengeItem: React.FC<UserChallengeItemProps> = ({
     }
   };
 
-  // Remove button handler with confirmation prompt
-  // TODO: confirmation prompt isn't working at all
-  const handleRemove = (id: number) => {
-    // console.log("Attempting to remove userChallenge with ID:", id);
-    Alert.alert(
-      "Confirm Deletion",
-      "Are you sure you want to remove this challenge? It will reset your progress.",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Yes",
-          onPress: () => {
-            // console.log("Confirm deletion, calling onRemove with ID:", id);
-            onRemove(id); // Pass ID parent handler
-          },
-        },
-      ],
-      { cancelable: false }
-    );
-  };
-
-  // debugging:
-  // console.log("UserChallenge data:", userChallenge);
-  // console.log("Challenge data:", challenge);
-
   return (
     <View
       style={[
         styles.challengeItem,
         theme === "dark" ? styles.darkForm : styles.lightForm,
-        {
-          borderColor: getBorderColor(challenge.difficulty),
-        },
+        { borderColor: getBorderColor(challenge.difficulty) },
       ]}
     >
+      <FavoriteButton challengeId={challenge.id} />
+
       <View style={styles.infoContainer}>
         <Text
           style={[
@@ -108,27 +79,22 @@ const UserChallengeItem: React.FC<UserChallengeItemProps> = ({
           {challenge.description}
         </Text>
 
-        {/* Remove Button */}
-        <TouchableOpacity
-          style={styles.button} // note: I just used the neutral button style
-          onPress={() => {
-            if (userChallenge.id) {
-              // console.log("Attempting to remove userChallenge with ID:", userChallenge.id);
-              // console.log("Calling handleRemove() with ID:", userChallenge.id);
-              onRemove(userChallenge.id);
-            } else {
-              console.warn("UserChallenge ID is missing!");
-            }
-          }}
-        >
-          <Ionicons
-            name="close"
-            size={24}
-            color={theme === "dark" ? "#fff" : "#000"}
-          />
-        </TouchableOpacity>
+        {/* Unjoin Button */}
+        <View style={{ alignItems: "center" }}>
+          <TouchableOpacity
+            style={[
+              styles.button,
+              theme === "dark" ? styles.darkButton : styles.lightButton,
+              { width: "75%", marginBottom: 4, marginTop: 10 },
+            ]}
+            onPress={() => onRemove(userChallenge.id)}
+          >
+            <Text style={[styles.buttonText, { color: "#fff" }]}>
+              Unjoin Challenge
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      <FavoriteButton challengeId={challenge.id} />
     </View>
   );
 };

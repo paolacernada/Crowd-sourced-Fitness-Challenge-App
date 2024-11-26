@@ -7,7 +7,7 @@ import ScreenContainer from "../components/ScreenContainer";
 import UserChallengesList from "../components/userChallenges/UserChallengesList";
 import {
   deleteChallengeFromUser,
-  fetchUserChallengesData,
+  getUserChallenges,
 } from "../services/userChallengeService";
 import { RefreshContext } from "../context/RefreshContext";
 
@@ -17,14 +17,13 @@ const UserChallengesScreen: React.FC = () => {
   const [userUuid, setUserUuid] = useState<string | null>(null);
   const [userChallenges, setUserChallenges] = useState([]);
   const { theme } = useTheme();
-
-  const { refresh } = useContext(RefreshContext);
+  const { refresh, setRefresh } = useContext(RefreshContext);
 
   // Fetch user UUID and challenges when the component mounts or when refresh is triggered
   useEffect(() => {
     const fetchUserDataAndChallenges = async () => {
       setLoading(true);
-      setError(null); // Reset error state before fetching
+      setError(null);
 
       try {
         const { data, error: authError } = await supabase.auth.getUser();
@@ -40,8 +39,7 @@ const UserChallengesScreen: React.FC = () => {
         const fetchedUserUuid = data.user.id;
         setUserUuid(fetchedUserUuid);
 
-        // Fetch user challenges
-        const challenges = await fetchUserChallengesData(fetchedUserUuid);
+        const challenges = await getUserChallenges(fetchedUserUuid);
         setUserChallenges(challenges);
       } catch (err) {
         console.error("Error fetching user data or challenges:", err);
@@ -66,8 +64,10 @@ const UserChallengesScreen: React.FC = () => {
       setUserChallenges((prevChallenges) =>
         prevChallenges.filter((challenge) => challenge.id !== userChallengeId)
       );
+
+      // Trigger refresh for other screens
+      setRefresh((prev) => !prev);
     } catch (error) {
-      // console.error("Error removing challenge:", error);
       console.error("Error removing challenge:", error);
     }
   };
