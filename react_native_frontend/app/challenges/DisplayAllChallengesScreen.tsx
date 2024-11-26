@@ -117,49 +117,26 @@ export default function SearchChallengeScreen() {
     }
   }, [userUuid, refresh]); // Added 'refresh' as a dependency
 
-  // Helper for deleting a challenge with confirmation prompt
+  // helper for deleting a challenge
   const handleDelete = (id: number) => {
-    Alert.alert(
-      "Confirm Deletion",
-      "Are you sure you want to delete this challenge? This action cannot be undone.",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              const response = await fetch(`${edgeFunctionUrl}/${id}`, {
-                method: "DELETE",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-              });
-
-              if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(errorText || "Failed to delete challenge");
-              }
-
-              // If delete successful, remove it from the state
-              setChallenges((prevChallenges) =>
-                prevChallenges.filter((challenge) => challenge.id !== id)
-              );
-              Alert.alert("Success", "Challenge deleted!");
-
-              // Trigger refresh for other screens
-              toggleRefresh();
-            } catch (error: any) {
-              Alert.alert("Error", error.message || "Something went wrong.");
-            }
-          },
-        },
-      ],
-      { cancelable: false }
-    );
+    // Delete challenge from backend edge database
+    fetch(`${edgeFunctionUrl}/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to delete challenge");
+        }
+        // If delete successful, remove it from the state
+        setChallenges(challenges.filter((challenge) => challenge.id !== id));
+        Alert.alert("Success", "Challenge deleted!");
+      })
+      .catch((error) => {
+        Alert.alert("Error", error.message || "Something went wrong.");
+      });
   };
 
   // Function to handle adding a challenge to the user
