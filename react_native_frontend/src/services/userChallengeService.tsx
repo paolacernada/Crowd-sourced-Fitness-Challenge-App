@@ -58,6 +58,26 @@ export const getUserChallenges = async (
   }
 };
 
+/**
+ * Fetch all user challenges using a shared function.
+ * This function ensures that all screens fetch user challenges in a consistent way.
+ * @param userUuid The UUID of the user whose challenges should be fetched
+ * @returns A promise that resolves to an array of challenges
+ */
+export const fetchUserChallengesData = async (
+  userUuid: string
+): Promise<UserChallenge[]> => {
+  try {
+    console.log(`Fetching user challenges for userUuid: ${userUuid}`);
+    const userChallenges = await getUserChallenges(userUuid);
+    console.log("Fetched user challenges:", userChallenges);
+    return userChallenges;
+  } catch (error) {
+    console.error("Error in fetchUserChallengesData:", error);
+    throw new Error("Failed to fetch user challenges.");
+  }
+};
+
 // Fetch all completed challenges (by all users)
 export const getCompletedChallenges = async (): Promise<
   CompletedChallenge[]
