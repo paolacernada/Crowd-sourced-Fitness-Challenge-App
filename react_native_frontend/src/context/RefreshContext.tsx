@@ -1,4 +1,4 @@
-import React, { createContext, useState, ReactNode } from "react";
+import React, { createContext, useState, ReactNode, useContext } from "react";
 
 interface RefreshContextProps {
   refresh: boolean;
@@ -8,8 +8,12 @@ interface RefreshContextProps {
 
 export const RefreshContext = createContext<RefreshContextProps>({
   refresh: false,
-  setRefresh: () => {},
-  toggleRefresh: () => {},
+  setRefresh: () => {
+    throw new Error("setRefresh must be used within a RefreshProvider");
+  },
+  toggleRefresh: () => {
+    throw new Error("toggleRefresh must be used within a RefreshProvider");
+  },
 });
 
 export const RefreshProvider = ({ children }: { children: ReactNode }) => {
@@ -23,3 +27,6 @@ export const RefreshProvider = ({ children }: { children: ReactNode }) => {
     </RefreshContext.Provider>
   );
 };
+
+export const useRefresh = () => useContext(RefreshContext);
+export default RefreshContext;

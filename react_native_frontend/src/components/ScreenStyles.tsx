@@ -86,7 +86,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 30,
     alignItems: "center",
-    marginBottom: 20,
   },
   darkButton: {
     backgroundColor: "#b05600",
@@ -96,7 +95,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "600",
   },
   linkText: {
