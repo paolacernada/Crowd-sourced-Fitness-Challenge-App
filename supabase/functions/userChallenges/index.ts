@@ -53,7 +53,7 @@ const handleResponse = async (response: Response) => {
   }
 };
 
-// GET (all) user-challenge relationships or by user_uuid (the latter is readily availabe in React Native)
+// GET (all) user-challenge relationships or by user_uuid (the latter is readily available in React Native)
 const getUserChallenges = async (userUuid: string | null) => {
   const query = userUuid
     ? `${supabaseUrl}/rest/v1/users_challenges?user_uuid=eq.${userUuid}&select=id,challenge_id,completed,favorites,users(id,name,uuid),challenges(id,name,description,difficulty)&order=id.asc`
@@ -334,7 +334,7 @@ Deno.serve(handleRequest);
 //   }
 // };
 
-// // GET (all) user-challenge relationships or by user_uuid (the latter is readily availabe in React Native)
+// // GET (all) user-challenge relationships or by user_uuid (the latter is readily available in React Native)
 // const getUserChallenges = async (userUuid: string | null) => {
 //   const query = userUuid
 //     ? `${supabaseUrl}/rest/v1/users_challenges?user_uuid=eq.${userUuid}&select=id,challenge_id,completed,favorites,users(id,name,uuid),challenges(id,name,description,difficulty)`

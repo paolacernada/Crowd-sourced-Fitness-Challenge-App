@@ -62,6 +62,9 @@ export default function BottomTabs() {
             case "Users":
               iconName = focused ? "people" : "people-outline";
               break;
+            case "WallOfFame":
+              iconName = focused ? "trophy" : "trophy-outline";
+              break;
             case "Settings":
               iconName = focused ? "settings" : "settings-outline";
               break;
@@ -114,7 +117,7 @@ export default function BottomTabs() {
       <Tab.Screen
         name="WallOfFame"
         component={WallOfFameScreen}
-        options={{ title: "WallOfFame" }}
+        options={{ title: "Wall of Fame" }}
       />
       <Tab.Screen
         name="Settings"

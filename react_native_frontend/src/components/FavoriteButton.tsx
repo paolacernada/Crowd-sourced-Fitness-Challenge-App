@@ -1,58 +1,116 @@
-import React from "react";
-import { TouchableOpacity, StyleSheet } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
-import { addFavorite, removeFavorite } from "../redux/slices/favoritesSlice";
-import { RootState } from "../redux/store";
+import React, { useState, useEffect, useContext } from "react";
+import { TouchableOpacity, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { supabase } from "../config/supabaseClient";
+import { useTheme } from "../context/ThemeContext";
+import { RefreshContext } from "../context/RefreshContext";
+import styles from "../components/ScreenStyles";
 
 interface FavoriteButtonProps {
   challengeId: number;
+  userUuid: string;
+  userChallengeId: number;
 }
 
-/**
- * FavoriteButton Component
- * Allows users to mark/unmark challenges as favorites.
- *
- * Props:
- * - challengeId: The ID of the challenge to favorite.
- */
-const FavoriteButton: React.FC<FavoriteButtonProps> = ({ challengeId }) => {
-  const dispatch = useDispatch();
-  const favorites = useSelector(
-    (state: RootState) => state.favorites.favorites
-  );
-  const isFavorite = favorites.includes(challengeId);
+const FavoriteButton: React.FC<FavoriteButtonProps> = ({
+  challengeId,
+  userUuid,
+  userChallengeId,
+}) => {
+  const [isFavorite, setIsFavorite] = useState<boolean>(false);
+  const { theme } = useTheme();
+  const { toggleRefresh } = useContext(RefreshContext);
 
-  /**
-   * Handles the press event to toggle favorite status.
-   */
-  const handlePress = () => {
-    if (isFavorite) {
-      dispatch(removeFavorite(challengeId));
-    } else {
-      dispatch(addFavorite(challengeId));
+  useEffect(() => {
+    const fetchFavoriteStatus = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("users_challenges")
+          .select("favorites")
+          .eq("id", userChallengeId)
+          .single();
+
+        if (error) {
+          console.error("Error fetching favorite status:", error);
+        } else {
+          setIsFavorite(data.favorites);
+        }
+      } catch (error) {
+        console.error("Error fetching favorite status:", error);
+      }
+    };
+
+    fetchFavoriteStatus();
+  }, [userChallengeId]);
+
+  const handlePress = async () => {
+    try {
+      const newFavoriteStatus = !isFavorite;
+
+      const { error } = await supabase
+        .from("users_challenges")
+        .update({ favorites: newFavoriteStatus })
+        .eq("id", userChallengeId);
+
+      if (error) {
+        console.error("Error updating favorite status:", error);
+        return;
+      }
+
+      // Update the local state
+      setIsFavorite(newFavoriteStatus);
+
+      // Trigger refresh for other screens
+      toggleRefresh();
+    } catch (error) {
+      console.error("Error updating favorite status:", error);
     }
   };
+
+  const heartColor = () => {
+    if (isFavorite) {
+      return theme === "dark" ? "#a1423b" : "red";
+    } else {
+      return "gray";
+    }
+  };
+
+  const buttonBackgroundColor = theme === "dark" ? "#605F5E" : "#ECECEC";
 
   return (
     <TouchableOpacity
       onPress={handlePress}
-      style={styles.button}
+      style={[
+        styles.button,
+        {
+          backgroundColor: buttonBackgroundColor,
+          paddingHorizontal: 20,
+          marginBottom: 8,
+          width: 200,
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          alignSelf: "center",
+        },
+      ]}
       testID="favorite-button"
     >
       <Ionicons
         name={isFavorite ? "heart" : "heart-outline"}
-        size={24}
-        color={isFavorite ? "red" : "gray"}
+        size={20}
+        color={heartColor()}
+        style={{ marginRight: 8 }}
       />
+      <Text
+        style={[
+          styles.buttonText,
+          { color: theme === "dark" ? "#fff" : "#000", fontSize: 14 },
+        ]}
+      >
+        {isFavorite ? "Remove Favorite" : "Add to Favorites"}
+      </Text>
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  button: {
-    padding: 10,
-  },
-});
 
 export default FavoriteButton;

@@ -17,7 +17,7 @@ const UserChallengesScreen: React.FC = () => {
   const [userUuid, setUserUuid] = useState<string | null>(null);
   const [userChallenges, setUserChallenges] = useState([]);
   const { theme } = useTheme();
-  const { refresh, setRefresh } = useContext(RefreshContext);
+  const { refresh, toggleRefresh } = useContext(RefreshContext);
 
   // Fetch user UUID and challenges when the component mounts or when refresh is triggered
   useEffect(() => {
@@ -48,7 +48,7 @@ const UserChallengesScreen: React.FC = () => {
         setLoading(false);
       }
     };
-    // Runs once component mounts
+    // Runs once component mounts or when refresh changes
     fetchUserDataAndChallenges();
   }, [refresh]);
 
@@ -66,7 +66,7 @@ const UserChallengesScreen: React.FC = () => {
       );
 
       // Trigger refresh for other screens
-      setRefresh((prev) => !prev);
+      toggleRefresh();
     } catch (error) {
       console.error("Error removing challenge:", error);
     }
@@ -94,24 +94,26 @@ const UserChallengesScreen: React.FC = () => {
         My Challenges
       </Text>
 
-      {/* Show Error Message */}
-      {error && <Text style={styles.errorText}>{error}</Text>}
-
-      {/* Show Loading Indicator */}
       {loading ? (
         <ActivityIndicator
           size="large"
           color={theme === "dark" ? "#fff" : "#000"}
         />
+      ) : userChallenges.length > 0 ? (
+        <UserChallengesList
+          userUuid={userUuid}
+          challenges={userChallenges}
+          onRemove={handleRemove}
+        />
       ) : (
-        // Display User Challenges List if User is Authenticated
-        userUuid && (
-          <UserChallengesList
-            userUuid={userUuid}
-            userChallenges={userChallenges}
-            onRemove={handleRemove}
-          />
-        )
+        <Text
+          style={[
+            theme === "dark" ? styles.darkText : styles.lightText,
+            { textAlign: "center", fontSize: 16 },
+          ]}
+        >
+          You are not part of any challenges yet.
+        </Text>
       )}
     </ScreenContainer>
   );
