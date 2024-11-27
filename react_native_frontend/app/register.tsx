@@ -164,6 +164,7 @@ export default function RegisterScreen() {
           style={[
             styles.button,
             theme === "dark" ? styles.darkButton : styles.lightButton,
+            { width: "40%", marginBottom: 10 },
           ]}
           onPress={handleRegister}
           disabled={loading}

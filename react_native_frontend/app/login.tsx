@@ -89,7 +89,8 @@ export default function LoginScreen() {
             style={[
               styles.button,
               theme === "dark" ? styles.darkButton : styles.lightButton,
-              { width: "45%" },
+              { width: "40%", marginBottom: 10 },
+              ,
             ]}
             onPress={handleLogin}
             disabled={loading}
