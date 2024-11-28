@@ -12,23 +12,20 @@ const CompletedChallengesScreen: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [completedChallenges, setCompletedChallenges] = useState<
     CompletedChallenge[]
-  >([]); // Store completed challenges as CompletedChallenge[] type
+  >([]); // Store completed challenges
   const { theme } = useTheme();
 
-  // Fetch completed Callenges upon mounting
+  // Fetch completed challenges
   useEffect(() => {
     const fetchCompletedChallengesData = async () => {
       setLoading(true);
-      setError(null); // Reset error state (before fetching)
+      setError(null); // Reset error state
 
       try {
-        // console.log("Fetching completed challenges..."); // Debugging: log before fetching
-        const challenges = await getCompletedChallenges(); // Call 'get completed challenges' service
-        // console.log("Fetched completed challenges:", challenges); // Debugging: log fetched data
-
-        setCompletedChallenges(challenges); // Set fetched completed challenges to state
+        const challenges = await getCompletedChallenges();
+        setCompletedChallenges(challenges);
       } catch (err) {
-        console.error("Error fetching completed challenges:", err); // Log error details
+        console.error("Error fetching completed challenges:", err);
         setError("Failed to load completed challenges.");
         Alert.alert(
           "Error",
@@ -39,32 +36,39 @@ const CompletedChallengesScreen: React.FC = () => {
       }
     };
 
-    fetchCompletedChallengesData(); // Fetch completed challenges upon mount
+    fetchCompletedChallengesData();
   }, []);
 
-  // If loading, show loading indicator
+  // Show loading indicator
   if (loading) {
     return (
       <ScreenContainer>
         <ActivityIndicator
           size="large"
           color={theme === "dark" ? "#fff" : "#000"}
-          style={{ marginTop: 20 }}
+          style={styles.loader}
         />
       </ScreenContainer>
     );
   }
 
-  // If error, show error message
+  // Show error message
   if (error) {
     return (
       <ScreenContainer>
-        <Text style={styles.errorText}>{error}</Text>
+        <Text
+          style={[
+            styles.errorText,
+            theme === "dark" ? styles.darkText : styles.lightText,
+          ]}
+        >
+          {error}
+        </Text>
       </ScreenContainer>
     );
   }
 
-  // If no completed challenges, display appropriate message
+  // Show message when no completed challenges
   if (completedChallenges.length === 0) {
     return (
       <ScreenContainer>
@@ -80,7 +84,7 @@ const CompletedChallengesScreen: React.FC = () => {
     );
   }
 
-  // Show list of completed challenges
+  // Show completed challenges list
   return (
     <ScreenContainer>
       {/* App Name */}
@@ -101,10 +105,10 @@ const CompletedChallengesScreen: React.FC = () => {
           { marginBottom: 20 },
         ]}
       >
-        FitTogether Wall of Fame
+       🎉 FitTogether Wall of Fame 🎉
       </Text>
 
-      {/* Show Completed Challenges List */}
+      {/* Completed Challenges List */}
       <CompletedChallengesList challenges={completedChallenges} />
     </ScreenContainer>
   );
