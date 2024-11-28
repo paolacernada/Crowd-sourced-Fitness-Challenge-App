@@ -105,7 +105,7 @@ const CompletedChallengesScreen: React.FC = () => {
           { marginBottom: 20 },
         ]}
       >
-       🎉 FitTogether Wall of Fame 🎉
+        🎉 FitTogether Wall of Fame 🎉
       </Text>
 
       {/* Completed Challenges List */}
