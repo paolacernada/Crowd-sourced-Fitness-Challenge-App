@@ -18,7 +18,7 @@ if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
 // CORS headers
 const corsHeaders = {
   "Content-Type": "application/json",
-  "Access-Control-Allow-Origin": "*", // Replace '*' with your frontend URL for production
+  "Access-Control-Allow-Origin": "*", // Replace '*' with frontend URL for production
   "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey",
 };
@@ -52,6 +52,14 @@ const handleResponse = async (response: Response) => {
   }
 };
 
+// Handle OPTIONS requests for CORS pre-flight
+const handleOptions = () => {
+  return new Response(null, {
+    status: 204,
+    headers: corsHeaders,
+  });
+};
+
 // Validates JWT token if provided
 const validateJWT = async (token: string) => {
   const response = await supabaseFetch(`${supabaseUrl}/auth/v1/user`, {
@@ -66,14 +74,6 @@ const validateJWT = async (token: string) => {
   return await response.json();
 };
 
-// Handle OPTIONS requests for CORS pre-flight
-const handleOptions = () => {
-  return new Response(null, {
-    status: 204,
-    headers: corsHeaders,
-  });
-};
-
 // Main request handler
 const handleRequest = async (req: Request) => {
   if (req.method === "OPTIONS") {
@@ -86,6 +86,9 @@ const handleRequest = async (req: Request) => {
   const id = path.pop();
   const token = req.headers.get("Authorization")?.split("Bearer ")[1];
 
+  // Get 'tag' query parameters
+  const selectedTags = url.searchParams.getAll("tag");
+
   try {
     // Validate JWT if token is present
     if (token) {
@@ -96,9 +99,11 @@ const handleRequest = async (req: Request) => {
     switch (req.method) {
       case "GET":
         console.log("GET request for challenge");
-        return id && !isNaN(Number(id))
-          ? await getChallenge(id)
-          : await getChallenges();
+        if (id && !isNaN(Number(id))) {
+          return await getChallengeById(id);
+        } else {
+          return await getChallenges(selectedTags);
+        }
 
       case "POST":
         console.log("POST request for creating challenge");
@@ -128,22 +133,53 @@ const handleRequest = async (req: Request) => {
   }
 };
 
-// Fetch all challenges (GET)
-const getChallenges = async () => {
-  const response = await supabaseFetch(`${supabaseUrl}/rest/v1/challenges`, {
+// Fetch all challenges or challenges filtered by tags (GET)
+const getChallenges = async (selectedTags: string[]) => {
+  let queryUrl = `${supabaseUrl}/rest/v1/challenges`;
+
+  const queryParams = new URLSearchParams();
+  queryParams.append("select", "*, challenge_tags!inner(tag_id, tags(name))");
+  queryParams.append("order", "id");
+
+  if (selectedTags.length > 0) {
+    // Filter challenges that have any of the selected tags
+    queryParams.append(
+      "challenge_tags.tag_id",
+      `in.(${selectedTags.join(",")})`
+    );
+  } else {
+    // Fetch all challenges with their tags using left join (default)
+    queryParams.append("select", "*, challenge_tags(tag_id, tags(name))");
+  }
+
+  queryParams.append("order", "id");
+
+  queryUrl += `?${queryParams.toString()}`;
+
+  console.log("Fetching challenges with URL:", queryUrl);
+
+  const response = await supabaseFetch(queryUrl, {
     method: "GET",
   });
   const data = await handleResponse(response);
-  return new Response(JSON.stringify(data), {
+
+  // Remove duplicates if any
+  const uniqueChallenges = Array.from(
+    new Set(data.map((item: any) => item.id))
+  ).map((id) => {
+    return data.find((item: any) => item.id === id);
+  });
+
+  return new Response(JSON.stringify(uniqueChallenges), {
     status: 200,
     headers: corsHeaders,
   });
 };
 
 // Fetch a single challenge by ID (GET)
-const getChallenge = async (id: string) => {
+const getChallengeById = async (id: string) => {
   const response = await supabaseFetch(
-    `${supabaseUrl}/rest/v1/challenges?id=eq.${id}`,
+    `${supabaseUrl}/rest/v1/challenges?id=eq.${id}&select=*, challenge_tags(tag_id, tags(name))`,
     { method: "GET" }
   );
   const data = await handleResponse(response);
@@ -158,7 +194,7 @@ const createChallenge = async (body: {
   description: string;
   difficulty: string;
 }) => {
-  // Ensure that the 'name', 'description', and 'difficulty' fields are provided
+  // Required fields for creating a challenge
   if (!body.name || !body.description || !body.difficulty) {
     return new Response(
       JSON.stringify({

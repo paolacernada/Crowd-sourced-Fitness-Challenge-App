@@ -31,7 +31,7 @@ const TagFilter: React.FC<TagFilterProps> = ({
       onSelectedItemsChange={onSelectedTagsChange}
       selectedItems={selectedTags}
       selectText="Filter by Tags"
-      searchInputPlaceholderText="Search Tags..."
+      searchInputPlaceholderText="Select Tag(s)"
       tagRemoveIconColor={theme === "dark" ? "#b05600" : "#f48c42"}
       tagBorderColor={theme === "dark" ? "#b05600" : "#f48c42"}
       tagTextColor={theme === "dark" ? "#fff" : "#000"}
