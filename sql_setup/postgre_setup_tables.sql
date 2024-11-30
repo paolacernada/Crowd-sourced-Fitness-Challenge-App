@@ -18,32 +18,19 @@ CREATE TABLE challenges (
   FOREIGN KEY (difficulty) REFERENCES difficulty(name) ON DELETE CASCADE
 );
 
-
-
 CREATE TABLE goals (
   id bigint primary key generated always as identity,
   name VARCHAR(100) UNIQUE NOT NULL,
   description VARCHAR(300) NOT NULL
 );
 
--- The following adds the Supabase UUID and username
--- But I had to keep the username nullable for now, until I either insert values to all the users or completely reenter all data for all tables.
 CREATE TABLE users (
   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   name VARCHAR(50) UNIQUE NOT NULL,
   registration_date TIMESTAMP DEFAULT NOW(),
-  uuid uuid DEFAULT gen_random_uuid() NOT NULL,  -- Supabase Auth UUID, nullable.  Todo: add UNIQUE
-  username VARCHAR(50) UNIQUE NOT NULL  -- New username field   NOTE: I 
+  uuid uuid DEFAULT gen_random_uuid() NOT NULL,
+  username VARCHAR(50) UNIQUE NOT NULL
 );
-
--- Previous table
--- CREATE TABLE users (
---   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
---   name VARCHAR(50) UNIQUE NOT NULL,
---   registration_date TIMESTAMP DEFAULT NOW(),
---   uuid uuid,  -- Supabase Auth UUID, nullable.  Todo: add UNIQUE
---   username VARCHAR(50) UNIQUE NOT NULL  -- New username field   NOTE: I 
--- );
 
 CREATE TABLE tags (
   id bigint primary key generated always as identity,
@@ -74,9 +61,6 @@ CREATE TABLE users_badges (
     FOREIGN KEY (badge_id) REFERENCES badges(id) ON DELETE CASCADE
 );
 
--- Factor in this (uuid is now an item here):
--- ALTER TABLE users_challenges
--- ADD COLUMN user_uuid uuid;
 CREATE TABLE users_challenges (
   id bigint primary key generated always as identity,
   user_id INT,
@@ -105,4 +89,3 @@ CREATE TABLE user_goals (
   completed BOOLEAN DEFAULT FALSE,  -- This indicates whether the user has completed the goal or not
   UNIQUE (user_id, goal_id, challenge_id)  -- Prevents duplicate goals being added to user
 );
-
