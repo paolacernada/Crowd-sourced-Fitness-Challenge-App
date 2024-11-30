@@ -15,7 +15,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 // CORS headers
 const corsHeaders = {
   "Content-Type": "application/json",
-  "Access-Control-Allow-Origin": "*", // Replace '*' with your frontend URL for production
+  "Access-Control-Allow-Origin": "*", // Replace '*' with frontend URL for production
   "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey",
 };

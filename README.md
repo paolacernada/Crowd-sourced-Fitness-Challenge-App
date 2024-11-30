@@ -149,6 +149,18 @@ This app enables users to create and participate in community-driven fitness cha
 
 3. Update the frontend to use the deployed Edge Function URL instead of local routes.
 
+# Exporting React Native app
+1. In the frontend root folder, run  
+   ```bash
+   npx expo export
+   ```
+
+2. If there is trouble running the linter after exporting a build, run:
+   ```bash
+   npx eslint --debug --no-cache .
+   ```
+
+
 # 📚 Explore the Docs
 
 - [Expo documentation](https://docs.expo.dev/): Learn fundamentals or explore advanced topics with [guides](https://docs.expo.dev/guides).
