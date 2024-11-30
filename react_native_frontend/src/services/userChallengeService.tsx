@@ -103,12 +103,12 @@ export const fetchUserChallengesData = async (
   userUuid: string
 ): Promise<UserChallenge[]> => {
   try {
-    console.log(`Fetching user challenges for userUuid: ${userUuid}`);
+    // console.log(`Fetching user challenges for userUuid: ${userUuid}`);
     const userChallenges = await getUserChallenges(userUuid);
-    console.log("Fetched user challenges:", userChallenges);
+    // console.log("Fetched user challenges:", userChallenges);
     return userChallenges;
   } catch (error) {
-    console.error("Error in fetchUserChallengesData:", error);
+    // console.error("Error in fetchUserChallengesData:", error);
     throw new Error("Failed to fetch user challenges.");
   }
 };
