@@ -149,7 +149,8 @@ This app enables users to create and participate in community-driven fitness cha
 
 3. Update the frontend to use the deployed Edge Function URL instead of local routes.
 
-# Exporting React Native app
+## 📦 Exporting React Native App
+
 1. In the frontend root folder, run  
    ```bash
    npx expo export
@@ -159,7 +160,6 @@ This app enables users to create and participate in community-driven fitness cha
    ```bash
    npx eslint --debug --no-cache .
    ```
-
 
 # 📚 Explore the Docs
 
