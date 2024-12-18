@@ -2,6 +2,15 @@
 
 This app enables users to create and participate in community-driven fitness challenges. Users can engage in challenges, chat with others, earn badges, and track progress all within a cross-platform mobile app.
 
+## Contributors
+
+This project is the result of the collaborative efforts of the following contributors:
+
+- **[@samuelberven](https://github.com/samuelberven)**: Samuel Berven
+- **[@paolacernada](https://github.com/paolacernada)**: Paola Cernada    
+
+**Note:** While GitHub may display an additional user as a contributor, no one else has made contributions to this project or holds permission to do so.
+
 ## Features
 
 ### Key Objectives:
